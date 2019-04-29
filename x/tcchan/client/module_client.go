@@ -4,7 +4,7 @@ import (
 	tcchancmd "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	amino "github.com/tendermint/go-amino"
+	"github.com/tendermint/go-amino"
 )
 
 // ModuleClient exports all client functionality from this module
