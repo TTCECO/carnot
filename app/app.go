@@ -1,4 +1,4 @@
-package tcchan
+package app
 
 import (
 	"encoding/json"
@@ -17,6 +17,7 @@ import (
 	cmn "github.com/tendermint/tendermint/libs/common"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
+	tcc "github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 )
 
 const (
@@ -38,7 +39,7 @@ type nameServiceApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	paramsKeeper        params.Keeper
-	tcKeeper            Keeper
+	tccKeeper            tcc.Keeper
 }
 
 // NewNameServiceApp is a constructor function for nameServiceApp
@@ -86,7 +87,7 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 
 	// The NameserviceKeeper is the Keeper from the module for this tutorial
 	// It handles interactions with the namestore
-	app.tcKeeper = NewKeeper(
+	app.tccKeeper = tcc.NewKeeper(
 		app.bankKeeper,
 		app.keyTCC,
 		app.cdc,
@@ -99,11 +100,11 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 	// Register the bank and tcchan routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("tcchan", NewHandler(app.tcKeeper))
+		AddRoute("tcchan", tcc.NewHandler(app.tccKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute("tcchan", NewQuerier(app.tcKeeper)).
+		AddRoute("tcchan", tcc.NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
@@ -189,7 +190,7 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	RegisterCodec(cdc)
+	tcc.RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)

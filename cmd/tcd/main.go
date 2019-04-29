@@ -22,7 +22,7 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
 
-	app "github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
+	app "github.com/TTCECO/ttc-cosmos-channal/app"
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"

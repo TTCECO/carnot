@@ -14,7 +14,7 @@ import (
 	amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
+	app "github.com/TTCECO/ttc-cosmos-channal/app"
 	tcclient "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client"
 	tcrest "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
