@@ -30,7 +30,7 @@ import (
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/TTCECO/ttc-cosmos-channal/app"
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	tcclient "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client"
 	tcrest "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,7 +50,7 @@ var defaultCLIHome = os.ExpandEnv("$HOME/.tccli")
 func main() {
 	cobra.EnableCommandSorting = false
 
-	cdc := app.MakeCodec()
+	cdc := tcchan.MakeCodec()
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()

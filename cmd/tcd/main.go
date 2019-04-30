@@ -38,7 +38,7 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/TTCECO/ttc-cosmos-channal/app"
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -57,7 +57,7 @@ const (
 func main() {
 	cobra.EnableCommandSorting = false
 
-	cdc := app.MakeCodec()
+	cdc := tcchan.MakeCodec()
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
@@ -80,13 +80,13 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewNameServiceApp(logger, db)
+	return tcchan.NewNameServiceApp(logger, db)
 }
 
 func appExporter() server.AppExporter {
 	return func(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool, _ []string) (
 		json.RawMessage, []tmtypes.GenesisValidator, error) {
-		dapp := app.NewNameServiceApp(logger, db)
+		dapp := tcchan.NewNameServiceApp(logger, db)
 		return dapp.ExportAppStateAndValidators()
 	}
 }
@@ -118,7 +118,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return fmt.Errorf("genesis.json file already exists: %v", genFile)
 			}
 
-			genesis := app.GenesisState{
+			genesis := tcchan.GenesisState{
 				AuthData: auth.DefaultGenesisState(),
 				BankData: bank.DefaultGenesisState(),
 			}
@@ -187,7 +187,7 @@ $ tcd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAK
 				return err
 			}
 
-			var appState app.GenesisState
+			var appState tcchan.GenesisState
 			if err = cdc.UnmarshalJSON(genDoc.AppState, &appState); err != nil {
 				return err
 			}

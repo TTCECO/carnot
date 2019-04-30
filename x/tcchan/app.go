@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the TTC library. If not, see <http://www.gnu.org/licenses/>.
 
-package app
+package tcchan
 
 import (
 	"encoding/json"
@@ -27,7 +27,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -55,7 +54,7 @@ type nameServiceApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	paramsKeeper        params.Keeper
-	tccKeeper           tcchan.Keeper
+	tccKeeper           Keeper
 }
 
 // NewNameServiceApp is a constructor function for nameServiceApp
@@ -103,7 +102,7 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 
 	// The NameserviceKeeper is the Keeper from the module for this tutorial
 	// It handles interactions with the namestore
-	app.tccKeeper = tcchan.NewKeeper(
+	app.tccKeeper = NewKeeper(
 		app.bankKeeper,
 		app.keyTCC,
 		app.cdc,
@@ -116,11 +115,11 @@ func NewNameServiceApp(logger log.Logger, db dbm.DB) *nameServiceApp {
 	// Register the bank and tcchan routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("tcchan", tcchan.NewHandler(app.tccKeeper))
+		AddRoute("tcchan", NewHandler(app.tccKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute("tcchan", tcchan.NewQuerier(app.tccKeeper)).
+		AddRoute("tcchan", NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
@@ -206,7 +205,7 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	tcchan.RegisterCodec(cdc)
+	RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
