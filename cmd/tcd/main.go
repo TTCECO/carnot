@@ -80,13 +80,13 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return tcchan.NewNameServiceApp(logger, db)
+	return tcchan.NewApp(logger, db)
 }
 
 func appExporter() server.AppExporter {
 	return func(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool, _ []string) (
 		json.RawMessage, []tmtypes.GenesisValidator, error) {
-		dapp := tcchan.NewNameServiceApp(logger, db)
+		dapp := tcchan.NewApp(logger, db)
 		return dapp.ExportAppStateAndValidators()
 	}
 }
