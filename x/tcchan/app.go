@@ -100,8 +100,8 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
-	// The NameserviceKeeper is the Keeper from the module for this tutorial
-	// It handles interactions with the namestore
+	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
+	// It handles interactions with the store
 	app.tccKeeper = NewKeeper(
 		app.bankKeeper,
 		app.keyTCC,
