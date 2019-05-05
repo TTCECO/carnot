@@ -17,6 +17,7 @@
 package tcchan
 
 import (
+	"github.com/TTCECO/gttc/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -35,4 +36,18 @@ func NewWhois() Whois {
 	return Whois{
 		Price: MinNamePrice,
 	}
+}
+
+// CCToC is the struct that contains cross chain transaction from TTC Mainnet to cosmos SDK
+type CCToC struct {
+	From  common.Address `json:"from"`
+	To    sdk.AccAddress `json:"to"`
+	Value sdk.Coin       `json:"value"`
+}
+
+// CCFromC is the struct that contains cross chain transation from cosmos SDK to TTC Mainnet
+type CCFromC struct {
+	From  sdk.AccAddress `json:"from"`
+	To    common.Address `json:"to"`
+	Value sdk.Coin       `json:"value"`
 }
