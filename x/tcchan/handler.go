@@ -42,6 +42,8 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err != nil {
 		return sdk.ErrInsufficientCoins("Buyer does not have enough coins").Result()
 	}
-	keeper.SetOrder(ctx, CCTxOrder{OrderID: 1, AccAddress: msg.From})
+	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: 1, AccAddress: msg.From}); err != nil {
+		return sdk.ErrInsufficientCoins("Store order fail").Result()
+	}
 	return sdk.Result{}
 }
