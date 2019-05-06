@@ -17,6 +17,11 @@
 package tcchan
 
 const (
-	COIN_TTC = "CTTC" // TTC on Cosmos
-	COIN_ACN = "CACN" // ACN on Cosmos, ERC20
+	CoinTTC = "CTTC" // TTC on Cosmos
+	CoinACN = "CACN" // ACN on Cosmos, ERC20
+
+	StoreAcc = "acc"
+	StoreTCCOrder = "tcc_order"
+	StoreTCCPerson ="tcc_person"
+	StoreTCCExtra ="tcc_extra"
 )

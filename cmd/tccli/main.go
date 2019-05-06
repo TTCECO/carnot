@@ -40,10 +40,7 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 )
 
-const (
-	storeAcc = "acc"
-	storeTCC = "tcchan"
-)
+
 
 var defaultCLIHome = os.ExpandEnv("$HOME/.tccli")
 
@@ -60,7 +57,7 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClients{
-		tcclient.NewModuleClient(storeTCC, cdc),
+		tcclient.NewModuleClient(tcchan.StoreTCCOrder, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -98,9 +95,9 @@ func registerRoutes(rs *lcd.RestServer) {
 	rs.CliCtx = rs.CliCtx.WithAccountDecoder(rs.Cdc)
 	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
+	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	tcrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeTCC)
+	tcrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreTCCOrder)
 }
 
 func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
@@ -116,7 +113,7 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 		tx.SearchTxCmd(cdc),
 		tx.QueryTxCmd(cdc),
 		client.LineBreak,
-		authcmd.GetAccountCmd(storeAcc, cdc),
+		authcmd.GetAccountCmd(tcchan.StoreAcc, cdc),
 	)
 
 	for _, m := range mc {

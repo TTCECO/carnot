@@ -36,7 +36,7 @@ func GetCmdOrder(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			orderID := args[0]
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/order/%s", queryRoute, orderID), nil)
 			if err != nil {
-				fmt.Printf("could not resolve whois - %s \n", string(orderID))
+				fmt.Printf("could not resolve order - %s \n", string(orderID))
 				return nil
 			}
 

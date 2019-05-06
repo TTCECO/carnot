@@ -27,6 +27,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
+
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -74,10 +75,10 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 		cdc:     cdc,
 
 		keyMain:          sdk.NewKVStoreKey("main"),
-		keyAccount:       sdk.NewKVStoreKey("acc"),
-		keyTCCOrder:      sdk.NewKVStoreKey("tcc_order"),
-		keyTCCPerson:     sdk.NewKVStoreKey("tcc_person"),
-		keyTCCExtra:      sdk.NewKVStoreKey("tcc_extra"),
+		keyAccount:       sdk.NewKVStoreKey(StoreAcc),
+		keyTCCOrder:      sdk.NewKVStoreKey(StoreTCCOrder),
+		keyTCCPerson:     sdk.NewKVStoreKey(StoreTCCPerson),
+		keyTCCExtra:      sdk.NewKVStoreKey(StoreTCCExtra),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyParams:        sdk.NewKVStoreKey("params"),
 		tkeyParams:       sdk.NewTransientStoreKey("transient_params"),
