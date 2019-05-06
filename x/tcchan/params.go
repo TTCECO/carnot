@@ -15,3 +15,8 @@
 // along with the TTC library. If not, see <http://www.gnu.org/licenses/>.
 
 package tcchan
+
+const (
+	COIN_TTC = "COIN_TTC"
+	COIN_ACN = "COIN_ACN"
+)

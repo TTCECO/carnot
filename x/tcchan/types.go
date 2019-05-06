@@ -38,6 +38,9 @@ func NewWhois() Whois {
 	}
 }
 
+// default zero value
+var ZeroValue = sdk.NewInt64Coin(COIN_TTC, 0)
+
 // CCToC is the struct that contains cross chain transaction from TTC to Cosmos SDK
 type CCToC struct {
 	From  common.Address `json:"from"`

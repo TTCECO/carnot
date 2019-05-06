@@ -3,6 +3,7 @@ module github.com/TTCECO/ttc-cosmos-channal
 go 1.12
 
 require (
+	github.com/TTCECO/gttc v0.1.5
 	github.com/btcsuite/btcd v0.0.0-20190418232430-6867ff32788a // indirect
 	github.com/btcsuite/btcutil v0.0.0-20190316010144-3ac1210f4b38 // indirect
 	github.com/cosmos/cosmos-sdk v0.34.1
