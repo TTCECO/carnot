@@ -17,6 +17,6 @@
 package tcchan
 
 const (
-	COIN_TTC = "COIN_TTC"
-	COIN_ACN = "COIN_ACN"
+	COIN_TTC = "CTTC" // TTC on Cosmos
+	COIN_ACN = "CACN" // ACN on Cosmos, ERC20
 )

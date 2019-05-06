@@ -21,36 +21,38 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Initial Starting Price for a name that was never previously owned
-var MinNamePrice = sdk.Coins{sdk.NewInt64Coin("nametoken", 1)}
+const (
+	OrderstatusProcess = 0
+	OrderStatusSuccess = 1
+	OrderStatusFail    = -1
+)
 
-// Whois is a struct that contains all the metadata of a name
-type Whois struct {
-	Value string         `json:"value"`
-	Owner sdk.AccAddress `json:"owner"`
-	Price sdk.Coins      `json:"price"`
+// CCTxOrder is the struct that contains cross chain transaction
+type CCTxOrder struct {
+	OrderID     uint64         `json:"orderId"`
+	BlockNumber uint64         `json:"blockNumber"`
+	AccAddress  sdk.AccAddress `json:"accAddress"`
+	TTCAddress  common.Address `json:"ttcAddress"`
+	Value       sdk.Coin       `json:"value"`
+	IsDeposit   bool           `json:"deposit"` // true = deposit(cosmos to ttc)
+	Status      int            `json:"status"`  // -1: fail 0: processing 1: success
 }
 
-// Returns a new Whois with the minprice as the price
-func NewWhois() Whois {
-	return Whois{
-		Price: MinNamePrice,
-	}
+// PersonalOrderRecord is the struct that contains transaction related to accAddress
+type PersonalOrderRecord struct {
+	AccAddress       sdk.AccAddress `json:"accAddress"`
+	DepositOrderIDs  []uint64       `json:"depositOrderIDs"`
+	WithdrawOrderIDs []uint64       `json:"withdrawOrderIDs"`
 }
 
-// default zero value
-var ZeroValue = sdk.NewInt64Coin(COIN_TTC, 0)
-
-// CCToC is the struct that contains cross chain transaction from TTC to Cosmos SDK
-type CCToC struct {
-	From  common.Address `json:"from"`
-	To    sdk.AccAddress `json:"to"`
-	Value sdk.Coin       `json:"value"`
+// OrderExtra is the struct that contains extra order info during process
+type OrderExtra struct {
+	OrderID uint64 `json:"orderID"` // ID of CCTxOrder
+	Step    int    `json:"step"`    // Process step
 }
 
-// CCFromC is the struct that contains cross chain transation from Cosmos SDK to TTC
-type CCFromC struct {
-	From  sdk.AccAddress `json:"from"`
-	To    common.Address `json:"to"`
-	Value sdk.Coin       `json:"value"`
+// CurrentOrderRecord is the struct that contains order not finish (CCtxOrder.Status==0)
+type CurrentOrderRecord struct {
+	DepositMap  map[uint64]OrderExtra // key is OrderID from CCTxOrder
+	WithdrawMap map[uint64]OrderExtra
 }

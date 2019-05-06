@@ -45,7 +45,9 @@ type tcChanApp struct {
 
 	keyMain          *sdk.KVStoreKey
 	keyAccount       *sdk.KVStoreKey
-	keyTCC           *sdk.KVStoreKey
+	keyTCCOrder      *sdk.KVStoreKey
+	keyTCCPerson     *sdk.KVStoreKey
+	keyTCCExtra      *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
@@ -54,7 +56,7 @@ type tcChanApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	paramsKeeper        params.Keeper
-	tccKeeper           Keeper
+	tccKeeper           TCChanKeeper
 }
 
 // NewApp is a constructor function for tcChanApp
@@ -73,7 +75,9 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 
 		keyMain:          sdk.NewKVStoreKey("main"),
 		keyAccount:       sdk.NewKVStoreKey("acc"),
-		keyTCC:           sdk.NewKVStoreKey("tcc"),
+		keyTCCOrder:      sdk.NewKVStoreKey("tcc_order"),
+		keyTCCPerson:     sdk.NewKVStoreKey("tcc_person"),
+		keyTCCExtra:      sdk.NewKVStoreKey("tcc_extra"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyParams:        sdk.NewKVStoreKey("params"),
 		tkeyParams:       sdk.NewTransientStoreKey("transient_params"),
@@ -102,9 +106,11 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 
 	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
 	// It handles interactions with the store
-	app.tccKeeper = NewKeeper(
+	app.tccKeeper = NewTCChanKeeper(
 		app.bankKeeper,
-		app.keyTCC,
+		app.keyTCCOrder,
+		app.keyTCCPerson,
+		app.keyTCCExtra,
 		app.cdc,
 	)
 
@@ -128,7 +134,9 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
-		app.keyTCC,
+		app.keyTCCOrder,
+		app.keyTCCPerson,
+		app.keyTCCExtra,
 		app.keyFeeCollection,
 		app.keyParams,
 		app.tkeyParams,

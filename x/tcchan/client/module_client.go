@@ -36,31 +36,28 @@ func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 // GetQueryCmd returns the cli query commands for this module
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	// Group tcchan queries under a subcommand
-	namesvcQueryCmd := &cobra.Command{
+	tcchanQueryCmd := &cobra.Command{
 		Use:   "tcchan",
 		Short: "Querying commands for the tcchan module",
 	}
 
-	namesvcQueryCmd.AddCommand(client.GetCommands(
-		tcchancmd.GetCmdResolveName(mc.storeKey, mc.cdc),
-		tcchancmd.GetCmdWhois(mc.storeKey, mc.cdc),
-		tcchancmd.GetCmdNames(mc.storeKey, mc.cdc),
+	tcchanQueryCmd.AddCommand(client.GetCommands(
+		tcchancmd.GetCmdOrder(mc.storeKey, mc.cdc),
 	)...)
 
-	return namesvcQueryCmd
+	return tcchanQueryCmd
 }
 
 // GetTxCmd returns the transaction commands for this module
 func (mc ModuleClient) GetTxCmd() *cobra.Command {
-	namesvcTxCmd := &cobra.Command{
+	tcchanTxCmd := &cobra.Command{
 		Use:   "tcchan",
 		Short: "tcchan transactions subcommands",
 	}
 
-	namesvcTxCmd.AddCommand(client.PostCommands(
-		tcchancmd.GetCmdBuyName(mc.cdc),
-		tcchancmd.GetCmdSetName(mc.cdc),
+	tcchanTxCmd.AddCommand(client.PostCommands(
+		tcchancmd.GetCmdDeposit(mc.cdc),
 	)...)
 
-	return namesvcTxCmd
+	return tcchanTxCmd
 }

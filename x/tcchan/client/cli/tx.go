@@ -28,11 +28,11 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 )
 
-// GetCmdBuyName is the CLI command for sending a BuyName transaction
-func GetCmdBuyName(cdc *codec.Codec) *cobra.Command {
+// GetCmdCCFromC is the CLI command for sending a BuyName transaction
+func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "buy-name [name] [amount]",
-		Short: "bid for existing name or claim new name",
+		Use:   "deposit [target address] [amount]",
+		Short: "cross chain deposit, from Cosmos to TTC",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -43,12 +43,12 @@ func GetCmdBuyName(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			coins, err := sdk.ParseCoins(args[1])
+			coin, err := sdk.ParseCoin(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := tcchan.NewMsgBuyName(args[0], coins, cliCtx.GetFromAddress())
+			msg := tcchan.NewMsgDeposit(cliCtx.GetFromAddress(), args[0], coin)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -56,35 +56,6 @@ func GetCmdBuyName(cdc *codec.Codec) *cobra.Command {
 
 			cliCtx.PrintResponse = true
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
-		},
-	}
-}
-
-// GetCmdSetName is the CLI command for sending a SetName transaction
-func GetCmdSetName(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "set-name [name] [value]",
-		Short: "set the value associated with a name that you own",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
-			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
-
-			msg := tcchan.NewMsgSetName(args[0], args[1], cliCtx.GetFromAddress())
-			err := msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			cliCtx.PrintResponse = true
-
-			// return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, msgs)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
