@@ -53,6 +53,9 @@ func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TC
 		panic("order ID is not int")
 	}
 	order, err := keeper.GetOrder(ctx, uint64(orderID))
+	if err != nil {
+		panic("could not get order from local")
+	}
 	bz, err := codec.MarshalJSONIndent(keeper.cdc, order)
 	if err != nil {
 		panic("could not marshal result to JSON")
