@@ -44,12 +44,8 @@ tcd init --chain-id tctestchain
 # [optional] add "--ledger" at the end to use a Ledger Nano S
 tccli keys add jack
 
-# Copy the `Address` output here and save it for later use
-tccli keys add alice
-
-# Add both accounts, with coins to the genesis file
-tcd add-genesis-account $(tccli keys show jack -a) 1000nametoken,1000jackcoin
-tcd add-genesis-account $(tccli keys show alice -a) 1000nametoken,1000alicecoin
+# Add account, with coins to the genesis file
+tcd add-genesis-account $(tccli keys show jack -a) 1000cttc
 
 # Configure your CLI to eliminate need for chain-id flag
 tccli config chain-id tctestchain
@@ -65,24 +61,15 @@ Open another terminal to run commands against the network you have just created:
 ```bash
 # First check the accounts to ensure they have funds
 tccli query account $(tccli keys show jack -a)
-tccli query account $(tccli keys show alice -a)
 
-# Buy your first name using your coins from the genesis file
-tccli tx tcchan buy-name jack.id 5nametoken --from jack
+# Deposit using your coins from the genesis file
+tccli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 50cttc --from jack
 
-# Set the value for the name you just bought
-tccli tx tcchan set-name jack.id 8.8.8.8 --from jack
+# Query the order by id
+tccli query tcchan order 1
+# > ...
 
-# Try out a resolve query against the name you registered
-tccli query tcchan resolve jack.id
-# > 8.8.8.8
 
-# Try out a whois query against the name you just registered
-tccli query tcchan whois jack.id
-# > {"value":"8.8.8.8","owner":"cosmos1l7k5tdt2qam0zecxrx78yuw447ga54dsmtpk2s","price":[{"denom":"nametoken","amount":"5"}]}
-
-# Alice buys name from jack
-tccli tx tcchan buy-name jack.id 10nametoken --from alice
 ```
 
 ### Congratulations, you have built a Cosmos SDK application! This tutorial is now complete. If you want to see how to run the same commands using the REST server [click here](run-rest.md).
