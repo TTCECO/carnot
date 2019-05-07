@@ -66,7 +66,7 @@ func (o CCTxOrder) String() string {
 
 // nolint: unparam
 func queryPerson(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
-	person, err := keeper.GetPerson(ctx, []byte(path[0]))
+	person, err := keeper.GetPerson(ctx, path[0])
 	if err != nil {
 		panic("could not get person from local")
 	}

@@ -120,14 +120,14 @@ func (k TCChanKeeper) SetOrderStatus(ctx sdk.Context, id uint64, status int) err
 }
 
 // Gets the entire GetPerson metadata struct by address
-func (k TCChanKeeper) GetPerson(ctx sdk.Context, address sdk.AccAddress) (PersonalOrderRecord, error) {
-	tmpKey, err := buildKey(address, prefixOrder)
+func (k TCChanKeeper) GetPerson(ctx sdk.Context, address string) (PersonalOrderRecord, error) {
+	tmpKey, err := buildKey(address, prefixPerson)
 	if err != nil {
 		return PersonalOrderRecord{}, err
 	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
-		return PersonalOrderRecord{AccAddress: address, DepositOrderIDs: []uint64{}, WithdrawOrderIDs: []uint64{}}, nil
+		return PersonalOrderRecord{}, nil
 	}
 	bz := store.Get(tmpKey)
 	var person PersonalOrderRecord
@@ -137,7 +137,7 @@ func (k TCChanKeeper) GetPerson(ctx sdk.Context, address sdk.AccAddress) (Person
 
 // Sets the entire PersonalOrderRecord metadata struct
 func (k TCChanKeeper) SetPerson(ctx sdk.Context, person PersonalOrderRecord) error {
-	tmpKey, err := buildKey(person.AccAddress, prefixOrder)
+	tmpKey, err := buildKey(person.AccAddress.String(), prefixPerson)
 	if err != nil {
 		return err
 	}

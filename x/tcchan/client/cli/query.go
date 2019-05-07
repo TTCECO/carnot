@@ -58,10 +58,9 @@ func GetCmdPerson(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			address := args[0]
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/person/%s", queryRoute, address), nil)
 			if err != nil {
-				fmt.Printf("could not resolve order - %s \n", string(address))
+				fmt.Printf("could not resolve order - %s \n", address)
 				return nil
 			}
-
 			var out tcchan.PersonalOrderRecord
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)

@@ -40,13 +40,13 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 
 	_, _, err := keeper.coinKeeper.SubtractCoins(ctx, msg.From, sdk.NewCoins(msg.Value))
 	if err != nil {
-		return sdk.ErrInsufficientCoins("Buyer does not have enough coins").Result()
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: 1, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
-		return sdk.ErrInsufficientCoins("Store order fail").Result()
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 	if err := keeper.SetPerson(ctx, PersonalOrderRecord{AccAddress: msg.From, DepositOrderIDs: []uint64{1}}); err != nil {
-		return sdk.ErrInsufficientCoins("Store person fail").Result()
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 	return sdk.Result{}
 }
