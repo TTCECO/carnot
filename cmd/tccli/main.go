@@ -40,8 +40,6 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 )
 
-
-
 var defaultCLIHome = os.ExpandEnv("$HOME/.tccli")
 
 func main() {
@@ -57,7 +55,7 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClients{
-		tcclient.NewModuleClient(tcchan.StoreTCCOrder, cdc),
+		tcclient.NewModuleClient(tcchan.StoreTCC, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -97,7 +95,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	tcrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreTCCOrder)
+	tcrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreTCC)
 }
 
 func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {

@@ -17,7 +17,6 @@
 package tcchan
 
 import (
-	"github.com/TTCECO/gttc/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -32,7 +31,7 @@ type CCTxOrder struct {
 	OrderID     uint64         `json:"orderId"`
 	BlockNumber uint64         `json:"blockNumber"`
 	AccAddress  sdk.AccAddress `json:"accAddress"`
-	TTCAddress  common.Address `json:"ttcAddress"`
+	TTCAddress  string         `json:"ttcAddress"`
 	Value       sdk.Coin       `json:"value"`
 	IsDeposit   bool           `json:"deposit"` // true = deposit(cosmos to ttc)
 	Status      int            `json:"status"`  // -1: fail 0: processing 1: success

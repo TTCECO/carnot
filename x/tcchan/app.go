@@ -27,7 +27,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
-
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
