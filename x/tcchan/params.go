@@ -24,4 +24,8 @@ const (
 	RouterName = "tcchan"
 	StoreAcc   = "acc"
 	StoreTCC   = "tcchan"
+
+	prefixOrder   = "order"
+	prefixPerson  = "person"
+	prefixCurrent = "current"
 )

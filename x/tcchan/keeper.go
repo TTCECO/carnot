@@ -31,6 +31,9 @@ var (
 
 	// errUndefinedStatus is returned when try to set a undefined status to order
 	errUndefinedStatus = errors.New("undefined status")
+
+	// errUndefinedData is returned when the prefix is undefined
+	errUndefinedPrefix = errors.New("undefined prefix")
 )
 
 // TCChanKeeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
@@ -49,9 +52,28 @@ func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.
 	}
 }
 
+func buildKey(input interface{}, prefix string) ([]byte, error) {
+	var key []byte
+	switch prefix {
+	case prefixOrder:
+		key = []byte(fmt.Sprintf("%s-%s", prefixOrder, input))
+	case prefixPerson:
+		key = []byte(fmt.Sprintf("%s-%s", prefixPerson, input))
+	case prefixCurrent:
+		key = []byte(fmt.Sprintf("%s", prefixCurrent))
+	default:
+		return key, errUndefinedPrefix
+
+	}
+	return key, nil
+}
+
 // Gets the entire CCTxOrder metadata struct by OrderID
 func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (CCTxOrder, error) {
-	tmpKey := []byte(fmt.Sprintf("order-%d", id))
+	tmpKey, err := buildKey(id, prefixOrder)
+	if err != nil {
+		return CCTxOrder{}, err
+	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
 		return CCTxOrder{}, errUnknownOrder
@@ -64,7 +86,10 @@ func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (CCTxOrder, error) {
 
 // Sets the entire CCTxOrder metadata struct
 func (k TCChanKeeper) SetOrder(ctx sdk.Context, order CCTxOrder) error {
-	tmpKey := []byte(fmt.Sprintf("order-%d", order.OrderID))
+	tmpKey, err := buildKey(order.OrderID, prefixOrder)
+	if err != nil {
+		return err
+	}
 	store := ctx.KVStore(k.tcchanKey)
 	store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(order))
 	return nil
