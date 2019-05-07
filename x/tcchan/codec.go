@@ -22,6 +22,6 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgDeposit{}, "tcchan/Deposit", nil)
+	cdc.RegisterConcrete(MsgDeposit{}, AppName+"/Deposit", nil)
 
 }

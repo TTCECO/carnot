@@ -18,6 +18,7 @@ package tcchan
 
 import (
 	"errors"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
@@ -35,27 +36,23 @@ var (
 // TCChanKeeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type TCChanKeeper struct {
 	coinKeeper bank.Keeper
-	orderKey   sdk.StoreKey // Unexposed key to access store from sdk.Context
-	personKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
-	extraKey   sdk.StoreKey // Unexposed key to access store from sdk.Context
+	tcchanKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(coinKeeper bank.Keeper, orderKey sdk.StoreKey, personKey sdk.StoreKey, extraKey sdk.StoreKey, cdc *codec.Codec) TCChanKeeper {
+func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec) TCChanKeeper {
 	return TCChanKeeper{
 		coinKeeper: coinKeeper,
-		orderKey:   orderKey,
-		personKey:  personKey,
-		extraKey:   extraKey,
+		tcchanKey:  tcchanKey,
 		cdc:        cdc,
 	}
 }
 
 // Gets the entire CCTxOrder metadata struct by OrderID
 func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (CCTxOrder, error) {
-	tmpKey := []byte(string(id))
-	store := ctx.KVStore(k.orderKey)
+	tmpKey := []byte(fmt.Sprintf("order-%d", id))
+	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
 		return CCTxOrder{}, errUnknownOrder
 	}
@@ -67,8 +64,8 @@ func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (CCTxOrder, error) {
 
 // Sets the entire CCTxOrder metadata struct
 func (k TCChanKeeper) SetOrder(ctx sdk.Context, order CCTxOrder) error {
-	tmpKey := []byte(string(order.OrderID))
-	store := ctx.KVStore(k.orderKey)
+	tmpKey := []byte(fmt.Sprintf("order-%d", order.OrderID))
+	store := ctx.KVStore(k.tcchanKey)
 	store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(order))
 	return nil
 }
@@ -99,6 +96,6 @@ func (k TCChanKeeper) SetOrderStatus(ctx sdk.Context, id uint64, status int) err
 
 // Get an iterator over all names in which the keys are the names and the values are the whois
 func (k TCChanKeeper) GetOrdersIterator(ctx sdk.Context) sdk.Iterator {
-	store := ctx.KVStore(k.orderKey)
-	return sdk.KVStorePrefixIterator(store, nil)
+	store := ctx.KVStore(k.tcchanKey)
+	return sdk.KVStorePrefixIterator(store, []byte("order"))
 }

@@ -55,7 +55,7 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClients{
-		tcclient.NewModuleClient(tcchan.StoreTCC, cdc),
+		tcclient.NewModuleClient(tcchan.RouterName, cdc),
 	}
 
 	rootCmd := &cobra.Command{

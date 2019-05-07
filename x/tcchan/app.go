@@ -35,19 +35,13 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 )
 
-const (
-	appName = "tcchan"
-)
-
 type tcChanApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
 	keyMain          *sdk.KVStoreKey
 	keyAccount       *sdk.KVStoreKey
-	keyTCCOrder      *sdk.KVStoreKey
-	keyTCCPerson     *sdk.KVStoreKey
-	keyTCCExtra      *sdk.KVStoreKey
+	keyTCChan        *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
@@ -66,7 +60,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	cdc := MakeCodec()
 
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
-	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc))
+	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc))
 
 	// Here you initialize your application with the store keys it requires
 	var app = &tcChanApp{
@@ -75,9 +69,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 
 		keyMain:          sdk.NewKVStoreKey("main"),
 		keyAccount:       sdk.NewKVStoreKey(StoreAcc),
-		keyTCCOrder:      sdk.NewKVStoreKey(StoreTCCOrder),
-		keyTCCPerson:     sdk.NewKVStoreKey(StoreTCCPerson),
-		keyTCCExtra:      sdk.NewKVStoreKey(StoreTCCExtra),
+		keyTCChan:        sdk.NewKVStoreKey(StoreTCC),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyParams:        sdk.NewKVStoreKey("params"),
 		tkeyParams:       sdk.NewTransientStoreKey("transient_params"),
@@ -108,9 +100,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	// It handles interactions with the store
 	app.tccKeeper = NewTCChanKeeper(
 		app.bankKeeper,
-		app.keyTCCOrder,
-		app.keyTCCPerson,
-		app.keyTCCExtra,
+		app.keyTCChan,
 		app.cdc,
 	)
 
@@ -121,11 +111,11 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	// Register the bank and tcchan routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("tcchan", NewHandler(app.tccKeeper))
+		AddRoute(RouterName, NewHandler(app.tccKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute("tcchan", NewQuerier(app.tccKeeper)).
+		AddRoute(RouterName, NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
@@ -134,9 +124,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
-		app.keyTCCOrder,
-		app.keyTCCPerson,
-		app.keyTCCExtra,
+		app.keyTCChan,
 		app.keyFeeCollection,
 		app.keyParams,
 		app.tkeyParams,

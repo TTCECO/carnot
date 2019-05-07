@@ -17,6 +17,7 @@
 package client
 
 import (
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	tcchancmd "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	// Group tcchan queries under a subcommand
 	tcchanQueryCmd := &cobra.Command{
-		Use:   "tcchan",
+		Use:   tcchan.RouterName,
 		Short: "Querying commands for the tcchan module",
 	}
 
@@ -51,8 +52,8 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 // GetTxCmd returns the transaction commands for this module
 func (mc ModuleClient) GetTxCmd() *cobra.Command {
 	tcchanTxCmd := &cobra.Command{
-		Use:   "tcchan",
-		Short: "tcchan transactions subcommands",
+		Use:    tcchan.RouterName,
+		Short: "Transactions subcommands",
 	}
 
 	tcchanTxCmd.AddCommand(client.PostCommands(

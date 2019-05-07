@@ -39,7 +39,7 @@ func NewMsgDeposit(from sdk.AccAddress, to string, value sdk.Coin) MsgDeposit {
 }
 
 // Route should return the name of the module
-func (msg MsgDeposit) Route() string { return "tcchan" }
+func (msg MsgDeposit) Route() string { return RouterName }
 
 // Type should return the action
 func (msg MsgDeposit) Type() string { return "deposit" }
