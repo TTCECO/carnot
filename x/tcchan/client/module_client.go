@@ -44,6 +44,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 
 	tcchanQueryCmd.AddCommand(client.GetCommands(
 		tcchancmd.GetCmdOrder(mc.storeKey, mc.cdc),
+		tcchancmd.GetCmdPerson(mc.storeKey, mc.cdc),
 	)...)
 
 	return tcchanQueryCmd

@@ -32,7 +32,7 @@ var (
 	// errUndefinedStatus is returned when try to set a undefined status to order
 	errUndefinedStatus = errors.New("undefined status")
 
-	// errUndefinedData is returned when the prefix is undefined
+	// errUndefinedPrefix is returned when the prefix is undefined
 	errUndefinedPrefix = errors.New("undefined prefix")
 )
 
@@ -119,8 +119,62 @@ func (k TCChanKeeper) SetOrderStatus(ctx sdk.Context, id uint64, status int) err
 	return nil
 }
 
-// Get an iterator over all names in which the keys are the names and the values are the whois
-func (k TCChanKeeper) GetOrdersIterator(ctx sdk.Context) sdk.Iterator {
+// Gets the entire GetPerson metadata struct by address
+func (k TCChanKeeper) GetPerson(ctx sdk.Context, address sdk.AccAddress) (PersonalOrderRecord, error) {
+	tmpKey, err := buildKey(address, prefixOrder)
+	if err != nil {
+		return PersonalOrderRecord{}, err
+	}
 	store := ctx.KVStore(k.tcchanKey)
-	return sdk.KVStorePrefixIterator(store, []byte("order"))
+	if !store.Has(tmpKey) {
+		return PersonalOrderRecord{AccAddress: address, DepositOrderIDs: []uint64{}, WithdrawOrderIDs: []uint64{}}, nil
+	}
+	bz := store.Get(tmpKey)
+	var person PersonalOrderRecord
+	k.cdc.MustUnmarshalBinaryBare(bz, &person)
+	return person, nil
+}
+
+// Sets the entire PersonalOrderRecord metadata struct
+func (k TCChanKeeper) SetPerson(ctx sdk.Context, person PersonalOrderRecord) error {
+	tmpKey, err := buildKey(person.AccAddress, prefixOrder)
+	if err != nil {
+		return err
+	}
+	store := ctx.KVStore(k.tcchanKey)
+	store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(person))
+	return nil
+}
+
+// Gets the entire GetPerson metadata struct by address
+func (k TCChanKeeper) GetCurrent(ctx sdk.Context) (CurrentOrderRecord, error) {
+	tmpKey, err := buildKey(nil, prefixCurrent)
+	if err != nil {
+		return CurrentOrderRecord{}, err
+	}
+	store := ctx.KVStore(k.tcchanKey)
+	if !store.Has(tmpKey) {
+		return CurrentOrderRecord{DepositMap: make(map[uint64]OrderExtra), WithdrawMap: make(map[uint64]OrderExtra)}, nil
+	}
+	bz := store.Get(tmpKey)
+	var current CurrentOrderRecord
+	k.cdc.MustUnmarshalBinaryBare(bz, &current)
+	return current, nil
+}
+
+// Sets the entire PersonalOrderRecord metadata struct
+func (k TCChanKeeper) SetCurrent(ctx sdk.Context, current CurrentOrderRecord) error {
+	tmpKey, err := buildKey(nil, prefixCurrent)
+	if err != nil {
+		return err
+	}
+	store := ctx.KVStore(k.tcchanKey)
+	store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(current))
+	return nil
+}
+
+// Get an iterator over all data in which the keys by prefix
+func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Iterator {
+	store := ctx.KVStore(k.tcchanKey)
+	return sdk.KVStorePrefixIterator(store, []byte(prefix))
 }

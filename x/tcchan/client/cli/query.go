@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// GetCmdOrder queries information about a domain
+// GetCmdOrder queries information about a order
 func GetCmdOrder(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "order [orderID]",
@@ -41,6 +41,28 @@ func GetCmdOrder(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			}
 
 			var out tcchan.CCTxOrder
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
+
+// GetCmdPerson queries information about a address
+func GetCmdPerson(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "person [orderID]",
+		Short: "Query person tx records by address",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			address := args[0]
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/person/%s", queryRoute, address), nil)
+			if err != nil {
+				fmt.Printf("could not resolve order - %s \n", string(address))
+				return nil
+			}
+
+			var out tcchan.PersonalOrderRecord
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

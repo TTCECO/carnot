@@ -45,5 +45,8 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: 1, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
 		return sdk.ErrInsufficientCoins("Store order fail").Result()
 	}
+	if err := keeper.SetPerson(ctx, PersonalOrderRecord{AccAddress: msg.From, DepositOrderIDs: []uint64{1}}); err != nil {
+		return sdk.ErrInsufficientCoins("Store person fail").Result()
+	}
 	return sdk.Result{}
 }

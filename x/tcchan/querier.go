@@ -27,18 +27,14 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-// query endpoints supported by the tcchan Querier
-const (
-	QueryOrder = "order"
-)
-
 // NewQuerier is the module level router for state queries
 func NewQuerier(keeper TCChanKeeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
-		case QueryOrder:
+		case prefixOrder:
 			return queryOrder(ctx, path[1:], req, keeper)
-
+		case prefixPerson:
+			return queryPerson(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown tcchan query endpoint")
 		}
@@ -48,7 +44,7 @@ func NewQuerier(keeper TCChanKeeper) sdk.Querier {
 // nolint: unparam
 func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
 
-	orderID, err := strconv.Atoi(string(path[0]))
+	orderID, err := strconv.Atoi(path[0])
 	if err != nil || orderID < 0 {
 		panic("order ID is not int")
 	}
@@ -66,4 +62,22 @@ func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TC
 // implement fmt.Stringer
 func (o CCTxOrder) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`OrderID: %s || AccAddress: %s || TccAddress: %s || Deposit: %t || Status: %d`, o.OrderID, o.AccAddress, o.TTCAddress, o.IsDeposit, o.Status))
+}
+
+// nolint: unparam
+func queryPerson(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
+	person, err := keeper.GetPerson(ctx, []byte(path[0]))
+	if err != nil {
+		panic("could not get person from local")
+	}
+	bz, err := codec.MarshalJSONIndent(keeper.cdc, person)
+	if err != nil {
+		panic("could not marshal result to JSON")
+	}
+	return bz, nil
+}
+
+// implement fmt.Stringer
+func (p PersonalOrderRecord) String() string {
+	return strings.TrimSpace(fmt.Sprintf(` AccAddress: %s || DepositIDs: %v || WithdrawIDs: %v`, p.AccAddress, p.DepositOrderIDs, p.WithdrawOrderIDs))
 }
