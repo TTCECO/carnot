@@ -57,6 +57,7 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: currentRecord.MaxOrderNum, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
+	currentRecord.Deposit = append(currentRecord.Deposit, OrderExtra{OrderID: currentRecord.MaxOrderNum, Step: 0})
 	personRecord.DepositOrderIDs = append(personRecord.DepositOrderIDs, currentRecord.MaxOrderNum)
 	if err := keeper.SetPerson(ctx, personRecord); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()

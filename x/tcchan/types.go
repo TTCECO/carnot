@@ -52,5 +52,7 @@ type OrderExtra struct {
 
 // CurrentOrderRecord is the struct that contains order not finish (CCtxOrder.Status==0)
 type CurrentOrderRecord struct {
-	MaxOrderNum uint64
+	MaxOrderNum uint64       `json:"maxOrderNumber"`
+	Deposit     []OrderExtra `json:"currentDeposit"`
+	Withdraw    []OrderExtra `json:"currentWithdraw"`
 }
