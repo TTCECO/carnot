@@ -52,6 +52,5 @@ type OrderExtra struct {
 
 // CurrentOrderRecord is the struct that contains order not finish (CCtxOrder.Status==0)
 type CurrentOrderRecord struct {
-	DepositMap  map[uint64]OrderExtra // key is OrderID from CCTxOrder
-	WithdrawMap map[uint64]OrderExtra
+	MaxOrderNum uint64
 }

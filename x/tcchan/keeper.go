@@ -127,7 +127,11 @@ func (k TCChanKeeper) GetPerson(ctx sdk.Context, address string) (PersonalOrderR
 	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
-		return PersonalOrderRecord{}, nil
+		tmpAddress, err := sdk.AccAddressFromBech32(address)
+		if err != nil {
+			return PersonalOrderRecord{}, err
+		}
+		return PersonalOrderRecord{AccAddress: tmpAddress, DepositOrderIDs: []uint64{}, WithdrawOrderIDs: []uint64{}}, nil
 	}
 	bz := store.Get(tmpKey)
 	var person PersonalOrderRecord
@@ -154,7 +158,7 @@ func (k TCChanKeeper) GetCurrent(ctx sdk.Context) (CurrentOrderRecord, error) {
 	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
-		return CurrentOrderRecord{DepositMap: make(map[uint64]OrderExtra), WithdrawMap: make(map[uint64]OrderExtra)}, nil
+		return CurrentOrderRecord{MaxOrderNum: 100}, nil
 	}
 	bz := store.Get(tmpKey)
 	var current CurrentOrderRecord

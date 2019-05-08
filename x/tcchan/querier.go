@@ -35,6 +35,8 @@ func NewQuerier(keeper TCChanKeeper) sdk.Querier {
 			return queryOrder(ctx, path[1:], req, keeper)
 		case prefixPerson:
 			return queryPerson(ctx, path[1:], req, keeper)
+		case prefixCurrent:
+			return queryCurrent(ctx, req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown tcchan query endpoint")
 		}
@@ -46,15 +48,15 @@ func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TC
 
 	orderID, err := strconv.Atoi(path[0])
 	if err != nil || orderID < 0 {
-		panic("order ID is not int")
+		return nil, sdk.ErrUnknownRequest("order ID is not int")
 	}
 	order, err := keeper.GetOrder(ctx, uint64(orderID))
 	if err != nil {
-		panic("could not get order from local")
+		return nil, sdk.ErrUnknownRequest("could not get order from local")
 	}
 	bz, err := codec.MarshalJSONIndent(keeper.cdc, order)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrUnknownRequest("could not marshal result to JSON")
 	}
 	return bz, nil
 }
@@ -68,11 +70,11 @@ func (o CCTxOrder) String() string {
 func queryPerson(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
 	person, err := keeper.GetPerson(ctx, path[0])
 	if err != nil {
-		panic("could not get person from local")
+		return nil, sdk.ErrUnknownRequest("could not get person from local")
 	}
 	bz, err := codec.MarshalJSONIndent(keeper.cdc, person)
 	if err != nil {
-		panic("could not marshal result to JSON")
+		return nil, sdk.ErrUnknownRequest("could not marshal result to JSON")
 	}
 	return bz, nil
 }
@@ -80,4 +82,22 @@ func queryPerson(ctx sdk.Context, path []string, req abci.RequestQuery, keeper T
 // implement fmt.Stringer
 func (p PersonalOrderRecord) String() string {
 	return strings.TrimSpace(fmt.Sprintf(` AccAddress: %s || DepositIDs: %v || WithdrawIDs: %v`, p.AccAddress, p.DepositOrderIDs, p.WithdrawOrderIDs))
+}
+
+// nolint: unparam
+func queryCurrent(ctx sdk.Context, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
+	current, err := keeper.GetCurrent(ctx)
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest("could not get person from local")
+	}
+	bz, err := codec.MarshalJSONIndent(keeper.cdc, current)
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest("could not marshal result to JSON")
+	}
+	return bz, nil
+}
+
+// implement fmt.Stringer
+func (c CurrentOrderRecord) String() string {
+	return strings.TrimSpace(fmt.Sprintf(` MaxOrderNum: %d `, c.MaxOrderNum))
 }

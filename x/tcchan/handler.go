@@ -35,18 +35,35 @@ func NewHandler(keeper TCChanKeeper) sdk.Handler {
 	}
 }
 
-// Handle a message to buy name
+// Handle a message to deposit, from cosmos to ttc
 func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.Result {
-
-	_, _, err := keeper.coinKeeper.SubtractCoins(ctx, msg.From, sdk.NewCoins(msg.Value))
+	// get record info
+	personRecord, err := keeper.GetPerson(ctx, msg.From.String())
 	if err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: 1, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
+	currentRecord, err := keeper.GetCurrent(ctx)
+	if err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-	if err := keeper.SetPerson(ctx, PersonalOrderRecord{AccAddress: msg.From, DepositOrderIDs: []uint64{1}}); err != nil {
+
+	// collect coin
+	if _, _, err := keeper.coinKeeper.SubtractCoins(ctx, msg.From, sdk.NewCoins(msg.Value)); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
+
+	// update record info
+	currentRecord.MaxOrderNum += 1
+	if err := keeper.SetOrder(ctx, CCTxOrder{OrderID: currentRecord.MaxOrderNum, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
+	}
+	personRecord.DepositOrderIDs = append(personRecord.DepositOrderIDs, currentRecord.MaxOrderNum)
+	if err := keeper.SetPerson(ctx, personRecord); err != nil {
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
+	}
+	if err := keeper.SetCurrent(ctx, currentRecord); err != nil {
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
+	}
+
 	return sdk.Result{}
 }
