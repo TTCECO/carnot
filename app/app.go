@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the TTC library. If not, see <http://www.gnu.org/licenses/>.
 
-package tcchan
+package app
 
 import (
 	"encoding/json"
@@ -27,12 +27,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
+)
+
+const (
+	AppName = "tcchan"
 )
 
 type tcChanApp struct {
@@ -50,7 +55,7 @@ type tcChanApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	paramsKeeper        params.Keeper
-	tccKeeper           TCChanKeeper
+	tccKeeper           tcchan.TCChanKeeper
 }
 
 // NewApp is a constructor function for tcChanApp
@@ -68,8 +73,8 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 		cdc:     cdc,
 
 		keyMain:          sdk.NewKVStoreKey("main"),
-		keyAccount:       sdk.NewKVStoreKey(StoreAcc),
-		keyTCChan:        sdk.NewKVStoreKey(StoreTCC),
+		keyAccount:       sdk.NewKVStoreKey(tcchan.StoreAcc),
+		keyTCChan:        sdk.NewKVStoreKey(tcchan.StoreTCC),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		keyParams:        sdk.NewKVStoreKey("params"),
 		tkeyParams:       sdk.NewTransientStoreKey("transient_params"),
@@ -98,7 +103,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 
 	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
 	// It handles interactions with the store
-	app.tccKeeper = NewTCChanKeeper(
+	app.tccKeeper = tcchan.NewTCChanKeeper(
 		app.bankKeeper,
 		app.keyTCChan,
 		app.cdc,
@@ -111,11 +116,11 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	// Register the bank and tcchan routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute(RouterName, NewHandler(app.tccKeeper))
+		AddRoute(tcchan.RouterName, tcchan.NewHandler(app.tccKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute(RouterName, NewQuerier(app.tccKeeper)).
+		AddRoute(tcchan.RouterName, tcchan.NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
@@ -201,7 +206,7 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	RegisterCodec(cdc)
+	tcchan.RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)

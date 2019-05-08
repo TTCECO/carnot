@@ -17,6 +17,7 @@
 package main
 
 import (
+	"github.com/TTCECO/ttc-cosmos-channal/app"
 	"os"
 	"path"
 
@@ -45,7 +46,7 @@ var defaultCLIHome = os.ExpandEnv("$HOME/.tccli")
 func main() {
 	cobra.EnableCommandSorting = false
 
-	cdc := tcchan.MakeCodec()
+	cdc := app.MakeCodec()
 
 	// Read in the configuration file for the sdk
 	config := sdk.GetConfig()

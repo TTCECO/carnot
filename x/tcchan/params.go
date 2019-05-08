@@ -20,7 +20,6 @@ const (
 	CoinTTC = "CTTC" // TTC on Cosmos
 	CoinACN = "CACN" // ACN on Cosmos, ERC20
 
-	AppName    = "tcchan"
 	RouterName = "tcchan"
 	StoreAcc   = "acc"
 	StoreTCC   = "tcchan"
