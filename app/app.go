@@ -40,7 +40,10 @@ const (
 	AppName = "tcchan"
 )
 
-type tcChanApp struct {
+var InitKeystore = ""
+var InitPassword = ""
+
+type TCChanApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -58,8 +61,8 @@ type tcChanApp struct {
 	tccKeeper           tcchan.TCChanKeeper
 }
 
-// NewApp is a constructor function for tcChanApp
-func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
+// NewApp is a constructor function for TCChanApp
+func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -68,7 +71,7 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc))
 
 	// Here you initialize your application with the store keys it requires
-	var app = &tcChanApp{
+	var app = &TCChanApp{
 		BaseApp: bApp,
 		cdc:     cdc,
 
@@ -107,6 +110,8 @@ func NewApp(logger log.Logger, db dbm.DB) *tcChanApp {
 		app.bankKeeper,
 		app.keyTCChan,
 		app.cdc,
+		InitKeystore,
+		InitPassword,
 	)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
@@ -150,7 +155,8 @@ type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
 }
 
-func (app *tcChanApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+
+func (app *TCChanApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(GenesisState)
@@ -171,7 +177,7 @@ func (app *tcChanApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) ab
 }
 
 // ExportAppStateAndValidators does the things
-func (app *tcChanApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
+func (app *TCChanApp) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abci.Header{})
 	accounts := []*auth.BaseAccount{}
 

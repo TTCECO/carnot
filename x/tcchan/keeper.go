@@ -41,14 +41,20 @@ type TCChanKeeper struct {
 	coinKeeper bank.Keeper
 	tcchanKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
+
+	keystore string // todo: should be a ttc unlock account in this keeper
+	password string
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec) TCChanKeeper {
+func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keystore string, password string) TCChanKeeper {
+
 	return TCChanKeeper{
 		coinKeeper: coinKeeper,
 		tcchanKey:  tcchanKey,
 		cdc:        cdc,
+		keystore:   keystore,
+		password:   password,
 	}
 }
 

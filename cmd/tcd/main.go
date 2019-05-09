@@ -68,6 +68,7 @@ func main() {
 
 	rootCmd.AddCommand(InitCmd(ctx, cdc))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc))
+	rootCmd.AddCommand(TCCStartCmd(ctx,newApp))
 	server.AddCommands(ctx, cdc, rootCmd, newApp, appExporter())
 
 	// prepare and add flags
@@ -91,6 +92,22 @@ func appExporter() server.AppExporter {
 	}
 }
 
+func TCCStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobra.Command {
+	cmd := server.StartCmd(ctx, appCreator)
+	cmd.Use = "tcc-start [keystore.json] [pass.txt]"
+	cmd.Short = "Run the full node (with unlock TTC address for cross chain action)"
+	cmd.Args= cobra.ExactArgs(2)
+	oldRunE := cmd.RunE
+	cmd.RunE = func(cc *cobra.Command, args []string) error {
+
+		app.InitKeystore = args[0]
+		app.InitPassword = args[1]
+
+		return oldRunE(cc,args)
+	}
+	return cmd
+
+}
 // InitCmd initializes all files for tendermint and application
 func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
