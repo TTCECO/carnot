@@ -43,7 +43,7 @@ type TCChanKeeper struct {
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
 
 	keystore string // todo: should be a ttc unlock account in this keeper
-	password string
+	password string // todo: need to deal keystore and password is empty or unlock fail
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
