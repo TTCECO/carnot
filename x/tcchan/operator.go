@@ -67,6 +67,10 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	if nonce, err := operator.getNonce(); err != nil {
 		operator.localNonce = nonce
 	}
+	// check balance
+	if balance, err := operator.getBalance(); err != nil && balance.Cmp(big.NewInt(minBalanceValue)) > 0 {
+		operator.logger.Error("Balance of this account is not enough", "balance", balance)
+	}
 	return &operator
 }
 
@@ -83,6 +87,22 @@ func (o *Operator) getNonce() (uint64, error) {
 		}
 		o.logger.Info("Current status", "nonce", nonce)
 		return nonce, nil
+	}
+}
+
+func (o *Operator) getBalance() (*big.Int, error) {
+	var response string
+	if err := o.cl.Call(&response, "eth_getBalance", o.key.Address, "latest"); err != nil {
+		o.logger.Error("Cross chain transaction Execute fail", "error", err)
+		return nil, err
+	} else {
+		balance := big.NewInt(0)
+		if err := balance.UnmarshalText([]byte(response)); err != nil {
+			o.logger.Error("Parse fail", "error", err)
+			return nil, err
+		}
+		o.logger.Info("Current status", "balance", balance)
+		return balance, nil
 	}
 }
 

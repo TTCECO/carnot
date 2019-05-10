@@ -28,6 +28,7 @@ const (
 	prefixPerson  = "person"
 	prefixCurrent = "current"
 
+	minBalanceValue = 1e+18 // for gas
 	//rpcUrl = "http://rpc-tokyo.ttcnet.io" // Mainnet
 	rpcUrl = "http://47.111.177.215:8511" // Testnet
 	//defaultChainID = 8848                 // Mainnet
