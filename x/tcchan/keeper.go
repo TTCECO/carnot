@@ -19,8 +19,10 @@ package tcchan
 import (
 	"errors"
 	"fmt"
+	"github.com/TTCECO/gttc/accounts/keystore"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"io/ioutil"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -41,21 +43,25 @@ type TCChanKeeper struct {
 	coinKeeper bank.Keeper
 	tcchanKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
-
-	keystore string // todo: should be a ttc unlock account in this keeper
-	password string // todo: need to deal keystore and password is empty or unlock fail
+	key        *keystore.Key
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keystore string, password string) TCChanKeeper {
-
-	return TCChanKeeper{
+func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keyfilepath string, password string) TCChanKeeper {
+	keeper := TCChanKeeper{
 		coinKeeper: coinKeeper,
 		tcchanKey:  tcchanKey,
 		cdc:        cdc,
-		keystore:   keystore,
-		password:   password,
+		key:        nil,
 	}
+	// unlock account
+	if keyJson, err := ioutil.ReadFile(keyfilepath); err == nil {
+		if keeper.key, err = keystore.DecryptKey(keyJson, password); err == nil {
+			fmt.Println("Address  unlock success : ", keeper.key.Address.Hex())
+		}
+	}
+
+	return keeper
 }
 
 func buildKey(input interface{}, prefix string) ([]byte, error) {
