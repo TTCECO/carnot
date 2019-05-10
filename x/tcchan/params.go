@@ -28,6 +28,10 @@ const (
 	prefixPerson  = "person"
 	prefixCurrent = "current"
 
-	//RPC_URL = "http://rpc-tokyo.ttcnet.io" // Mainnet
-	RPC_URL = "http://47.111.177.215:8511" // Testnet
+	//rpcUrl = "http://rpc-tokyo.ttcnet.io" // Mainnet
+	rpcUrl = "http://47.111.177.215:8511" // Testnet
+	//defaultChainID = 8848                 // Mainnet
+	defaultChainID = 8341 // Testnet
+
+	contractAddress = "t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89"
 )

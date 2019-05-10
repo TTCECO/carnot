@@ -20,35 +20,106 @@ package tcchan
 import (
 	"fmt"
 	"github.com/TTCECO/gttc/accounts/keystore"
+	"github.com/TTCECO/gttc/common"
+	"github.com/TTCECO/gttc/core/types"
+	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
+	"math/big"
+	"strconv"
 )
 
 type Operator struct {
-	key    *keystore.Key
-	cl     *rpc.Client
-	logger log.Logger
+	key          *keystore.Key
+	cl           *rpc.Client
+	logger       log.Logger
+	contractAddr common.Address
+	chainID      *big.Int
+	localNonce   uint64
 }
 
 func NewCrossChainOperator(logger log.Logger, keyfilepath string, password string) *Operator {
-	operator := Operator{logger: logger}
+	operator := Operator{logger: logger,
+		contractAddr: common.HexToAddress(contractAddress),
+		chainID:      big.NewInt(defaultChainID),
+	}
 	// unlock account
 	if keyJson, err := ioutil.ReadFile(keyfilepath); err == nil {
 		if operator.key, err = keystore.DecryptKey(keyJson, password); err == nil {
-			logger.Info("Account unlock success ", "address", operator.key.Address.Hex())
+			logger.Info("Account unlock success", "address", operator.key.Address.Hex())
 		} else {
-			logger.Error("Account unlock fail ", "error", err)
+			logger.Error("Account unlock fail", "error", err)
 		}
 	} else {
-		fmt.Println("Keystore load fail ", "error", err)
+		fmt.Println("Keystore load fail", "error", err)
 	}
 	// dial rpc
-	if client, err := rpc.Dial(RPC_URL); err == nil {
+	if client, err := rpc.Dial(rpcUrl); err == nil {
 		operator.cl = client
-		logger.Info("Dial rpc success ", "url", RPC_URL)
+		logger.Info("Dial rpc success", "url", rpcUrl)
 	} else {
 		fmt.Println("Dial rpc fail", "error", err)
 	}
+	// update chain id
+	operator.updateVersion()
+	// update nonce for this account
+	if nonce, err := operator.getNonce(); err != nil {
+		operator.localNonce = nonce
+	}
 	return &operator
+}
+
+func (o *Operator) getNonce() (uint64, error) {
+	var response string
+	if err := o.cl.Call(&response, "eth_getTransactionCount", o.key.Address, "latest"); err != nil {
+		o.logger.Error("Cross chain transaction Execute fail", "error", err)
+		return 0, err
+	} else {
+		nonce, err := strconv.ParseUint(response[2:], 16, 64)
+		if err != nil {
+			o.logger.Error("Parse fail", "error", err)
+			return 0, err
+		}
+		o.logger.Info("Current status", "nonce", nonce)
+		return nonce, nil
+	}
+}
+
+func (o *Operator) updateVersion() {
+	var response string
+	if err := o.cl.Call(&response, "net_version"); err != nil {
+		o.logger.Error("Cross chain transaction Execute fail", "error", err)
+	} else {
+		chainID, err := strconv.ParseUint(response, 10, 64)
+		if err != nil {
+			o.logger.Error("Parse fail", "error", err)
+		}
+		o.logger.Info("Current status", "chainID", chainID)
+
+	}
+}
+
+func (o *Operator) sendTransaction(nonce uint64) error {
+
+	tx := types.NewTransaction(nonce, o.contractAddr, big.NewInt(1), uint64(100000), big.NewInt(21000000), []byte{})
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(o.chainID), o.key.PrivateKey)
+	if err != nil {
+		o.logger.Error("Transaction sign fail", "error", err)
+		return err
+	}
+	data, err := rlp.EncodeToBytes(signedTx)
+	if err != nil {
+		o.logger.Error("RLP Data fail", "error", err)
+		return err
+	}
+	var response string
+	if err := o.cl.Call(&response, "eth_sendRawTransaction", common.ToHex(data)); err != nil {
+		o.logger.Error("Cross chain transaction Execute fail", "error", err)
+		return err
+	} else {
+		o.logger.Info("Transaction", "result", response)
+	}
+
+	return nil
 }
