@@ -19,12 +19,11 @@ package tcchan
 import (
 	"errors"
 	"fmt"
-	"github.com/TTCECO/gttc/accounts/keystore"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"io/ioutil"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+
+	"github.com/tendermint/tendermint/libs/log"
 )
 
 var (
@@ -43,24 +42,19 @@ type TCChanKeeper struct {
 	coinKeeper bank.Keeper
 	tcchanKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
 	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
-	key        *keystore.Key
+	operator   *Operator
+	logger     log.Logger
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keyfilepath string, password string) TCChanKeeper {
+func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keyfilepath string, password string) TCChanKeeper {
 	keeper := TCChanKeeper{
+		logger:     logger,
 		coinKeeper: coinKeeper,
 		tcchanKey:  tcchanKey,
 		cdc:        cdc,
-		key:        nil,
+		operator:   NewCrossChainOperator(logger, keyfilepath, password),
 	}
-	// unlock account
-	if keyJson, err := ioutil.ReadFile(keyfilepath); err == nil {
-		if keeper.key, err = keystore.DecryptKey(keyJson, password); err == nil {
-			fmt.Println("Address  unlock success : ", keeper.key.Address.Hex())
-		}
-	}
-
 	return keeper
 }
 

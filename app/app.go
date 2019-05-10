@@ -107,6 +107,7 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
 	// It handles interactions with the store
 	app.tccKeeper = tcchan.NewTCChanKeeper(
+		logger,
 		app.bankKeeper,
 		app.keyTCChan,
 		app.cdc,

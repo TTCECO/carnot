@@ -27,4 +27,7 @@ const (
 	prefixOrder   = "order"
 	prefixPerson  = "person"
 	prefixCurrent = "current"
+
+	//RPC_URL = "http://rpc-tokyo.ttcnet.io" // Mainnet
+	RPC_URL = "http://47.111.177.215:8511" // Testnet
 )
