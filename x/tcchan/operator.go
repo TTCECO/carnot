@@ -96,13 +96,14 @@ func (o *Operator) updateVersion() {
 			o.logger.Error("Parse fail", "error", err)
 		}
 		o.logger.Info("Current status", "chainID", chainID)
-
 	}
 }
 
-func (o *Operator) sendTransaction(nonce uint64) error {
-
-	tx := types.NewTransaction(nonce, o.contractAddr, big.NewInt(1), uint64(100000), big.NewInt(21000000), []byte{})
+func (o *Operator) sendTransaction() error {
+	if nonce, err := o.getNonce(); err == nil && nonce > o.localNonce {
+		o.localNonce = nonce
+	}
+	tx := types.NewTransaction(o.localNonce, o.contractAddr, big.NewInt(1), uint64(100000), big.NewInt(21000000), []byte{})
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(o.chainID), o.key.PrivateKey)
 	if err != nil {
 		o.logger.Error("Transaction sign fail", "error", err)
@@ -119,7 +120,7 @@ func (o *Operator) sendTransaction(nonce uint64) error {
 		return err
 	} else {
 		o.logger.Info("Transaction", "result", response)
+		o.localNonce += 1
 	}
-
 	return nil
 }
