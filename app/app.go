@@ -156,6 +156,11 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 // application updates every end block
 func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	ctx.Logger().Info("BeginBlocker", "info","...")
+	res,err := app.tccKeeper.GetCurrent(ctx)
+	if err != nil {
+		ctx.Logger().Error("BeginBlocker", "error",err)
+	}
+	ctx.Logger().Info("BeginBlocker", "current",res.MaxOrderNum)
 	return abci.ResponseBeginBlock{}
 }
 
