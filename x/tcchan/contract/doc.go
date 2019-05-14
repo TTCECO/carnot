@@ -16,11 +16,11 @@
 
 package contract
 
-// compile TCChanContract.sol to get TCChanContract.abi and bytecode
+// compile *.sol in tcchan to get tcchan.abi and bytecode
 // deploy the contract on block chain.
 // eth.getTransactionReceipt(tx_hash).contractAddress to find the contractAddress and save into ../params.go
-// gen abi and copy into TCChanContract.abi
-// abigen --abi TCChanContract.abi --pkg contract --type Contract --out contract.go
+// gen abi and copy into tcchan.abi
+// abigen --abi tcchan.abi --pkg contract --type Contract --out contract.go
 
 /*
 {
