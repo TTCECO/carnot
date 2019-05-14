@@ -129,8 +129,7 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 		AddRoute(tcchan.RouterName, tcchan.NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
-	// The initChainer handles translating the genesis.json file into initial state for the network
-	app.SetInitChainer(app.initChainer)
+
 
 	app.MountStores(
 		app.keyMain,
@@ -141,12 +140,29 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 		app.tkeyParams,
 	)
 
+	// The initChainer handles translating the genesis.json file into initial state for the network
+	app.SetInitChainer(app.initChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	app.SetEndBlocker(app.EndBlocker)
+
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		cmn.Exit(err.Error())
 	}
 
 	return app
+}
+
+// application updates every end block
+func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	ctx.Logger().Info("BeginBlocker", "info","...")
+	return abci.ResponseBeginBlock{}
+}
+
+
+func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	ctx.Logger().Info("EndBlocker", "info","...")
+	return abci.ResponseEndBlock{}
 }
 
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
