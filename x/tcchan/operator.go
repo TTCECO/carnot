@@ -18,12 +18,16 @@ package tcchan
 
 //curl -H 'content-type:application/json;' -X POST --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":67}' http://47.111.177.215:8511
 import (
+	"context"
 	"fmt"
+	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/gttc/accounts/keystore"
 	"github.com/TTCECO/gttc/common"
 	"github.com/TTCECO/gttc/core/types"
+	"github.com/TTCECO/gttc/ethclient"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan/contract"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
 	"math/big"
@@ -71,6 +75,10 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	if balance, err := operator.getBalance(); err != nil && balance.Cmp(big.NewInt(minBalanceValue)) > 0 {
 		operator.logger.Error("Balance of this account is not enough", "balance", balance)
 	}
+
+	// test contract call
+	go operator.tmpTestCallContract()
+
 	return &operator
 }
 
@@ -142,5 +150,33 @@ func (o *Operator) sendTransaction() error {
 		o.logger.Info("Transaction", "result", response)
 		o.localNonce += 1
 	}
+	return nil
+}
+
+func (o *Operator) tmpTestCallContract() error {
+
+	ctx := context.Background()
+	client := ethclient.NewClient(o.cl)
+	testContract, err := contract.NewContract(common.HexToAddress(contractAddress), client)
+	if err != nil {
+		return err
+	}
+
+	currentNum, err := testContract.GetNum(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Call Contract", "currentNum", currentNum)
+
+	tx, err := testContract.SetNum(bind.NewKeyedTransactor(o.key.PrivateKey), currentNum+1)
+	if err != nil {
+		return err
+	}
+	receipt, err := bind.WaitMined(ctx, client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Call Contract", "status", receipt.Status)
+
 	return nil
 }

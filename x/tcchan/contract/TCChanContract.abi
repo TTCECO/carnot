@@ -1,0 +1,30 @@
+[
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getNum",
+		"outputs": [
+			{
+				"name": "_num",
+				"type": "uint8"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_input",
+				"type": "uint8"
+			}
+		],
+		"name": "setNum",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
