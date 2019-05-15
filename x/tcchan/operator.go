@@ -162,6 +162,11 @@ func (o *Operator) tmpTestCallContract() error {
 	if err != nil {
 		return err
 	}
+	exist,err :=testContract.Validators(&bind.CallOpts{},testAddress)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Call Contract", "validator", exist)
 
 	currentNum, err := testContract.GetConfirmStatus(&bind.CallOpts{},"_id",testAddress)
 	if err != nil {
