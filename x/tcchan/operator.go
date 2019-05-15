@@ -154,6 +154,7 @@ func (o *Operator) sendTransaction() error {
 }
 
 func (o *Operator) tmpTestCallContract() error {
+	testAddress := common.HexToAddress("t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89")
 
 	ctx := context.Background()
 	client := ethclient.NewClient(o.cl)
@@ -162,13 +163,13 @@ func (o *Operator) tmpTestCallContract() error {
 		return err
 	}
 
-	currentNum, err := testContract.GetNum(&bind.CallOpts{})
+	currentNum, err := testContract.GetConfirmStatus(&bind.CallOpts{},"_id",testAddress)
 	if err != nil {
 		return err
 	}
 	o.logger.Info("Call Contract", "currentNum", currentNum)
 
-	tx, err := testContract.SetNum(bind.NewKeyedTransactor(o.key.PrivateKey), currentNum+1)
+	tx, err := testContract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey),"_id",testAddress,"acn",big.NewInt(1000000))
 	if err != nil {
 		return err
 	}

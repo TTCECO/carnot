@@ -7,12 +7,14 @@ contract TCChan is Ownable{
     using SafeMath for uint;
 
     enum orderStatus {FAIL, UNFINISHED, SUCCESS }
+
     struct DepositOrder {
         string orderID;
         address targetAddress;
         string name;
         uint value;
         orderStatus  status;
+        uint confirmCount;
         mapping(address => bool) confirmAddress; // validator address
     }
 
@@ -51,19 +53,40 @@ contract TCChan is Ownable{
 
 
     function confirm(string _id, address _target, string _name, uint _value) onlyValidator public {
+        require(_target != address(0));
         bytes32 key = sha256(_id);
-        if (depositRecords[key].targetAddress != address(0)){
+        // update the confirmAddress status
+        if (keccak256(depositRecords[key].orderID) == keccak256(_id)
+            && depositRecords[key].targetAddress == _target
+            && keccak256(depositRecords[key].name) == keccak256(_name)
+            && depositRecords[key].value == _value) {
+
             DepositOrder storage order = depositRecords[key];
             order.confirmAddress[msg.sender] = true;
+            order.confirmCount = order.confirmCount + 1;
         } else {
-            DepositOrder storage newOrder;
+            DepositOrder memory newOrder ;
             newOrder.orderID = _id;
             newOrder.targetAddress = _target;
             newOrder.name = _name;
             newOrder.value =_value;
             newOrder.status = orderStatus.UNFINISHED;
-            newOrder.confirmAddress[msg.sender] = true;
+            newOrder.confirmCount = 1;
             depositRecords[key] = newOrder;
+            depositRecords[key].confirmAddress[msg.sender] = true;
         }
+
+        // udpate status & send coin if got enough confirmAddress
+        if (depositRecords[key].status == orderStatus.UNFINISHED
+            && depositRecords[key].confirmCount >= minConfirmNum){
+            require(depositRecords[key].targetAddress.send(depositRecords[key].value));
+            depositRecords[key].status = orderStatus.SUCCESS;
+        }
+
+    }
+
+    function getConfirmStatus(string _id, address _addr) public view returns (bool){
+        bytes32 key = sha256(_id);
+        return depositRecords[key].confirmAddress[_addr];
     }
 }
