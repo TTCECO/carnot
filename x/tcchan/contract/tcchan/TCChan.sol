@@ -7,7 +7,7 @@ contract TCChan is Ownable{
     using SafeMath for uint;
 
     enum orderStatus {FAIL, UNFINISHED, SUCCESS }
-
+    // from cosmos to ttc mainnet
     struct DepositOrder {
         string orderID;
         address targetAddress;
@@ -18,10 +18,21 @@ contract TCChan is Ownable{
         mapping(address => bool) confirmAddress; // validator address
     }
 
+    // from ttc mainnet to cosmos
+    struct WithdrawOrder {
+        uint orderID;
+        address source;
+        string target;
+        uint value;
+        uint height;
+    }
+
+    uint public withdrawOrderID = 1;
     uint public minConfirmNum = 3;
     uint public depositFee = 1000000; //
     mapping(address => bool) public validators;
     mapping(bytes32  => DepositOrder) public depositRecords;
+    mapping(uint => WithdrawOrder) public withdrawRecords;
 
     modifier onlyValidator(){
         require(validators[msg.sender]);
@@ -46,7 +57,10 @@ contract TCChan is Ownable{
         depositFee = _fee;
     }
 
-    function finalize() onlyOwner public {
+    function ownerChargeFund() onlyOwner  payable public{
+	}
+
+    function ownerWithdrawFund() onlyOwner public {
         require(this.balance > 0);
         require(owner.send(this.balance));
     }
@@ -79,7 +93,7 @@ contract TCChan is Ownable{
         // udpate status & send coin if got enough confirmAddress
         if (depositRecords[key].status == orderStatus.UNFINISHED
             && depositRecords[key].confirmCount >= minConfirmNum){
-            require(depositRecords[key].targetAddress.send(depositRecords[key].value));
+            require(depositRecords[key].targetAddress.send(depositRecords[key].value.sub(depositFee)));
             depositRecords[key].status = orderStatus.SUCCESS;
         }
 
@@ -88,5 +102,16 @@ contract TCChan is Ownable{
     function getConfirmStatus(string _id, address _addr) public view returns (bool){
         bytes32 key = sha256(_id);
         return depositRecords[key].confirmAddress[_addr];
+    }
+
+    function crossChainTransaction(string _addr) payable public{
+        WithdrawOrder memory newOrder;
+        newOrder.orderID = withdrawOrderID;
+        newOrder.source = msg.sender;
+        newOrder.target = _addr;
+        newOrder.value = msg.value;
+        newOrder.height = block.number;
+        withdrawRecords[withdrawOrderID] = newOrder;
+        withdrawOrderID += 1;
     }
 }

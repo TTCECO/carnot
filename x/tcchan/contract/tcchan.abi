@@ -1,6 +1,15 @@
 [
 	{
 		"constant": false,
+		"inputs": [],
+		"name": "ownerChargeFund",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
 		"inputs": [
 			{
 				"name": "_addr",
@@ -28,6 +37,29 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [],
+		"name": "withdrawOrderID",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "ownerWithdrawFund",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -36,15 +68,6 @@
 			}
 		],
 		"name": "setDepositFee",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [],
-		"name": "finalize",
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
@@ -102,6 +125,20 @@
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_addr",
+				"type": "string"
+			}
+		],
+		"name": "crossChainTransaction",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "owner",
@@ -109,6 +146,41 @@
 			{
 				"name": "",
 				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawRecords",
+		"outputs": [
+			{
+				"name": "orderID",
+				"type": "uint256"
+			},
+			{
+				"name": "source",
+				"type": "address"
+			},
+			{
+				"name": "target",
+				"type": "string"
+			},
+			{
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"name": "height",
+				"type": "uint256"
 			}
 		],
 		"payable": false,

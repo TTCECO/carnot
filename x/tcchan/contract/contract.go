@@ -14,7 +14,7 @@ import (
 )
 
 // ContractABI is the input ABI used to generate the binding from.
-const ContractABI = "[{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"delValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_num\",\"type\":\"uint256\"}],\"name\":\"setMinConfirmNum\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setDepositFee\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"finalize\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"getConfirmStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"depositFee\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_target\",\"type\":\"address\"},{\"name\":\"_name\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"confirm\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"depositRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"string\"},{\"name\":\"targetAddress\",\"type\":\"address\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"confirmCount\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"minConfirmNum\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const ContractABI = "[{\"constant\":false,\"inputs\":[],\"name\":\"ownerChargeFund\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"delValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_num\",\"type\":\"uint256\"}],\"name\":\"setMinConfirmNum\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"withdrawOrderID\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"ownerWithdrawFund\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setDepositFee\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"getConfirmStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"depositFee\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"string\"}],\"name\":\"crossChainTransaction\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"uint256\"},{\"name\":\"source\",\"type\":\"address\"},{\"name\":\"target\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"height\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_target\",\"type\":\"address\"},{\"name\":\"_name\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"confirm\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"depositRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"string\"},{\"name\":\"targetAddress\",\"type\":\"address\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"confirmCount\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"minConfirmNum\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // Contract is an auto generated Go binding around an Ethereum contract.
 type Contract struct {
@@ -340,6 +340,80 @@ func (_Contract *ContractCallerSession) Validators(arg0 common.Address) (bool, e
 	return _Contract.Contract.Validators(&_Contract.CallOpts, arg0)
 }
 
+// WithdrawOrderID is a free data retrieval call binding the contract method 0x3e78c509.
+//
+// Solidity: function withdrawOrderID() constant returns(uint256)
+func (_Contract *ContractCaller) WithdrawOrderID(opts *bind.CallOpts) (*big.Int, error) {
+	var (
+		ret0 = new(*big.Int)
+	)
+	out := ret0
+	err := _Contract.contract.Call(opts, out, "withdrawOrderID")
+	return *ret0, err
+}
+
+// WithdrawOrderID is a free data retrieval call binding the contract method 0x3e78c509.
+//
+// Solidity: function withdrawOrderID() constant returns(uint256)
+func (_Contract *ContractSession) WithdrawOrderID() (*big.Int, error) {
+	return _Contract.Contract.WithdrawOrderID(&_Contract.CallOpts)
+}
+
+// WithdrawOrderID is a free data retrieval call binding the contract method 0x3e78c509.
+//
+// Solidity: function withdrawOrderID() constant returns(uint256)
+func (_Contract *ContractCallerSession) WithdrawOrderID() (*big.Int, error) {
+	return _Contract.Contract.WithdrawOrderID(&_Contract.CallOpts)
+}
+
+// WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
+//
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+func (_Contract *ContractCaller) WithdrawRecords(opts *bind.CallOpts, arg0 *big.Int) (struct {
+	OrderID *big.Int
+	Source  common.Address
+	Target  string
+	Value   *big.Int
+	Height  *big.Int
+}, error) {
+	ret := new(struct {
+		OrderID *big.Int
+		Source  common.Address
+		Target  string
+		Value   *big.Int
+		Height  *big.Int
+	})
+	out := ret
+	err := _Contract.contract.Call(opts, out, "withdrawRecords", arg0)
+	return *ret, err
+}
+
+// WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
+//
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+func (_Contract *ContractSession) WithdrawRecords(arg0 *big.Int) (struct {
+	OrderID *big.Int
+	Source  common.Address
+	Target  string
+	Value   *big.Int
+	Height  *big.Int
+}, error) {
+	return _Contract.Contract.WithdrawRecords(&_Contract.CallOpts, arg0)
+}
+
+// WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
+//
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+func (_Contract *ContractCallerSession) WithdrawRecords(arg0 *big.Int) (struct {
+	OrderID *big.Int
+	Source  common.Address
+	Target  string
+	Value   *big.Int
+	Height  *big.Int
+}, error) {
+	return _Contract.Contract.WithdrawRecords(&_Contract.CallOpts, arg0)
+}
+
 // AddValidator is a paid mutator transaction binding the contract method 0x4d238c8e.
 //
 // Solidity: function addValidator(_addr address) returns()
@@ -382,6 +456,27 @@ func (_Contract *ContractTransactorSession) Confirm(_id string, _target common.A
 	return _Contract.Contract.Confirm(&_Contract.TransactOpts, _id, _target, _name, _value)
 }
 
+// CrossChainTransaction is a paid mutator transaction binding the contract method 0x88062f11.
+//
+// Solidity: function crossChainTransaction(_addr string) returns()
+func (_Contract *ContractTransactor) CrossChainTransaction(opts *bind.TransactOpts, _addr string) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "crossChainTransaction", _addr)
+}
+
+// CrossChainTransaction is a paid mutator transaction binding the contract method 0x88062f11.
+//
+// Solidity: function crossChainTransaction(_addr string) returns()
+func (_Contract *ContractSession) CrossChainTransaction(_addr string) (*types.Transaction, error) {
+	return _Contract.Contract.CrossChainTransaction(&_Contract.TransactOpts, _addr)
+}
+
+// CrossChainTransaction is a paid mutator transaction binding the contract method 0x88062f11.
+//
+// Solidity: function crossChainTransaction(_addr string) returns()
+func (_Contract *ContractTransactorSession) CrossChainTransaction(_addr string) (*types.Transaction, error) {
+	return _Contract.Contract.CrossChainTransaction(&_Contract.TransactOpts, _addr)
+}
+
 // DelValidator is a paid mutator transaction binding the contract method 0x12ae2c65.
 //
 // Solidity: function delValidator(_addr address) returns()
@@ -403,25 +498,46 @@ func (_Contract *ContractTransactorSession) DelValidator(_addr common.Address) (
 	return _Contract.Contract.DelValidator(&_Contract.TransactOpts, _addr)
 }
 
-// Finalize is a paid mutator transaction binding the contract method 0x4bb278f3.
+// OwnerChargeFund is a paid mutator transaction binding the contract method 0x02b1dab5.
 //
-// Solidity: function finalize() returns()
-func (_Contract *ContractTransactor) Finalize(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "finalize")
+// Solidity: function ownerChargeFund() returns()
+func (_Contract *ContractTransactor) OwnerChargeFund(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "ownerChargeFund")
 }
 
-// Finalize is a paid mutator transaction binding the contract method 0x4bb278f3.
+// OwnerChargeFund is a paid mutator transaction binding the contract method 0x02b1dab5.
 //
-// Solidity: function finalize() returns()
-func (_Contract *ContractSession) Finalize() (*types.Transaction, error) {
-	return _Contract.Contract.Finalize(&_Contract.TransactOpts)
+// Solidity: function ownerChargeFund() returns()
+func (_Contract *ContractSession) OwnerChargeFund() (*types.Transaction, error) {
+	return _Contract.Contract.OwnerChargeFund(&_Contract.TransactOpts)
 }
 
-// Finalize is a paid mutator transaction binding the contract method 0x4bb278f3.
+// OwnerChargeFund is a paid mutator transaction binding the contract method 0x02b1dab5.
 //
-// Solidity: function finalize() returns()
-func (_Contract *ContractTransactorSession) Finalize() (*types.Transaction, error) {
-	return _Contract.Contract.Finalize(&_Contract.TransactOpts)
+// Solidity: function ownerChargeFund() returns()
+func (_Contract *ContractTransactorSession) OwnerChargeFund() (*types.Transaction, error) {
+	return _Contract.Contract.OwnerChargeFund(&_Contract.TransactOpts)
+}
+
+// OwnerWithdrawFund is a paid mutator transaction binding the contract method 0x48177db0.
+//
+// Solidity: function ownerWithdrawFund() returns()
+func (_Contract *ContractTransactor) OwnerWithdrawFund(opts *bind.TransactOpts) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "ownerWithdrawFund")
+}
+
+// OwnerWithdrawFund is a paid mutator transaction binding the contract method 0x48177db0.
+//
+// Solidity: function ownerWithdrawFund() returns()
+func (_Contract *ContractSession) OwnerWithdrawFund() (*types.Transaction, error) {
+	return _Contract.Contract.OwnerWithdrawFund(&_Contract.TransactOpts)
+}
+
+// OwnerWithdrawFund is a paid mutator transaction binding the contract method 0x48177db0.
+//
+// Solidity: function ownerWithdrawFund() returns()
+func (_Contract *ContractTransactorSession) OwnerWithdrawFund() (*types.Transaction, error) {
+	return _Contract.Contract.OwnerWithdrawFund(&_Contract.TransactOpts)
 }
 
 // SetDepositFee is a paid mutator transaction binding the contract method 0x490ae210.
