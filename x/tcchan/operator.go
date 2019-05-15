@@ -154,27 +154,25 @@ func (o *Operator) sendTransaction() error {
 }
 
 func (o *Operator) tmpTestCallContract() error {
+	// test data
 	testAddress := common.HexToAddress("t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89")
 
+	// init contract
 	ctx := context.Background()
 	client := ethclient.NewClient(o.cl)
 	testContract, err := contract.NewContract(common.HexToAddress(contractAddress), client)
 	if err != nil {
 		return err
 	}
-	exist,err :=testContract.Validators(&bind.CallOpts{},testAddress)
+
+	o.logger.Info("Contract", "testAddress", testAddress)
+	exist, err := testContract.Validators(&bind.CallOpts{}, testAddress)
 	if err != nil {
 		return err
 	}
-	o.logger.Info("Call Contract", "validator", exist)
+	o.logger.Info("Contract Validators", "exist", exist)
 
-	currentNum, err := testContract.GetConfirmStatus(&bind.CallOpts{},"_id",testAddress)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Call Contract", "currentNum", currentNum)
-
-	tx, err := testContract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey),"_id",testAddress,"acn",big.NewInt(1000000))
+	tx, err := testContract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), testAddress)
 	if err != nil {
 		return err
 	}
@@ -182,7 +180,46 @@ func (o *Operator) tmpTestCallContract() error {
 	if err != nil {
 		return err
 	}
-	o.logger.Info("Call Contract", "status", receipt.Status)
+	o.logger.Info("Contract AddValidator", "status", receipt.Status, testAddress)
+
+	tx, err = testContract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), o.key.Address)
+	if err != nil {
+		return err
+	}
+	receipt, err = bind.WaitMined(ctx, client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract AddValidator", "status", receipt.Status, o.key.Address)
+
+	o.logger.Info("Contract", "testAddress", testAddress)
+	exist, err = testContract.Validators(&bind.CallOpts{}, testAddress)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract Validators", "exist", exist)
+
+	confirmed, err := testContract.GetConfirmStatus(&bind.CallOpts{}, "_id", o.key.Address)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract GetConfirmStatus", "confirmed", confirmed)
+
+	tx, err = testContract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), "_id", o.key.Address, "acn", big.NewInt(1000000))
+	if err != nil {
+		return err
+	}
+	receipt, err = bind.WaitMined(ctx, client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract Confirm", "status", receipt.Status)
+
+	confirmed, err = testContract.GetConfirmStatus(&bind.CallOpts{}, "_id", o.key.Address)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract GetConfirmStatus", "confirmed", confirmed)
 
 	return nil
 }
