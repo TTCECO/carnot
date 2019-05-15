@@ -90,12 +90,10 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 func (o *Operator) getNonce() (uint64, error) {
 	var response string
 	if err := o.cl.Call(&response, "eth_getTransactionCount", o.key.Address, "latest"); err != nil {
-		o.logger.Error("Cross chain transaction Execute fail", "error", err)
 		return 0, err
 	} else {
 		nonce, err := strconv.ParseUint(response[2:], 16, 64)
 		if err != nil {
-			o.logger.Error("Parse fail", "error", err)
 			return 0, err
 		}
 		o.logger.Info("Current status", "nonce", nonce)
@@ -106,12 +104,10 @@ func (o *Operator) getNonce() (uint64, error) {
 func (o *Operator) getBalance() (*big.Int, error) {
 	var response string
 	if err := o.cl.Call(&response, "eth_getBalance", o.key.Address, "latest"); err != nil {
-		o.logger.Error("Cross chain transaction Execute fail", "error", err)
 		return nil, err
 	} else {
 		balance := big.NewInt(0)
 		if err := balance.UnmarshalText([]byte(response)); err != nil {
-			o.logger.Error("Parse fail", "error", err)
 			return nil, err
 		}
 		o.logger.Info("Current status", "balance", balance)
@@ -122,13 +118,11 @@ func (o *Operator) getBalance() (*big.Int, error) {
 func (o *Operator) updateVersion() {
 	var response string
 	if err := o.cl.Call(&response, "net_version"); err != nil {
-		o.logger.Error("Cross chain transaction Execute fail", "error", err)
 	} else {
-		chainID, err := strconv.ParseUint(response, 10, 64)
-		if err != nil {
-			o.logger.Error("Parse fail", "error", err)
+		if chainID, err := strconv.ParseUint(response, 10, 64); err != nil {
+		} else {
+			o.logger.Info("Current status", "chainID", chainID)
 		}
-		o.logger.Info("Current status", "chainID", chainID)
 	}
 }
 
@@ -191,7 +185,7 @@ func (o *Operator) tmpTestCallContract() error {
 	if err != nil {
 		return err
 	}
-	o.logger.Info("Contract AddValidator", "status", receipt.Status, "address",testAddress)
+	o.logger.Info("Contract AddValidator", "status", receipt.Status, "address", testAddress)
 
 	tx, err = o.contract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), o.key.Address)
 	if err != nil {
@@ -232,5 +226,24 @@ func (o *Operator) tmpTestCallContract() error {
 	}
 	o.logger.Info("Contract GetConfirmStatus", "confirmed", confirmed)
 
+	o.getBalance()
+	opts := bind.NewKeyedTransactor(o.key.PrivateKey)
+	opts.Value = new(big.Int).Mul(big.NewInt(1e+18), big.NewInt(250))
+
+	tx, err = o.contract.OwnerChargeFund(opts)
+	receipt, err = bind.WaitMined(ctx, o.client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract Confirm", "status", receipt.Status)
+	o.getBalance()
+	opts = bind.NewKeyedTransactor(o.key.PrivateKey)
+	tx, err = o.contract.OwnerWithdrawFund(opts)
+	receipt, err = bind.WaitMined(ctx, o.client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract Confirm", "status", receipt.Status)
+	o.getBalance()
 	return nil
 }
