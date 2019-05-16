@@ -82,7 +82,7 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 		operator.logger.Error("Contract initialized fail", "error", err)
 	}
 
-	operator.tmpTestCallContract()
+	go operator.tmpTestCallContract()
 
 	return &operator
 }

@@ -58,7 +58,7 @@ func GetCmdPerson(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			address := args[0]
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/person/%s", queryRoute, address), nil)
 			if err != nil {
-				fmt.Printf("could not resolve address - %s : %s\n", address,err)
+				fmt.Printf("could not resolve address - %s : %s\n", address, err)
 				return nil
 			}
 			var out tcchan.PersonalOrderRecord
@@ -67,7 +67,6 @@ func GetCmdPerson(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
-
 
 // GetCmdCurrent queries information
 func GetCmdCurrent(queryRoute string, cdc *codec.Codec) *cobra.Command {
@@ -79,7 +78,7 @@ func GetCmdCurrent(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/current", queryRoute), nil)
 			if err != nil {
-				fmt.Printf("could not get current info : %s\n",err)
+				fmt.Printf("could not get current info : %s\n", err)
 				return nil
 			}
 			var out tcchan.CurrentOrderRecord

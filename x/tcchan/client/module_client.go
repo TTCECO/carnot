@@ -54,7 +54,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 // GetTxCmd returns the transaction commands for this module
 func (mc ModuleClient) GetTxCmd() *cobra.Command {
 	tcchanTxCmd := &cobra.Command{
-		Use:    tcchan.RouterName,
+		Use:   tcchan.RouterName,
 		Short: "Transactions subcommands",
 	}
 

@@ -20,11 +20,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	"github.com/cosmos/cosmos-sdk/client/context"
-
+	clientrest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
-
 	"github.com/gorilla/mux"
 )
 
@@ -34,11 +35,54 @@ const (
 
 // RegisterRoutes - Central function to define routes that get registered by the main application
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, storeName string) {
-	//r.HandleFunc("/%s/tcchan", namesHandler(cdc, cliCtx, storeName)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/tcchan/order/{%s}", orderID), resolveOrderHandler(cdc, cliCtx, storeName)).Methods("GET")
-	//r.HandleFunc(fmt.Sprintf("/%s/tcchan", storeName), setNameHandler(cdc, cliCtx)).Methods("PUT")
-	//r.HandleFunc(fmt.Sprintf("/%s/tcchan/{%s}", storeName, restName), resolveNameHandler(cdc, cliCtx, storeName)).Methods("GET")
-	//r.HandleFunc(fmt.Sprintf("/%s/tcchan/{%s}/whois", storeName, restName), whoIsHandler(cdc, cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/deposit", tcchan.RouterName), depositHandler(cdc, cliCtx)).Methods("POST")
+	r.HandleFunc(fmt.Sprintf("/%s/order/{%s}", tcchan.RouterName, orderID), resolveOrderHandler(cdc, cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/current", tcchan.RouterName), resolveCurrentHandler(cdc, cliCtx, storeName)).Methods("GET")
+}
+
+type depositReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	Target  string       `json:"target"`
+	Amount  string       `json:"amount"`
+	Sender  string       `json:"sender"`
+}
+
+func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req depositReq
+
+		if !rest.ReadRESTReq(w, r, cdc, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		addr, err := sdk.AccAddressFromBech32(req.Sender)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		coin, err := sdk.ParseCoin(req.Amount)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// create the message
+		msg := tcchan.NewMsgDeposit(addr, req.Target, coin)
+		err = msg.ValidateBasic()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, baseReq, []sdk.Msg{msg})
+	}
 }
 
 func resolveOrderHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
@@ -52,6 +96,17 @@ func resolveOrderHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName 
 			return
 		}
 
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+	}
+}
+
+func resolveCurrentHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/current", storeName), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
 		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }
