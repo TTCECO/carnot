@@ -39,9 +39,12 @@ $ curl -s http://localhost:1317/auth/accounts/$(tccli keys show jack -a)
 
 
 # Deposit coin from Cosmos to TTC
-# NOTE: Be sure to specialize this request for your specific environment, also the "sender" and "from" should be the same address
-$ curl -XPOST -s http://localhost:1317/tcchan/deposit --data-binary '{"base_req":{"from":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g","password":"12345678","chain_id":"tctestchain","sequence":"4","account_number":"0"},"target":"t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89","amount":"50cttc","sender":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g"}'
-# > {"type":"auth/StdTx","value":{"msg":[{"type":"tcchan/Deposit","value":{"From":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g","To":"t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89","Value":{"denom":"cttc","amount":"50"}}}],"fee":{"amount":null,"gas":"200000"},"signatures":null,"memo":""}}
+# NOTE: Be sure to specialize this request for your specific environment
+$ curl -XPOST -s http://localhost:1317/tcchan/deposit --data-binary '{"base_req":{"from":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g","password":"12345678","chain_id":"tctestchain","sequence":"7","account_number":"0","amount":"66cttc"},"target":"t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89","amount":"50cttc","name":"jack","pass":"12345678"}'
+# > {
+  "height": "0",
+  "txhash": "62CABFDE45F4BE3B4B078282D41E0B6D9BAE221E935825512352DE3482FEE190"
+}
 
 # Query the current status
 $ curl -s http://localhost:1317/tcchan/current
