@@ -93,8 +93,7 @@ $ curl -s http://localhost:1317/tcchan/order/1
 ```json
 {
   "base_req": {
-    "name": "string",
-    "password": "string",
+    "from": "string",
     "chain_id": "string",
     "sequence": "number",
     "account_number": "number",
@@ -102,8 +101,9 @@ $ curl -s http://localhost:1317/tcchan/order/1
     "gas_adjustment": "string,not_req",
   },
   "target": "string",
-  "amount": "string",
-  "sender": "string"
+  "amount": "string"
+  "name": "string",
+  "password": "string"
 }
 ```
 
@@ -111,8 +111,7 @@ $ curl -s http://localhost:1317/tcchan/order/1
 ```json
 {
   "base_req": {
-    "name": "string",
-    "password": "string",
+    "from": "string",
     "chain_id": "string",
     "sequence": "number",
     "account_number": "number",
@@ -121,7 +120,8 @@ $ curl -s http://localhost:1317/tcchan/order/1
   },
   "target": "string",
   "amount": "string",
-  "sender": "string"
+  "name": "string",
+  "password": "string"
 }
 ```
 
