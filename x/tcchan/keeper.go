@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"math/big"
 
 	"github.com/tendermint/tendermint/libs/log"
 )
@@ -187,4 +188,10 @@ func (k TCChanKeeper) SetCurrent(ctx sdk.Context, current CurrentOrderRecord) er
 func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Iterator {
 	store := ctx.KVStore(k.tcchanKey)
 	return sdk.KVStorePrefixIterator(store, []byte(prefix))
+}
+
+
+//
+func (k TCChanKeeper) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error{
+	return k.operator.SendConfirmTx(orderID , target , coinName , value)
 }

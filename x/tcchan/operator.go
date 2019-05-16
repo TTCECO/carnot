@@ -82,7 +82,7 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 		operator.logger.Error("Contract initialized fail", "error", err)
 	}
 
-	go operator.tmpTestCallContract()
+	// go operator.tmpTestCallContract()
 
 	return &operator
 }
@@ -163,6 +163,21 @@ func (o *Operator) createContract() error {
 	o.contract = contract
 	return nil
 }
+
+func (o *Operator) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
+	ctx := context.Background()
+	tx, err := o.contract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), orderID, common.HexToAddress(target), coinName, value)
+	if err != nil {
+		return err
+	}
+	receipt, err := bind.WaitMined(ctx, o.client, tx)
+	if err != nil {
+		return err
+	}
+	o.logger.Info("Contract Confirm", "status", receipt.Status)
+	return nil
+}
+
 
 func (o *Operator) tmpTestCallContract() error {
 	// test data
