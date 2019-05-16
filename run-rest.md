@@ -4,7 +4,6 @@ Now that you tested your CLI queries and transactions, time to test same things 
 
 ```bash
 $ tccli keys show jack --address
-$ tccli keys show alice --address
 ```
 
 Now its time to start the `rest-server` in another terminal window:
@@ -20,33 +19,69 @@ Then you can construct and run the following queries:
 ```bash
 # Get the sequence and account numbers for jack to construct the below requests
 $ curl -s http://localhost:1317/auth/accounts/$(tccli keys show jack -a)
-# > {"type":"auth/Account","value":{"address":"cosmos127qa40nmq56hu27ae263zvfk3ey0tkapwk0gq6","coins":[{"denom":"jackCoin","amount":"1000"},{"denom":"nametoken","amount":"1010"}],"public_key":{"type":"tendermint/PubKeySecp256k1","value":"A9YxyEbSWzLr+IdK/PuMUYmYToKYQ3P/pM8SI1Bxx3wu"},"account_number":"0","sequence":"1"}}
+# > {
+  "type": "auth/Account",
+  "value": {
+    "address": "cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g",
+    "coins": [
+      {
+        "denom": "cttc",
+        "amount": "800"
+      }
+    ],
+    "public_key": {
+      "type": "tendermint/PubKeySecp256k1",
+      "value": "A/7aLwoApKQM19OqenU8yVg16cgYe5rfzUIWFpD0fP1+"
+    },
+    "account_number": "0",
+    "sequence": "4"
+  }
 
-# Get the sequence and account numbers for alice to construct the below requests
-$ curl -s http://localhost:1317/auth/accounts/$(tccli keys show alice -a)
-# > {"type":"auth/Account","value":{"address":"cosmos1h7ztnf2zkf4558hdxv5kpemdrg3tf94hnpvgsl","coins":[{"denom":"aliceCoin","amount":"1000"},{"denom":"nametoken","amount":"980"}],"public_key":{"type":"tendermint/PubKeySecp256k1","value":"Avc7qwecLHz5qb1EKDuSTLJfVOjBQezk0KSPDNybLONJ"},"account_number":"1","sequence":"1"}}
 
-# Buy another name for jack
-# NOTE: Be sure to specialize this request for your specific environment, also the "buyer" and "from" should be the same address
-$ curl -XPOST -s http://localhost:1317/tcchan/names --data-binary '{"base_req":{"from":"jack","password":"foobarbaz","chain_id":"tctestchain","sequence":"2","account_number":"0"},"name":"jack1.id","amount":"5nametoken","buyer":"cosmos127qa40nmq56hu27ae263zvfk3ey0tkapwk0gq6"}'
-# > {"check_tx":{"gasWanted":"200000","gasUsed":"1242"},"deliver_tx":{"log":"Msg 0: ","gasWanted":"200000","gasUsed":"2986","tags":[{"key":"YWN0aW9u","value":"YnV5X25hbWU="}]},"hash":"098996CD7ED4323561AC9011DEA24C70C8FAED2A4A10BC8DE2CE35C1977C3B7A","height":"23"}
+# Deposit coin from Cosmos to TTC
+# NOTE: Be sure to specialize this request for your specific environment, also the "sender" and "from" should be the same address
+$ curl -XPOST -s http://localhost:1317/tcchan/deposit --data-binary '{"base_req":{"from":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g","password":"12345678","chain_id":"tctestchain","sequence":"4","account_number":"0"},"target":"t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89","amount":"50cttc","sender":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g"}'
+# > {"type":"auth/StdTx","value":{"msg":[{"type":"tcchan/Deposit","value":{"From":"cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g","To":"t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89","Value":{"denom":"cttc","amount":"50"}}}],"fee":{"amount":null,"gas":"200000"},"signatures":null,"memo":""}}
 
-# Set the data for that name that jack just bought
-# NOTE: Be sure to specialize this request for your specific environment, also the "owner" and "from" should be the same address
-$ curl -XPUT -s http://localhost:1317/tcchan/names --data-binary '{"base_req":{"from":"jack","password":"foobarbaz","chain_id":"tctestchain","sequence":"3","account_number":"0"},"name":"jack1.id","value":"8.8.4.4","owner":"cosmos127qa40nmq56hu27ae263zvfk3ey0tkapwk0gq6"}'
-# > {"check_tx":{"gasWanted":"200000","gasUsed":"1242"},"deliver_tx":{"log":"Msg 0: ","gasWanted":"200000","gasUsed":"1352","tags":[{"key":"YWN0aW9u","value":"c2V0X25hbWU="}]},"hash":"B4DF0105D57380D60524664A2E818428321A0DCA1B6B2F091FB3BEC54D68FAD7","height":"26"}
+# Query the current status
+$ curl -s http://localhost:1317/tcchan/current
+# {
+  "maxOrderNumber": "4",
+  "currentDeposit": [
+    {
+      "orderID": "1",
+      "step": "0"
+    },
+    {
+      "orderID": "2",
+      "step": "0"
+    },
+    {
+      "orderID": "3",
+      "step": "0"
+    },
+    {
+      "orderID": "4",
+      "step": "0"
+    }
+  ],
+  "currentWithdraw": null
+}
 
-# Query the value for the name jack just set
-$ curl -s http://localhost:1317/tcchan/names/jack1.id
-# 8.8.4.4
-
-# Query whois for the name jack just bought
-$ curl -s http://localhost:1317/tcchan/names/jack1.id/whois
-# > {"value":"8.8.8.8","owner":"cosmos127qa40nmq56hu27ae263zvfk3ey0tkapwk0gq6","price":[{"denom":"STAKE","amount":"10"}]}
-
-# Alice buys name from jack
-$ curl -XPOST -s http://localhost:1317/tcchan/names --data-binary '{"base_req":{"from":"alice","password":"foobarbaz","chain_id":"tctestchain","sequence":"1","account_number":"1"},"name":"jack1.id","amount":"10nametoken","buyer":"cosmos1h7ztnf2zkf4558hdxv5kpemdrg3tf94hnpvgsl"}'
-# > {"check_tx":{"gasWanted":"200000","gasUsed":"1264"},"deliver_tx":{"log":"Msg 0: ","gasWanted":"200000","gasUsed":"4509","tags":[{"key":"YWN0aW9u","value":"YnV5X25hbWU="}]},"hash":"81A371392B52F703266257D524538085F8C749EE3CBC1C579873632EFBAFA40C","height":"70"}
+# Query order details
+$ curl -s http://localhost:1317/tcchan/order/1
+# {
+  "orderId": "1",
+  "blockNumber": "0",
+  "accAddress": "cosmos1eg37masx8qk20lfz0sfcu2tsfea7pcxkcst40g",
+  "ttcAddress": "t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89",
+  "value": {
+    "denom": "",
+    "amount": "0"
+  },
+  "deposit": false,
+  "status": "0"
+}
 ```
 
 ### Request Schemas:
@@ -63,9 +98,9 @@ $ curl -XPOST -s http://localhost:1317/tcchan/names --data-binary '{"base_req":{
     "gas": "string,not_req",
     "gas_adjustment": "string,not_req",
   },
-  "name": "string",
+  "target": "string",
   "amount": "string",
-  "buyer": "string"
+  "sender": "string"
 }
 ```
 
@@ -81,9 +116,9 @@ $ curl -XPOST -s http://localhost:1317/tcchan/names --data-binary '{"base_req":{
     "gas": "string,not_req",
     "gas_adjustment": "strin,not_reqg"
   },
-  "name": "string",
-  "value": "string",
-  "owner": "string"
+  "target": "string",
+  "amount": "string",
+  "sender": "string"
 }
 ```
 
