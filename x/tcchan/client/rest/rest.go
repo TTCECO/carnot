@@ -21,12 +21,15 @@ import (
 	"net/http"
 
 	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
-	clientrest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
+
+	"github.com/cosmos/cosmos-sdk/client/utils"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 )
 
 const (
@@ -44,7 +47,8 @@ type depositReq struct {
 	BaseReq rest.BaseReq `json:"base_req"`
 	Target  string       `json:"target"`
 	Amount  string       `json:"amount"`
-	Sender  string       `json:"sender"`
+	Name    string       `json:"name"`
+	Pass    string       `json:"pass"`
 }
 
 func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
@@ -61,7 +65,7 @@ func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 			return
 		}
 
-		addr, err := sdk.AccAddressFromBech32(req.Sender)
+		addr, err := sdk.AccAddressFromBech32(baseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -81,7 +85,40 @@ func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 			return
 		}
 
-		clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, baseReq, []sdk.Msg{msg})
+		//clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, baseReq, []sdk.Msg{msg})
+
+		gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, baseReq.GasAdjustment, client.DefaultGasAdjustment)
+		if !ok {
+			return
+		}
+		_, gas, err := client.ParseGas(baseReq.Gas)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		txBldr := authtxb.NewTxBuilder(
+			utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
+			baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
+		)
+		cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+		cliCtx.PrintResponse = true
+
+		// build and sign the transaction
+		txBytes, err := txBldr.BuildAndSign(req.Name, req.Pass, []sdk.Msg{msg})
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// broadcast to a Tendermint node
+		cliCtx.BroadcastMode = client.BroadcastAsync
+		res, err := cliCtx.BroadcastTx(txBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }
 

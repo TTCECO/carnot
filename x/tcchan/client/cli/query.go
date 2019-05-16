@@ -50,7 +50,7 @@ func GetCmdOrder(queryRoute string, cdc *codec.Codec) *cobra.Command {
 // GetCmdPerson queries information about a address
 func GetCmdPerson(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "person [orderID]",
+		Use:   "person [address]",
 		Short: "Query person tx records by address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
