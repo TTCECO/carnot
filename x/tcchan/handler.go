@@ -38,7 +38,9 @@ func NewHandler(keeper TCChanKeeper) sdk.Handler {
 }
 
 func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithdrawConfirm) sdk.Result {
+	confirm := WithdrawConfirm{}
 
+	keeper.SetConfirm(ctx, confirm)
 	return sdk.Result{}
 }
 

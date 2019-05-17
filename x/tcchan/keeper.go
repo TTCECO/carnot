@@ -104,6 +104,47 @@ func (k TCChanKeeper) SetOrder(ctx sdk.Context, order DepositOrder) error {
 	return nil
 }
 
+// Gets the entire CCTxOrder metadata struct by OrderID
+func (k TCChanKeeper) GetConfirm(ctx sdk.Context, id uint64) (WithdrawConfirm, error) {
+	tmpKey, err := buildKey(id, prefixConfirm)
+	if err != nil {
+		return WithdrawConfirm{}, err
+	}
+	store := ctx.KVStore(k.tcchanKey)
+	if !store.Has(tmpKey) {
+		return WithdrawConfirm{}, errUnknownOrder
+	}
+	bz := store.Get(tmpKey)
+	var order WithdrawConfirm
+	k.cdc.MustUnmarshalBinaryBare(bz, &order)
+	return order, nil
+}
+
+// Sets the entire CCTxOrder metadata struct
+func (k TCChanKeeper) SetConfirm(ctx sdk.Context, confirm WithdrawConfirm) error {
+	tmpKey, err := buildKey(confirm.OrderID, prefixConfirm)
+	if err != nil {
+		return err
+	}
+	record, err := k.GetConfirm(ctx, confirm.OrderID)
+	if err != nil && len(record.Confirms) > 0 && sameConfirm(record, confirm) && len(confirm.Confirms) == 1 {
+		record.Confirms = append(record.Confirms, confirm.Confirms[0])
+		store := ctx.KVStore(k.tcchanKey)
+		store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(record))
+	} else {
+		store := ctx.KVStore(k.tcchanKey)
+		store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(confirm))
+	}
+	return nil
+}
+
+func sameConfirm(origin, new WithdrawConfirm) bool {
+	if origin.OrderID == new.OrderID && origin.Value.IsEqual(new.Value) && origin.AccAddress.Equals(new.AccAddress) {
+		return true
+	}
+	return false
+}
+
 // GetOrderStatus - gets the order status by order id
 func (k TCChanKeeper) GetOrderStatus(ctx sdk.Context, id uint64) (int, error) {
 	order, err := k.GetOrder(ctx, id)

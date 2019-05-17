@@ -36,6 +36,16 @@ type DepositOrder struct {
 	Status      int            `json:"status"` // -1: fail 0: processing 1: success
 }
 
+type WithdrawConfirm struct {
+	OrderID     uint64           `json:"orderId"`
+	BlockNumber uint64           `json:"blockNumber"`
+	AccAddress  sdk.AccAddress   `json:"accAddress"`
+	TTCAddress  string           `json:"ttcAddress"`
+	Value       sdk.Coin         `json:"value"`
+	Status      int              `json:"status"` // -1: fail 0: processing 1: success
+	Confirms    []sdk.AccAddress `json:"confirms"`
+}
+
 // PersonalOrderRecord is the struct that contains transaction related to accAddress
 type PersonalOrderRecord struct {
 	AccAddress       sdk.AccAddress `json:"accAddress"`
