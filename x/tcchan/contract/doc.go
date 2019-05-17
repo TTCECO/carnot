@@ -27,6 +27,10 @@ package contract
 
 // compile *.sol in tcchan to get tcchan.abi and bytecode
 // deploy the contract on block chain.
+// contract.addValidator(_address)
+// contract.setMinConfirmNum(_num)
+// contract.ownerChargeFund()   // for test
+
 // eth.getTransactionReceipt(tx_hash).contractAddress to find the contractAddress and save into ../params.go
 // gen abi and copy into tcchan.abi
 // abigen --abi tcchan.abi --pkg contract --type Contract --out contract.go
