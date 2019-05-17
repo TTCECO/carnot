@@ -34,5 +34,5 @@ const (
 	//defaultChainID = 8848                 // Mainnet
 	defaultChainID = 8341 // Testnet
 
-	contractAddress = "t06bdd75755d06d0c69f7fc7042984d9194fcb6fc5" // test address
+	contractAddress = "t0f6086b9588d4a74636d8df61f4bd9ab2e8eeb7f9" // test address
 )

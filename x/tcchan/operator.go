@@ -83,7 +83,9 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	}
 
 	// go operator.tmpTestCallContract()
-
+	if err:= operator.tmpTestQueryTransaction(); err != nil {
+		operator.logger.Error("Query cross chain order fail", "error", err)
+	}
 	return &operator
 }
 
@@ -178,6 +180,22 @@ func (o *Operator) SendConfirmTx(orderID string, target string, coinName string,
 	return nil
 }
 
+
+func (o *Operator) tmpTestQueryTransaction() error {
+
+	currentOrderID,err := o.contract.WithdrawOrderID(&bind.CallOpts{})
+	if err != nil {
+		return err
+	}
+
+	res, err := o.contract.WithdrawRecords(&bind.CallOpts{},currentOrderID)
+	if err != nil  {
+		return err
+	}
+
+	o.logger.Info("last Order", "res", res)
+	return nil
+}
 
 func (o *Operator) tmpTestCallContract() error {
 	// test data

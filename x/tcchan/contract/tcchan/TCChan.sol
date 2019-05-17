@@ -27,7 +27,7 @@ contract TCChan is Ownable{
         uint height;
     }
 
-    uint public withdrawOrderID = 1;
+    uint public withdrawOrderID = 0;
     uint public minConfirmNum = 3;
     uint public depositFee = 1000000; //
     mapping(address => bool) public validators;
@@ -106,12 +106,12 @@ contract TCChan is Ownable{
 
     function crossChainTransaction(string _addr) payable public{
         WithdrawOrder memory newOrder;
+        withdrawOrderID += 1;
         newOrder.orderID = withdrawOrderID;
         newOrder.source = msg.sender;
         newOrder.target = _addr;
         newOrder.value = msg.value;
         newOrder.height = block.number;
         withdrawRecords[withdrawOrderID] = newOrder;
-        withdrawOrderID += 1;
     }
 }

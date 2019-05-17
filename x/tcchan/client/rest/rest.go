@@ -85,8 +85,6 @@ func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 			return
 		}
 
-		//clientrest.WriteGenerateStdTxResponse(w, cdc, cliCtx, baseReq, []sdk.Msg{msg})
-
 		gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, baseReq.GasAdjustment, client.DefaultGasAdjustment)
 		if !ok {
 			return
@@ -101,7 +99,6 @@ func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 			utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
 			baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
 		)
-		cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 		cliCtx.PrintResponse = true
 
 		// build and sign the transaction
