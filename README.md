@@ -30,3 +30,8 @@ Here are key considerations we tackled during the development of this technology
 3. The cross-chain control must be designed to be capable of handling multiple accounts with different authorities at the same time. It also must be able to perform 2-way confirmation and verification between the TCD and smart contract both ways.
 4. The smart contract which carries out the cross-chain transactions would be able to withdraw or deposit coins (and/or tokens), only when certain limited conditions are met.
 5. As both the Binance Chain (Tendermint) and TTC blockchain (Multi-tier BFT-DPoS) satisfy finality, this cross-chain transaction also satisfies finality.
+
+
+## Building and running the example
+[Click here](tutorial.md) for instructions on how to build and run the code.
+
