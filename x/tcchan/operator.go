@@ -167,6 +167,7 @@ func (o *Operator) createContract() error {
 	return nil
 }
 
+// SendConfirmTx send tx to TTC contract to confirm this validator confirm deposit transaction on cosmos
 func (o *Operator) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
 	ctx := context.Background()
 	tx, err := o.contract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), orderID, common.HexToAddress(target), coinName, value)

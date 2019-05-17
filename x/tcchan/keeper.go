@@ -66,6 +66,8 @@ func buildKey(input interface{}, prefix string) ([]byte, error) {
 		key = []byte(fmt.Sprintf("%s-%s", prefixOrder, input))
 	case prefixPerson:
 		key = []byte(fmt.Sprintf("%s-%s", prefixPerson, input))
+	case prefixConfirm:
+		key = []byte(fmt.Sprintf("%s-%s", prefixConfirm, input))
 	case prefixCurrent:
 		key = []byte(fmt.Sprintf("%s", prefixCurrent))
 	default:
@@ -190,7 +192,7 @@ func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Ite
 	return sdk.KVStorePrefixIterator(store, []byte(prefix))
 }
 
-//
+// SendConfirmTx send confirm tx to ttc
 func (k TCChanKeeper) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
 	return k.operator.SendConfirmTx(orderID, target, coinName, value)
 }

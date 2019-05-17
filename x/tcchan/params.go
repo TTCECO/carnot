@@ -27,6 +27,7 @@ const (
 	prefixOrder   = "order"
 	prefixPerson  = "person"
 	prefixCurrent = "current"
+	prefixConfirm = "confirm"
 
 	minBalanceValue = 1e+18 // for gas
 	//rpcUrl = "http://rpc-tokyo.ttcnet.io" // Mainnet
