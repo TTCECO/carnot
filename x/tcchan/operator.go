@@ -19,6 +19,7 @@ package tcchan
 //curl -H 'content-type:application/json;' -X POST --data '{"jsonrpc":"2.0","method":"net_version","params":[],"id":67}' http://47.111.177.215:8511
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/gttc/accounts/keystore"
@@ -186,6 +187,9 @@ func (o *Operator) tmpTestQueryTransaction() error {
 	currentOrderID,err := o.contract.WithdrawOrderID(&bind.CallOpts{})
 	if err != nil {
 		return err
+	}
+	if currentOrderID.Cmp(big.NewInt(0)) == 0 {
+		return errors.New("order not exist")
 	}
 
 	res, err := o.contract.WithdrawRecords(&bind.CallOpts{},currentOrderID)
