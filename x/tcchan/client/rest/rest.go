@@ -34,12 +34,14 @@ import (
 
 const (
 	orderID = "orderID"
+	address = "address"
 )
 
 // RegisterRoutes - Central function to define routes that get registered by the main application
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, storeName string) {
 	r.HandleFunc(fmt.Sprintf("/%s/deposit", tcchan.RouterName), depositHandler(cdc, cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/%s/order/{%s}", tcchan.RouterName, orderID), resolveOrderHandler(cdc, cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/person/{%s}", tcchan.RouterName, address), resolvePersonHandler(cdc, cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/current", tcchan.RouterName), resolveCurrentHandler(cdc, cliCtx, storeName)).Methods("GET")
 }
 
@@ -133,6 +135,23 @@ func resolveOrderHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName 
 		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }
+
+
+func resolvePersonHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		paramType := vars[address]
+
+		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/person/%s", storeName, paramType), nil)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
+			return
+		}
+
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+	}
+}
+
 
 func resolveCurrentHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
