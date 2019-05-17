@@ -68,7 +68,7 @@ func main() {
 
 	rootCmd.AddCommand(InitCmd(ctx, cdc))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc))
-	rootCmd.AddCommand(TCCStartCmd(ctx,newApp))
+	rootCmd.AddCommand(CrossChainStartCmd(ctx,newApp))
 	server.AddCommands(ctx, cdc, rootCmd, newApp, appExporter())
 
 	// prepare and add flags
@@ -92,9 +92,9 @@ func appExporter() server.AppExporter {
 	}
 }
 
-func TCCStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobra.Command {
+func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobra.Command {
 	cmd := server.StartCmd(ctx, appCreator)
-	cmd.Use = "tcc-start [keystore.json] [pass.txt]"
+	cmd.Use = "cc-start [keystore.json] [password]"
 	cmd.Short = "Run the full node (with unlock TTC address for cross chain action)"
 	cmd.Args= cobra.ExactArgs(2)
 	oldRunE := cmd.RunE
