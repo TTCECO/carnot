@@ -125,4 +125,4 @@ $ curl -s http://localhost:1317/tcchan/order/1
 }
 ```
 
-### [Back to start of tutorial](./README.md)
+### [Back to start of tutorial](./tutorial.md)
