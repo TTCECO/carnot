@@ -190,8 +190,7 @@ func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Ite
 	return sdk.KVStorePrefixIterator(store, []byte(prefix))
 }
 
-
 //
-func (k TCChanKeeper) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error{
-	return k.operator.SendConfirmTx(orderID , target , coinName , value)
+func (k TCChanKeeper) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
+	return k.operator.SendConfirmTx(orderID, target, coinName, value)
 }

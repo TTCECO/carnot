@@ -23,5 +23,5 @@ import (
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgDeposit{}, RouterName+"/Deposit", nil)
-
+	cdc.RegisterConcrete(MsgWithdrawConfirm{}, RouterName+"/WithdrawConfirm", nil)
 }

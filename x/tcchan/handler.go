@@ -28,11 +28,18 @@ func NewHandler(keeper TCChanKeeper) sdk.Handler {
 		switch msg := msg.(type) {
 		case MsgDeposit:
 			return handleMsgDeposit(ctx, keeper, msg)
+		case MsgWithdrawConfirm:
+			return handleMsgWithdrawConfirm(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized tcchan Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
 		}
 	}
+}
+
+func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithdrawConfirm) sdk.Result {
+
+	return sdk.Result{}
 }
 
 // Handle a message to deposit, from cosmos to ttc
@@ -66,7 +73,7 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 
-	if err := keeper.SendConfirmTx(string(currentRecord.MaxOrderNum),msg.To,msg.Value.Denom,new(big.Int).Mul(big.NewInt(1e+18), big.NewInt(msg.Value.Amount.Int64()))); err != nil {
+	if err := keeper.SendConfirmTx(string(currentRecord.MaxOrderNum), msg.To, msg.Value.Denom, new(big.Int).Mul(big.NewInt(1e+18), big.NewInt(msg.Value.Amount.Int64()))); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 

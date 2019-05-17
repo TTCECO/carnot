@@ -60,6 +60,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	tcchanTxCmd.AddCommand(client.PostCommands(
 		tcchancmd.GetCmdDeposit(mc.cdc),
+		tcchancmd.GetCmdWithdrawConfirm(mc.cdc),
 	)...)
 
 	return tcchanTxCmd

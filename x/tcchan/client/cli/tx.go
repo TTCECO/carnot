@@ -18,6 +18,7 @@ package cli
 
 import (
 	"github.com/spf13/cobra"
+	"math/big"
 
 	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -28,7 +29,7 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 )
 
-// GetCmdCCFromC is the CLI command for sending a BuyName transaction
+// GetCmdDeposit is the CLI command for sending a deposit transaction
 func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "deposit [target address] [amount]",
@@ -60,3 +61,39 @@ func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+// GetCmdWithdrawConfirm is the CLI command for sending a withdraw confirm transaction
+func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "withdraw [from string] [target address] [value int] [coinName string] [orderID int]",
+		Short: "cross chain withdraw transaction confirm, from TTC to Cosmos",
+		Args:  cobra.ExactArgs(5),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
+			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			if err := cliCtx.EnsureAccountExists(); err != nil {
+				return err
+			}
+			value := big.NewInt(0)
+			if err := value.UnmarshalText([]byte(args[2])); err !=nil {
+				return err
+			}
+			targetAddress := sdk.AccAddress{}
+			if err:= targetAddress.Unmarshal([]byte(args[1])); err !=nil {
+				return err
+			}
+			msg := tcchan.NewMsgWithdrawConfirm(args[0],targetAddress,value,args[3],args[4])
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			cliCtx.PrintResponse = true
+
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
+		},
+	}
+}
+
+

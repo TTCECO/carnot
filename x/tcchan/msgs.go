@@ -18,6 +18,7 @@ package tcchan
 
 import (
 	"encoding/json"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -29,7 +30,7 @@ type MsgDeposit struct {
 	Value sdk.Coin
 }
 
-// NewMsgDeposit is the constructor function for MsgCCFromC
+// NewMsgDeposit is the constructor function for MsgDeposit
 func NewMsgDeposit(from sdk.AccAddress, to string, value sdk.Coin) MsgDeposit {
 	return MsgDeposit{
 		From:  from,
@@ -70,4 +71,55 @@ func (msg MsgDeposit) GetSignBytes() []byte {
 // GetSigners defines whose signature is required
 func (msg MsgDeposit) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
+}
+
+// MsgWithdrawConfirm defines the Withdraw message, deposit the ttc from TTC Mainnet to Cosmos
+type MsgWithdrawConfirm struct {
+	From     string
+	To       sdk.AccAddress
+	Value    *big.Int
+	CoinName string
+	OrderID  string
+}
+
+// NewMsgWithdrawConfirm is the constructor function for MsgWithdraw
+func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value *big.Int, coinName string, orderID string) MsgWithdrawConfirm {
+	return MsgWithdrawConfirm{
+		From:     from,
+		To:       to,
+		Value:    value,
+		CoinName: coinName,
+		OrderID:  orderID,
+	}
+}
+
+// Route should return the name of the module
+func (msg MsgWithdrawConfirm) Route() string { return RouterName }
+
+// Type should return the action
+func (msg MsgWithdrawConfirm) Type() string { return "withdraw" }
+
+// ValidateBasic runs stateless checks on the message
+func (msg MsgWithdrawConfirm) ValidateBasic() sdk.Error {
+	if msg.To.Empty() {
+		return sdk.ErrInvalidAddress(msg.To.String())
+	}
+	if msg.Value.Cmp(big.NewInt(0)) < 0 {
+		return sdk.ErrUnknownRequest("Withdraw value must be positive")
+	}
+	return nil
+}
+
+// GetSignBytes encodes the message for signing
+func (msg MsgWithdrawConfirm) GetSignBytes() []byte {
+	b, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
+// GetSigners defines whose signature is required
+func (msg MsgWithdrawConfirm) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{}
 }
