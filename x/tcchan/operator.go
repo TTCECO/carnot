@@ -28,7 +28,7 @@ import (
 	"github.com/TTCECO/gttc/ethclient"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
-	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan/contract"
+	"github.com/TTCECO/carnot/x/tcchan/contract"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
 	"math/big"

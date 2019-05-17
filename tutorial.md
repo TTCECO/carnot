@@ -1,8 +1,8 @@
-# Building and running the ttc-cosmos-channal
+# Building and running the carnot
 
-## Building the `ttc-cosmos-channal` application
+## Building the `carnot` application
 
-If you want to build the `ttc-cosmos-channal` application in this repo to see the functionalities, **Go 1.12.1+** is required .
+If you want to build the `carnot` application in this repo to see the functionalities, **Go 1.12.1+** is required .
 
 Add some parameters to environment is necessary if you have never used the `go mod` before.
 

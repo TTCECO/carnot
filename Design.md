@@ -1,6 +1,6 @@
-# TTC Cosmos Channal
+# Carnot
 
-ttc-cosmos-channal的构建目标是实现代币在TTC和Cosmos两种不同的区块链间的跨链转移，包括其基于Cosmos SDK开发的侧链和需要部署在TTC上的智能合约。通过Cosmos SDK这个框架，我们构建一个简单的具有业务功能的状态机，以其作为媒介和智能合约产生交互。
+carnot的构建目标是实现代币在TTC和Cosmos两种不同的区块链间的跨链转移，包括其基于Cosmos SDK开发的侧链和需要部署在TTC上的智能合约。通过Cosmos SDK这个框架，我们构建一个简单的具有业务功能的状态机，以其作为媒介和智能合约产生交互。
 
 Cosmos（Tendermint）和TTC均采用DPOS共识机制，所以在这两种区块链中，均存在最终确定性。
 

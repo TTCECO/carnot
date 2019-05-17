@@ -17,7 +17,7 @@
 package main
 
 import (
-	"github.com/TTCECO/ttc-cosmos-channal/app"
+	"github.com/TTCECO/carnot/app"
 	"os"
 	"path"
 
@@ -31,9 +31,9 @@ import (
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
-	tcclient "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client"
-	tcrest "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/rest"
+	"github.com/TTCECO/carnot/x/tcchan"
+	tcclient "github.com/TTCECO/carnot/x/tcchan/client"
+	tcrest "github.com/TTCECO/carnot/x/tcchan/client/rest"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"

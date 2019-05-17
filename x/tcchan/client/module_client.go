@@ -17,8 +17,8 @@
 package client
 
 import (
-	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
-	tcchancmd "github.com/TTCECO/ttc-cosmos-channal/x/tcchan/client/cli"
+	"github.com/TTCECO/carnot/x/tcchan"
+	tcchancmd "github.com/TTCECO/carnot/x/tcchan/client/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"

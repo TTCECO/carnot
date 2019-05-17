@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"math/big"
 
-	"github.com/TTCECO/ttc-cosmos-channal/x/tcchan"
+	"github.com/TTCECO/carnot/x/tcchan"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"

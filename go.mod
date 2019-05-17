@@ -1,4 +1,4 @@
-module github.com/TTCECO/ttc-cosmos-channal
+module github.com/TTCECO/carnot
 
 go 1.12
 
