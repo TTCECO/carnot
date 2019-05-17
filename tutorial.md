@@ -52,9 +52,11 @@ tccli config chain-id tctestchain
 tccli config output json
 tccli config indent true
 tccli config trust-node true
-```
 
-You can now start `tcd` by calling `tcd start`. You will see logs begin streaming that represent blocks being produced, this will take a couple of seconds.
+```
+You alse need to [create your TTC account](https://github.com/TTCECO/gttc/wiki/TRY-AS-SUPERNODE-ON-TESTNET#create-your-new-accountaddress-by-gttc) for cross chain transaction. 
+
+You can now start `tcd` by calling `tcd cc-start keyfile.json password `. You will see logs begin streaming that represent blocks being produced, this will take a couple of seconds.
 
 Open another terminal to run commands against the network you have just created:
 
