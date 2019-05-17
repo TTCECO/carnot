@@ -21,6 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/TTCECO/carnot/x/tcchan/contract"
 	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/gttc/accounts/keystore"
 	"github.com/TTCECO/gttc/common"
@@ -28,7 +29,6 @@ import (
 	"github.com/TTCECO/gttc/ethclient"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
-	"github.com/TTCECO/carnot/x/tcchan/contract"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
 	"math/big"
@@ -45,6 +45,10 @@ type Operator struct {
 	contract     *contract.Contract
 	client       *ethclient.Client
 }
+
+var (
+	errTTCAccountMissing = errors.New("ttc account missing")
+)
 
 func NewCrossChainOperator(logger log.Logger, keyfilepath string, password string) *Operator {
 	operator := Operator{logger: logger,
@@ -70,6 +74,10 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	}
 	// update chain id
 	operator.updateVersion()
+
+	if operator.key == nil {
+		return &operator
+	}
 	// update nonce for this account
 	if nonce, err := operator.getNonce(); err != nil {
 		operator.localNonce = nonce
@@ -91,6 +99,9 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 }
 
 func (o *Operator) getNonce() (uint64, error) {
+	if o.key == nil {
+		return 0, errTTCAccountMissing
+	}
 	var response string
 	if err := o.cl.Call(&response, "eth_getTransactionCount", o.key.Address, "latest"); err != nil {
 		return 0, err
@@ -105,6 +116,9 @@ func (o *Operator) getNonce() (uint64, error) {
 }
 
 func (o *Operator) getBalance() (*big.Int, error) {
+	if o.key == nil {
+		return nil, errTTCAccountMissing
+	}
 	var response string
 	if err := o.cl.Call(&response, "eth_getBalance", o.key.Address, "latest"); err != nil {
 		return nil, err
@@ -130,6 +144,10 @@ func (o *Operator) updateVersion() {
 }
 
 func (o *Operator) sendTransaction() error {
+
+	if o.key == nil {
+		return errTTCAccountMissing
+	}
 	if nonce, err := o.getNonce(); err == nil && nonce > o.localNonce {
 		o.localNonce = nonce
 	}
@@ -156,6 +174,10 @@ func (o *Operator) sendTransaction() error {
 }
 
 func (o *Operator) createContract() error {
+
+	if o.key == nil {
+		return errTTCAccountMissing
+	}
 	// init contract
 	o.client = ethclient.NewClient(o.cl)
 	contract, err := contract.NewContract(common.HexToAddress(contractAddress), o.client)
@@ -169,6 +191,11 @@ func (o *Operator) createContract() error {
 
 // SendConfirmTx send tx to TTC contract to confirm this validator confirm deposit transaction on cosmos
 func (o *Operator) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
+
+	if o.key == nil {
+		return errTTCAccountMissing
+	}
+
 	ctx := context.Background()
 	tx, err := o.contract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), orderID, common.HexToAddress(target), coinName, value)
 	if err != nil {
@@ -184,6 +211,9 @@ func (o *Operator) SendConfirmTx(orderID string, target string, coinName string,
 
 func (o *Operator) tmpTestQueryTransaction() error {
 
+	if o.key == nil {
+		return errTTCAccountMissing
+	}
 	currentOrderID, err := o.contract.WithdrawOrderID(&bind.CallOpts{})
 	if err != nil {
 		return err
@@ -202,6 +232,10 @@ func (o *Operator) tmpTestQueryTransaction() error {
 }
 
 func (o *Operator) tmpTestCallContract() error {
+
+	if o.key == nil {
+		return errTTCAccountMissing
+	}
 	// test data
 	testAddress := common.HexToAddress("t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89")
 
