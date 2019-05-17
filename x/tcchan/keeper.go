@@ -62,8 +62,8 @@ func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.St
 func buildKey(input interface{}, prefix string) ([]byte, error) {
 	var key []byte
 	switch prefix {
-	case prefixOrder:
-		key = []byte(fmt.Sprintf("%s-%s", prefixOrder, input))
+	case prefixDeposit:
+		key = []byte(fmt.Sprintf("%s-%s", prefixDeposit, input))
 	case prefixPerson:
 		key = []byte(fmt.Sprintf("%s-%s", prefixPerson, input))
 	case prefixConfirm:
@@ -78,24 +78,24 @@ func buildKey(input interface{}, prefix string) ([]byte, error) {
 }
 
 // Gets the entire CCTxOrder metadata struct by OrderID
-func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (CCTxOrder, error) {
-	tmpKey, err := buildKey(id, prefixOrder)
+func (k TCChanKeeper) GetOrder(ctx sdk.Context, id uint64) (DepositOrder, error) {
+	tmpKey, err := buildKey(id, prefixDeposit)
 	if err != nil {
-		return CCTxOrder{}, err
+		return DepositOrder{}, err
 	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
-		return CCTxOrder{}, errUnknownOrder
+		return DepositOrder{}, errUnknownOrder
 	}
 	bz := store.Get(tmpKey)
-	var order CCTxOrder
+	var order DepositOrder
 	k.cdc.MustUnmarshalBinaryBare(bz, &order)
 	return order, nil
 }
 
 // Sets the entire CCTxOrder metadata struct
-func (k TCChanKeeper) SetOrder(ctx sdk.Context, order CCTxOrder) error {
-	tmpKey, err := buildKey(order.OrderID, prefixOrder)
+func (k TCChanKeeper) SetOrder(ctx sdk.Context, order DepositOrder) error {
+	tmpKey, err := buildKey(order.OrderID, prefixDeposit)
 	if err != nil {
 		return err
 	}

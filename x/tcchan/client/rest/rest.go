@@ -124,7 +124,7 @@ func resolveOrderHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName 
 		vars := mux.Vars(r)
 		paramType := vars[orderID]
 
-		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/order/%s", storeName, paramType), nil)
+		res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/deposit/%s", storeName, paramType), nil)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusNotFound, err.Error())
 			return

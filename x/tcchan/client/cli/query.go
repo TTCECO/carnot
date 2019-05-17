@@ -29,18 +29,18 @@ import (
 func GetCmdOrder(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "order [orderID]",
-		Short: "Query order info of ID",
+		Short: "Query deposit order info by ID",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			orderID := args[0]
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/order/%s", queryRoute, orderID), nil)
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/deposit/%s", queryRoute, orderID), nil)
 			if err != nil {
 				fmt.Printf("could not resolve order - %d : %s\n", orderID, err)
 				return nil
 			}
 
-			var out tcchan.CCTxOrder
+			var out tcchan.DepositOrder
 			cdc.MustUnmarshalJSON(res, &out)
 			return cliCtx.PrintOutput(out)
 		},

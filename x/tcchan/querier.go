@@ -31,7 +31,7 @@ import (
 func NewQuerier(keeper TCChanKeeper) sdk.Querier {
 	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
-		case prefixOrder:
+		case prefixDeposit:
 			return queryOrder(ctx, path[1:], req, keeper)
 		case prefixPerson:
 			return queryPerson(ctx, path[1:], req, keeper)
@@ -62,8 +62,8 @@ func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TC
 }
 
 // implement fmt.Stringer
-func (o CCTxOrder) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`OrderID: %s || AccAddress: %s || TccAddress: %s || Deposit: %t || Status: %d`, o.OrderID, o.AccAddress, o.TTCAddress, o.IsDeposit, o.Status))
+func (o DepositOrder) String() string {
+	return strings.TrimSpace(fmt.Sprintf(`OrderID: %s || AccAddress: %s || TccAddress: %s ||  Status: %d`, o.OrderID, o.AccAddress, o.TTCAddress, o.Status))
 }
 
 // nolint: unparam

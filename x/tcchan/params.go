@@ -24,7 +24,7 @@ const (
 	StoreAcc   = "acc"
 	StoreTCC   = "tcchan"
 
-	prefixOrder   = "order"
+	prefixDeposit = "deposit"
 	prefixPerson  = "person"
 	prefixCurrent = "current"
 	prefixConfirm = "confirm"

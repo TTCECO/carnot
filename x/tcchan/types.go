@@ -26,15 +26,14 @@ const (
 	OrderStatusFail    = -1
 )
 
-// CCTxOrder is the struct that contains cross chain transaction
-type CCTxOrder struct {
+// DepositOrder is the struct that contains cross chain transaction
+type DepositOrder struct {
 	OrderID     uint64         `json:"orderId"`
 	BlockNumber uint64         `json:"blockNumber"`
 	AccAddress  sdk.AccAddress `json:"accAddress"`
 	TTCAddress  string         `json:"ttcAddress"`
 	Value       sdk.Coin       `json:"value"`
-	IsDeposit   bool           `json:"deposit"` // true = deposit(cosmos to ttc)
-	Status      int            `json:"status"`  // -1: fail 0: processing 1: success
+	Status      int            `json:"status"` // -1: fail 0: processing 1: success
 }
 
 // PersonalOrderRecord is the struct that contains transaction related to accAddress
@@ -46,7 +45,7 @@ type PersonalOrderRecord struct {
 
 // OrderExtra is the struct that contains extra order info during process
 type OrderExtra struct {
-	OrderID uint64 `json:"orderID"` // ID of CCTxOrder
+	OrderID uint64 `json:"orderID"` // ID of DepositOrder
 	Step    int    `json:"step"`    // Process step
 }
 
