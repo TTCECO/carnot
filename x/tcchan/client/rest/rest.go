@@ -39,6 +39,7 @@ const (
 
 // RegisterRoutes - Central function to define routes that get registered by the main application
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, storeName string) {
+	r.HandleFunc(fmt.Sprintf("/%s/confirm", tcchan.RouterName), confirmHandler(cdc, cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/%s/deposit", tcchan.RouterName), depositHandler(cdc, cliCtx)).Methods("POST")
 	r.HandleFunc(fmt.Sprintf("/%s/order/{%s}", tcchan.RouterName, orderID), resolveOrderHandler(cdc, cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/person/{%s}", tcchan.RouterName, address), resolvePersonHandler(cdc, cliCtx, storeName)).Methods("GET")
@@ -51,6 +52,84 @@ type depositReq struct {
 	Amount  string       `json:"amount"`
 	Name    string       `json:"name"`
 	Pass    string       `json:"pass"`
+}
+
+type confirmReq struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	From    string       `json:"from"`
+	Target  string       `json:"target"`
+	Amount  string       `json:"amount"`
+	OrderID string       `json:"id"`
+	Name    string       `json:"name"`
+	Pass    string       `json:"pass"`
+}
+
+func confirmHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req confirmReq
+
+		if !rest.ReadRESTReq(w, r, cdc, &req) {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "failed to parse request")
+			return
+		}
+
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		target, err := sdk.AccAddressFromBech32(req.Target)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		coin, err := sdk.ParseCoin(req.Amount)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// create the message
+		msg := tcchan.NewMsgWithdrawConfirm(req.From,target,coin.Amount.BigInt(), coin.Denom, req.OrderID)
+		err = msg.ValidateBasic()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		gasAdj, ok := rest.ParseFloat64OrReturnBadRequest(w, baseReq.GasAdjustment, client.DefaultGasAdjustment)
+		if !ok {
+			return
+		}
+		_, gas, err := client.ParseGas(baseReq.Gas)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		txBldr := authtxb.NewTxBuilder(
+			utils.GetTxEncoder(cdc), baseReq.AccountNumber, baseReq.Sequence, gas, gasAdj,
+			baseReq.Simulate, baseReq.ChainID, baseReq.Memo, baseReq.Fees, baseReq.GasPrices,
+		)
+		cliCtx.PrintResponse = true
+
+		// build and sign the transaction
+		txBytes, err := txBldr.BuildAndSign(req.Name, req.Pass, []sdk.Msg{msg})
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// broadcast to a Tendermint node
+		cliCtx.BroadcastMode = client.BroadcastAsync
+		res, err := cliCtx.BroadcastTx(txBytes)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+	}
 }
 
 func depositHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFunc {
