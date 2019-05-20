@@ -91,7 +91,7 @@ func confirmHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 		}
 
 		// create the message
-		msg := tcchan.NewMsgWithdrawConfirm(req.From,target,coin.Amount.BigInt(), coin.Denom, req.OrderID)
+		msg := tcchan.NewMsgWithdrawConfirm(req.From, target, coin.Amount.BigInt(), coin.Denom, req.OrderID)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -215,7 +215,6 @@ func resolveOrderHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName 
 	}
 }
 
-
 func resolvePersonHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -230,7 +229,6 @@ func resolvePersonHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName
 		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }
-
 
 func resolveCurrentHandler(cdc *codec.Codec, cliCtx context.CLIContext, storeName string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
