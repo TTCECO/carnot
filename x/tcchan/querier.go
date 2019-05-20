@@ -17,11 +17,8 @@
 package tcchan
 
 import (
-	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -33,6 +30,8 @@ func NewQuerier(keeper TCChanKeeper) sdk.Querier {
 		switch path[0] {
 		case prefixDeposit:
 			return queryOrder(ctx, path[1:], req, keeper)
+		case prefixConfirm:
+			return queryConfirm(ctx, path[1:], req, keeper)
 		case prefixPerson:
 			return queryPerson(ctx, path[1:], req, keeper)
 		case prefixCurrent:
@@ -61,9 +60,22 @@ func queryOrder(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TC
 	return bz, nil
 }
 
-// implement fmt.Stringer
-func (o DepositOrder) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`OrderID: %s || AccAddress: %s || TccAddress: %s ||  Status: %d`, o.OrderID, o.AccAddress, o.TTCAddress, o.Status))
+// nolint: unparam
+func queryConfirm(ctx sdk.Context, path []string, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
+
+	orderID, err := strconv.Atoi(path[0])
+	if err != nil || orderID < 0 {
+		return nil, sdk.ErrUnknownRequest("order ID is not int")
+	}
+	confirm, err := keeper.GetConfirm(ctx, uint64(orderID))
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest("could not get confirm from local")
+	}
+	bz, err := codec.MarshalJSONIndent(keeper.cdc, confirm)
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest("could not marshal result to JSON")
+	}
+	return bz, nil
 }
 
 // nolint: unparam
@@ -79,11 +91,6 @@ func queryPerson(ctx sdk.Context, path []string, req abci.RequestQuery, keeper T
 	return bz, nil
 }
 
-// implement fmt.Stringer
-func (p PersonalOrderRecord) String() string {
-	return strings.TrimSpace(fmt.Sprintf(` AccAddress: %s || DepositIDs: %v || WithdrawIDs: %v`, p.AccAddress, p.DepositOrderIDs, p.WithdrawOrderIDs))
-}
-
 // nolint: unparam
 func queryCurrent(ctx sdk.Context, req abci.RequestQuery, keeper TCChanKeeper) ([]byte, sdk.Error) {
 	current, err := keeper.GetCurrent(ctx)
@@ -95,9 +102,4 @@ func queryCurrent(ctx sdk.Context, req abci.RequestQuery, keeper TCChanKeeper) (
 		return nil, sdk.ErrUnknownRequest("could not marshal result to JSON")
 	}
 	return bz, nil
-}
-
-// implement fmt.Stringer
-func (c CurrentOrderRecord) String() string {
-	return strings.TrimSpace(fmt.Sprintf(` MaxOrderNum: %d `, c.MaxOrderNum))
 }

@@ -17,7 +17,9 @@
 package tcchan
 
 import (
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strings"
 )
 
 const (
@@ -36,6 +38,11 @@ type DepositOrder struct {
 	Status      int            `json:"status"` // -1: fail 0: processing 1: success
 }
 
+// implement fmt.Stringer
+func (o DepositOrder) String() string {
+	return strings.TrimSpace(fmt.Sprintf(`OrderID: %d || AccAddress: %s || TccAddress: %s ||  Status: %d`, o.OrderID, o.AccAddress, o.TTCAddress, o.Status))
+}
+
 type WithdrawConfirm struct {
 	OrderID     uint64           `json:"orderId"`
 	BlockNumber uint64           `json:"blockNumber"`
@@ -46,11 +53,20 @@ type WithdrawConfirm struct {
 	Confirms    []sdk.AccAddress `json:"confirms"`
 }
 
+func (w WithdrawConfirm) String() string {
+	return strings.TrimSpace(fmt.Sprintf(`OrderID: %d || AccAddress: %s || TccAddress: %s ||  Status: %d`, w.OrderID, w.AccAddress, w.TTCAddress, w.Status))
+}
+
 // PersonalOrderRecord is the struct that contains transaction related to accAddress
 type PersonalOrderRecord struct {
 	AccAddress       sdk.AccAddress `json:"accAddress"`
 	DepositOrderIDs  []uint64       `json:"depositOrderIDs"`
 	WithdrawOrderIDs []uint64       `json:"withdrawOrderIDs"`
+}
+
+// implement fmt.Stringer
+func (p PersonalOrderRecord) String() string {
+	return strings.TrimSpace(fmt.Sprintf(` AccAddress: %s || DepositIDs: %v || WithdrawIDs: %v`, p.AccAddress, p.DepositOrderIDs, p.WithdrawOrderIDs))
 }
 
 // OrderExtra is the struct that contains extra order info during process
@@ -64,4 +80,9 @@ type CurrentOrderRecord struct {
 	MaxOrderNum uint64       `json:"maxOrderNumber"`
 	Deposit     []OrderExtra `json:"currentDeposit"`
 	Withdraw    []OrderExtra `json:"currentWithdraw"`
+}
+
+// implement fmt.Stringer
+func (c CurrentOrderRecord) String() string {
+	return strings.TrimSpace(fmt.Sprintf(` MaxOrderNum: %d `, c.MaxOrderNum))
 }

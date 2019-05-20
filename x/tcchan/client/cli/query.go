@@ -87,3 +87,26 @@ func GetCmdCurrent(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
+
+
+// GetCmdConfirm queries information
+func GetCmdConfirm(queryRoute string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "confirm",
+		Short: "Query confirm info",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			confirmID := args[0]
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/confirm/%s", queryRoute, confirmID), nil)
+			if err != nil {
+				fmt.Printf("could not resolve order - %d : %s\n", confirmID, err)
+				return nil
+			}
+
+			var out tcchan.WithdrawConfirm
+			cdc.MustUnmarshalJSON(res, &out)
+			return cliCtx.PrintOutput(out)
+		},
+	}
+}
