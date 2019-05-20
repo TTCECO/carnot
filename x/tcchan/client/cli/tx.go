@@ -80,13 +80,13 @@ func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
 			if err := value.UnmarshalText([]byte(args[2])); err != nil {
 				return err
 			}
-			targetAddress := sdk.AccAddress{}
-			if err := targetAddress.Unmarshal([]byte(args[1])); err != nil {
+			targetAddress, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
 				return err
 			}
-			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, value, args[3], args[4])
-			err := msg.ValidateBasic()
-			if err != nil {
+			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, value, args[3], args[4], cliCtx.GetFromAddress())
+
+			if err := msg.ValidateBasic() ;err != nil {
 				return err
 			}
 			cliCtx.PrintResponse = true

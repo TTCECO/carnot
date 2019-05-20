@@ -77,6 +77,11 @@ func confirmHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
+		validator, err := sdk.AccAddressFromBech32(baseReq.From)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 
 		target, err := sdk.AccAddressFromBech32(req.Target)
 		if err != nil {
@@ -91,7 +96,7 @@ func confirmHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 		}
 
 		// create the message
-		msg := tcchan.NewMsgWithdrawConfirm(req.From, target, coin.Amount.BigInt(), coin.Denom, req.OrderID)
+		msg := tcchan.NewMsgWithdrawConfirm(req.From, target, coin.Amount.BigInt(), coin.Denom, req.OrderID,validator)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

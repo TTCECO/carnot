@@ -75,21 +75,23 @@ func (msg MsgDeposit) GetSigners() []sdk.AccAddress {
 
 // MsgWithdrawConfirm defines the Withdraw message, deposit the ttc from TTC Mainnet to Cosmos
 type MsgWithdrawConfirm struct {
-	From     string
-	To       sdk.AccAddress
-	Value    *big.Int
-	CoinName string
-	OrderID  string
+	From      string
+	To        sdk.AccAddress
+	Value     *big.Int
+	CoinName  string
+	OrderID   string
+	Validator sdk.AccAddress
 }
 
 // NewMsgWithdrawConfirm is the constructor function for MsgWithdraw
-func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value *big.Int, coinName string, orderID string) MsgWithdrawConfirm {
+func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value *big.Int, coinName string, orderID string, validator sdk.AccAddress) MsgWithdrawConfirm {
 	return MsgWithdrawConfirm{
-		From:     from,
-		To:       to,
-		Value:    value,
-		CoinName: coinName,
-		OrderID:  orderID,
+		From:      from,
+		To:        to,
+		Value:     value,
+		CoinName:  coinName,
+		OrderID:   orderID,
+		Validator: validator,
 	}
 }
 
@@ -97,7 +99,7 @@ func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value *big.Int, coinN
 func (msg MsgWithdrawConfirm) Route() string { return RouterName }
 
 // Type should return the action
-func (msg MsgWithdrawConfirm) Type() string { return "withdraw" }
+func (msg MsgWithdrawConfirm) Type() string { return "withdrawConfirm" }
 
 // ValidateBasic runs stateless checks on the message
 func (msg MsgWithdrawConfirm) ValidateBasic() sdk.Error {
@@ -121,5 +123,5 @@ func (msg MsgWithdrawConfirm) GetSignBytes() []byte {
 
 // GetSigners defines whose signature is required
 func (msg MsgWithdrawConfirm) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{}
+	return []sdk.AccAddress{msg.Validator}
 }
