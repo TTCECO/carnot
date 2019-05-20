@@ -96,7 +96,7 @@ func confirmHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerFun
 		}
 
 		// create the message
-		msg := tcchan.NewMsgWithdrawConfirm(req.From, target, coin.Amount.BigInt(), coin.Denom, req.OrderID,validator)
+		msg := tcchan.NewMsgWithdrawConfirm(req.From, target, coin, req.OrderID,validator)
 		err = msg.ValidateBasic()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

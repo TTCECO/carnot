@@ -18,8 +18,6 @@ package tcchan
 
 import (
 	"encoding/json"
-	"math/big"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -77,19 +75,17 @@ func (msg MsgDeposit) GetSigners() []sdk.AccAddress {
 type MsgWithdrawConfirm struct {
 	From      string
 	To        sdk.AccAddress
-	Value     *big.Int
-	CoinName  string
+	Value     sdk.Coin
 	OrderID   string
 	Validator sdk.AccAddress
 }
 
 // NewMsgWithdrawConfirm is the constructor function for MsgWithdraw
-func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value *big.Int, coinName string, orderID string, validator sdk.AccAddress) MsgWithdrawConfirm {
+func NewMsgWithdrawConfirm(from string, to sdk.AccAddress, value sdk.Coin, orderID string, validator sdk.AccAddress) MsgWithdrawConfirm {
 	return MsgWithdrawConfirm{
 		From:      from,
 		To:        to,
 		Value:     value,
-		CoinName:  coinName,
 		OrderID:   orderID,
 		Validator: validator,
 	}
@@ -106,7 +102,7 @@ func (msg MsgWithdrawConfirm) ValidateBasic() sdk.Error {
 	if msg.To.Empty() {
 		return sdk.ErrInvalidAddress(msg.To.String())
 	}
-	if msg.Value.Cmp(big.NewInt(0)) < 0 {
+	if !msg.Value.IsPositive() {
 		return sdk.ErrUnknownRequest("Withdraw value must be positive")
 	}
 	return nil

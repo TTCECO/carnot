@@ -17,13 +17,11 @@
 package cli
 
 import (
-	"github.com/spf13/cobra"
-	"math/big"
-
 	"github.com/TTCECO/carnot/x/tcchan"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/spf13/cobra"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
@@ -65,9 +63,9 @@ func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 // GetCmdWithdrawConfirm is the CLI command for sending a withdraw confirm transaction
 func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "withdraw [from string] [target address] [value int] [coinName string] [orderID int]",
+		Use:   "withdraw [from string] [target address] [amount] [orderID int]",
 		Short: "cross chain withdraw transaction confirm, from TTC to Cosmos",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
@@ -76,15 +74,17 @@ func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
-			value := big.NewInt(0)
-			if err := value.UnmarshalText([]byte(args[2])); err != nil {
+
+			coin, err := sdk.ParseCoin(args[2])
+			if err != nil {
 				return err
 			}
+
 			targetAddress, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
-			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, value, args[3], args[4], cliCtx.GetFromAddress())
+			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, coin, args[3], cliCtx.GetFromAddress())
 
 			if err := msg.ValidateBasic() ;err != nil {
 				return err
