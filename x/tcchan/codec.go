@@ -22,6 +22,8 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
+	// MsgDeposit is the tx send by user to transfer coin from cosmos to ttc
 	cdc.RegisterConcrete(MsgDeposit{}, RouterName+"/Deposit", nil)
+	// MsgWithdrawConfirm is the tx send by validator which confirmed withdraw order
 	cdc.RegisterConcrete(MsgWithdrawConfirm{}, RouterName+"/WithdrawConfirm", nil)
 }

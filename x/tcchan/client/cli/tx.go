@@ -35,26 +35,20 @@ func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
-
 			coin, err := sdk.ParseCoin(args[1])
 			if err != nil {
 				return err
 			}
-
 			msg := tcchan.NewMsgDeposit(cliCtx.GetFromAddress(), args[0], coin)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
-
 			cliCtx.PrintResponse = true
-
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
@@ -63,34 +57,28 @@ func GetCmdDeposit(cdc *codec.Codec) *cobra.Command {
 // GetCmdWithdrawConfirm is the CLI command for sending a withdraw confirm transaction
 func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "withdraw [from string] [target address] [amount] [orderID int]",
+		Use:   "confirm [from string] [target address] [amount] [orderID int]",
 		Short: "cross chain withdraw transaction confirm, from TTC to Cosmos",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
-
 			coin, err := sdk.ParseCoin(args[2])
 			if err != nil {
 				return err
 			}
-
 			targetAddress, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, coin, args[3], cliCtx.GetFromAddress())
-
 			if err := msg.ValidateBasic() ;err != nil {
 				return err
 			}
 			cliCtx.PrintResponse = true
-
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
