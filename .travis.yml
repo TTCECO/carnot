@@ -1,0 +1,14 @@
+language: go
+go_import_path: github.com/TTCECO/carnot
+sudo: false
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      sudo: required
+      go: 1.12.x
+      script:
+        - sudo modprobe fuse
+        - sudo chmod 666 /dev/fuse
+        - sudo chown root:$USER /etc/fuse.conf
+        - make install
