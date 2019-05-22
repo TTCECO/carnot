@@ -1,5 +1,9 @@
 # Carnot
- 
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/TTCECO/carnot)](https://goreportcard.com/report/github.com/TTCECO/carnot)
+[![Travis](https://travis-ci.org/TTCECO/carnot.svg?branch=master)](https://travis-ci.org/TTCECO/carnot)
+[![License](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](LICENSE)
+
 TTC Foundation introduces Carnot, a cross-chain solution, which will allow the TTC on-chain assets (TTC and TST-20 tokens) to transact with Binance Chain on-chain assets (BEP-2 tokens) by interlinking two blockchains. Carnot is designed to be both (i) operable independently by a single project (or an alliance) and (ii) integratable to Binance Chain as a module.
 
 Any blockchain platforms that support smart contract can achieve interoperability with the Binance Chain by customizing Carnot to meet its needs. We believe that Carnot will empower more blockchain platforms to join the Binance DEX.
