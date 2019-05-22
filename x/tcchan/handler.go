@@ -55,12 +55,10 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-
 	// collect coin
 	if _, _, err := keeper.coinKeeper.SubtractCoins(ctx, msg.From, sdk.NewCoins(msg.Value)); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-
 	// update record info
 	currentRecord.MaxOrderNum += 1
 	if err := keeper.SetOrder(ctx, DepositOrder{OrderID: currentRecord.MaxOrderNum, AccAddress: msg.From, TTCAddress: msg.To}); err != nil {
@@ -74,10 +72,8 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err := keeper.SetCurrent(ctx, currentRecord); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-
 	if err := keeper.SendConfirmTx(string(currentRecord.MaxOrderNum), msg.To, msg.Value.Denom, new(big.Int).Mul(big.NewInt(1e+18), msg.Value.Amount.BigInt())); err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
-
 	return sdk.Result{}
 }
