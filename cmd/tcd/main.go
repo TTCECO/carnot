@@ -62,7 +62,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:               "tcd",
-		Short:             "TTC COSMOS Channal App Daemon (server)",
+		Short:             "Carnot - TTC COSMOS Channal App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 

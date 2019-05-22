@@ -61,7 +61,7 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "tccli",
-		Short: "TTC COSMOS Channal Client",
+		Short: "Carnot - TTC COSMOS Channal Client",
 	}
 
 	// Add --chain-id to persistent flags and mark it required

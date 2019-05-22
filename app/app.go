@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	AppName = "tcchan"
+	AppName = "carnot" // the name of app
 )
 
 var InitKeystore = ""
@@ -151,9 +151,8 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 	return app
 }
 
-// application updates every end block
+// BeginBlocker update keeper before seal each block
 func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	ctx.Logger().Info("BeginBlocker", "info", "...")
 	res, err := app.tccKeeper.GetCurrent(ctx)
 	if err != nil {
 		ctx.Logger().Error("BeginBlocker", "error", err)
@@ -162,8 +161,8 @@ func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	return abci.ResponseBeginBlock{}
 }
 
+// EndBlocker  update keeper after seal each block
 func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	ctx.Logger().Info("EndBlocker", "info", "...")
 	app.tccKeeper.CalculateConfirm(ctx)
 	return abci.ResponseEndBlock{}
 }
