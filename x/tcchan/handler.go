@@ -20,6 +20,7 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"math/big"
+	"strconv"
 )
 
 // NewHandler returns a handler for "tcchan" type messages.
@@ -38,7 +39,19 @@ func NewHandler(keeper TCChanKeeper) sdk.Handler {
 }
 
 func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithdrawConfirm) sdk.Result {
-	confirm := WithdrawConfirm{}
+	orderID, err := strconv.Atoi(msg.OrderID)
+	if err != nil {
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
+	}
+	confirm := WithdrawConfirm{
+		OrderID:     uint64(orderID),
+		BlockNumber: uint64(ctx.BlockHeight()),
+		AccAddress:  msg.To,
+		TTCAddress:  msg.From,
+		Value:       msg.Value,
+		Status:      1,
+		Confirms:    msg.GetSigners(),
+	}
 
 	keeper.SetConfirm(ctx, confirm)
 	return sdk.Result{}

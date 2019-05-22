@@ -127,11 +127,22 @@ func (k TCChanKeeper) SetConfirm(ctx sdk.Context, confirm WithdrawConfirm) error
 		return err
 	}
 	record, err := k.GetConfirm(ctx, confirm.OrderID)
-	if err != nil && len(record.Confirms) > 0 && sameConfirm(record, confirm) && len(confirm.Confirms) == 1 {
-		record.Confirms = append(record.Confirms, confirm.Confirms[0])
-		store := ctx.KVStore(k.tcchanKey)
-		store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(record))
+	if err == nil && len(record.Confirms) > 0 && sameConfirm(record, confirm) && len(confirm.Confirms) == 1 {
+		newConfirm := true
+		for _, v := range record.Confirms {
+			if v.Equals(confirm.Confirms[0]) {
+				newConfirm = false
+				break
+			}
+		}
+
+		if newConfirm {
+			record.Confirms = append(record.Confirms, confirm.Confirms[0])
+			store := ctx.KVStore(k.tcchanKey)
+			store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(record))
+		}
 	} else {
+		// todo : if some of the validator got wrong withdraw transaction , the wrong will replace the old one here
 		store := ctx.KVStore(k.tcchanKey)
 		store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(confirm))
 	}
