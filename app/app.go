@@ -167,6 +167,7 @@ func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 
 func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	ctx.Logger().Info("EndBlocker", "info","...")
+	app.tccKeeper.CalculateConfirm(ctx)
 	return abci.ResponseEndBlock{}
 }
 

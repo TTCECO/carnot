@@ -49,7 +49,7 @@ func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithd
 		AccAddress:  msg.To,
 		TTCAddress:  msg.From,
 		Value:       msg.Value,
-		Status:      1,
+		Status:      0,
 		Confirms:    msg.GetSigners(),
 	}
 

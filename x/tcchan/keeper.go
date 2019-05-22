@@ -149,6 +149,41 @@ func (k TCChanKeeper) SetConfirm(ctx sdk.Context, confirm WithdrawConfirm) error
 	return nil
 }
 
+//
+func (k TCChanKeeper) setConfirmSuccess(ctx sdk.Context, orderID uint64) error {
+	tmpKey, err := buildKey(orderID, prefixConfirm)
+	if err != nil {
+		return err
+	}
+	record, err := k.GetConfirm(ctx, orderID)
+	if err != nil {
+		return err
+	}
+	record.Status = 1
+	store := ctx.KVStore(k.tcchanKey)
+	store.Set(tmpKey, k.cdc.MustMarshalBinaryBare(record))
+	return nil
+}
+
+func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
+	iterator := k.GetRecordsIterator(ctx, prefixConfirm)
+	for ; iterator.Valid(); iterator.Next() {
+		var order WithdrawConfirm
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &order)
+		// todo min validator count, should related to validator count in genesis.json
+		if len(order.Confirms) >= minValidatorCount && order.Status == 0 {
+			if _, _, err := k.coinKeeper.AddCoins(ctx, order.AccAddress, sdk.NewCoins(order.Value)); err != nil {
+				return err
+			} else {
+				// update the status the order to 1
+				k.setConfirmSuccess(ctx, order.OrderID)
+			}
+		}
+	}
+	iterator.Close()
+	return nil
+}
+
 func sameConfirm(origin, new WithdrawConfirm) bool {
 	if origin.OrderID == new.OrderID && origin.Value.IsEqual(new.Value) && origin.AccAddress.Equals(new.AccAddress) {
 		return true
