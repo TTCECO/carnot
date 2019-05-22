@@ -75,7 +75,7 @@ func GetCmdWithdrawConfirm(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			msg := tcchan.NewMsgWithdrawConfirm(args[0], targetAddress, coin, args[3], cliCtx.GetFromAddress())
-			if err := msg.ValidateBasic() ;err != nil {
+			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 			cliCtx.PrintResponse = true

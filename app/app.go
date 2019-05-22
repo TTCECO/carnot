@@ -129,8 +129,6 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 		AddRoute(tcchan.RouterName, tcchan.NewQuerier(app.tccKeeper)).
 		AddRoute("acc", auth.NewQuerier(app.accountKeeper))
 
-
-
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
@@ -155,18 +153,17 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 
 // application updates every end block
 func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	ctx.Logger().Info("BeginBlocker", "info","...")
-	res,err := app.tccKeeper.GetCurrent(ctx)
+	ctx.Logger().Info("BeginBlocker", "info", "...")
+	res, err := app.tccKeeper.GetCurrent(ctx)
 	if err != nil {
-		ctx.Logger().Error("BeginBlocker", "error",err)
+		ctx.Logger().Error("BeginBlocker", "error", err)
 	}
-	ctx.Logger().Info("BeginBlocker", "current",res.MaxOrderNum)
+	ctx.Logger().Info("BeginBlocker", "current", res.MaxOrderNum)
 	return abci.ResponseBeginBlock{}
 }
 
-
 func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	ctx.Logger().Info("EndBlocker", "info","...")
+	ctx.Logger().Info("EndBlocker", "info", "...")
 	app.tccKeeper.CalculateConfirm(ctx)
 	return abci.ResponseEndBlock{}
 }
@@ -177,7 +174,6 @@ type GenesisState struct {
 	BankData bank.GenesisState   `json:"bank"`
 	Accounts []*auth.BaseAccount `json:"accounts"`
 }
-
 
 func (app *TCChanApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes

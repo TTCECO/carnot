@@ -88,7 +88,6 @@ func GetCmdCurrent(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-
 // GetCmdConfirm queries information
 func GetCmdConfirm(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
