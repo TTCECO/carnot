@@ -37,7 +37,7 @@ import (
 )
 
 const (
-	AppName = "carnot" // the name of app
+	AppName = "Carnot" // the name of app
 )
 
 var InitKeystore = ""
