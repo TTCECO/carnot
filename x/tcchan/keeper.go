@@ -254,7 +254,7 @@ func (k TCChanKeeper) GetCurrent(ctx sdk.Context) (CurrentOrderRecord, error) {
 	}
 	store := ctx.KVStore(k.tcchanKey)
 	if !store.Has(tmpKey) {
-		return CurrentOrderRecord{MaxOrderNum: 0, Deposit: []OrderExtra{}, Withdraw: []OrderExtra{}}, nil
+		return CurrentOrderRecord{MaxDeposit: 0, MaxWithdraw: 0, Deposit: []OrderExtra{}, Withdraw: []OrderExtra{}}, nil
 	}
 	bz := store.Get(tmpKey)
 	var current CurrentOrderRecord

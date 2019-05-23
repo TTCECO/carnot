@@ -77,12 +77,13 @@ type OrderExtra struct {
 
 // CurrentOrderRecord is the struct that contains order not finish (CCtxOrder.Status==0)
 type CurrentOrderRecord struct {
-	MaxOrderNum uint64       `json:"maxOrderNumber"`
+	MaxWithdraw uint64       `json:"maxWithdraw"`
+	MaxDeposit  uint64       `json:"maxDeposit"`
 	Deposit     []OrderExtra `json:"currentDeposit"`
 	Withdraw    []OrderExtra `json:"currentWithdraw"`
 }
 
 // implement fmt.Stringer
 func (c CurrentOrderRecord) String() string {
-	return strings.TrimSpace(fmt.Sprintf(` MaxOrderNum: %d `, c.MaxOrderNum))
+	return strings.TrimSpace(fmt.Sprintf(` MaxDeposit: %d || MaxWithdraw: %d`, c.MaxDeposit, c.MaxWithdraw))
 }
