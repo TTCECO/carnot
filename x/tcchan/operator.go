@@ -33,6 +33,8 @@ import (
 	"io/ioutil"
 	"math/big"
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Operator struct {
@@ -92,9 +94,13 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	}
 
 	// go operator.tmpTestCallContract()
-	if err := operator.tmpTestQueryTransaction(); err != nil {
-		operator.logger.Error("Query cross chain order fail", "error", err)
+	if blockNumber, err := operator.GetBlockNumber(); err != nil {
+		operator.logger.Error("TTC Main net query block height fail", "error", err)
+	} else {
+		operator.logger.Info("TTC Main net ", "block height", blockNumber)
+
 	}
+
 	return &operator
 }
 
@@ -209,26 +215,56 @@ func (o *Operator) SendConfirmTx(orderID string, target string, coinName string,
 	return nil
 }
 
-func (o *Operator) tmpTestQueryTransaction() error {
-
-	if o.key == nil {
-		return errTTCAccountMissing
+// GetBlockNumber return the current block number
+func (o *Operator) GetBlockNumber() (*big.Int, error) {
+	var response string
+	if err := o.cl.Call(&response, "eth_blockNumber"); err != nil {
+		return nil, errors.New("block number query fail")
+	} else {
+		o.logger.Info("Contract Confirm", "status", response)
+		blockNumber := big.NewInt(0)
+		err = blockNumber.UnmarshalText([]byte(response))
+		return blockNumber, err
 	}
+}
+
+// GetContractWithdrawRecords
+func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64) ([]MsgWithdrawConfirm, error) {
 	currentOrderID, err := o.contract.WithdrawOrderID(&bind.CallOpts{})
+	var resultMsg []MsgWithdrawConfirm
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if currentOrderID.Cmp(big.NewInt(0)) == 0 {
-		return errors.New("order not exist")
+	if currentOrderID.Cmp(big.NewInt(0)) == 0 || currentOrderID.Cmp(new(big.Int).SetUint64(lastID)) <= 0 {
+		return resultMsg, nil
 	}
-
-	res, err := o.contract.WithdrawRecords(&bind.CallOpts{}, currentOrderID)
+	currentRemoteHeight, err := o.GetBlockNumber()
 	if err != nil {
-		return err
+		return resultMsg, nil
 	}
+	maxNeedConfirmHeight := currentRemoteHeight.Sub(currentRemoteHeight, new(big.Int).SetUint64(blockDelay))
+	for id := lastID + 1; id <= currentOrderID.Uint64(); id++ {
+		record, err := o.contract.WithdrawRecords(&bind.CallOpts{}, new(big.Int).SetUint64(id))
+		if err != nil {
+			continue
+		}
+		if record.Height.Cmp(maxNeedConfirmHeight) < 0 && record.Value.Cmp(big.NewInt(0)) > 0 {
+			to, err := sdk.AccAddressFromBech32(record.Target)
+			if err != nil {
+				continue
+			}
 
-	o.logger.Info("last Order", "res", res)
-	return nil
+			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
+			o.logger.Info("Contract ", "Value", amount)
+			resultMsg = append(resultMsg, MsgWithdrawConfirm{
+				OrderID: record.OrderID.String(),
+				From:    record.Source.String(),
+				To:      to,
+				Value:   sdk.NewCoin(CoinTTC, sdk.NewIntFromBigInt(amount)),
+			})
+		}
+	}
+	return resultMsg, nil
 }
 
 func (o *Operator) tmpTestCallContract() error {

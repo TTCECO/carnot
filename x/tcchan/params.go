@@ -17,7 +17,7 @@
 package tcchan
 
 const (
-	CoinTTC = "CTTC" // TTC on Cosmos
+	CoinTTC = "cttc" // TTC on Cosmos
 	CoinACN = "CACN" // ACN on Cosmos, ERC20
 
 	RouterName = "tcchan"
@@ -38,4 +38,6 @@ const (
 	contractAddress = "t0f6086b9588d4a74636d8df61f4bd9ab2e8eeb7f9" // test address
 
 	minValidatorCount = 2
+
+	blockDelay = 15
 )

@@ -161,6 +161,8 @@ func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 
 // EndBlocker  update keeper after seal each block
 func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	app.tccKeeper.ProcessWithdraw(ctx)
+
 	return abci.ResponseEndBlock{}
 }
 

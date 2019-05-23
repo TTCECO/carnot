@@ -184,6 +184,23 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 	return nil
 }
 
+func (k TCChanKeeper) ProcessWithdraw(ctx sdk.Context) error {
+	// todo : need find the lastID this validator already confirm for withdraw order.
+
+	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay)
+	if err != nil {
+		return err
+	}
+	for _, msg := range msgs {
+		k.logger.Info("Contract withdraw", "id", msg.OrderID)
+		k.logger.Info("Contract Withdraw", "from", msg.From)
+		k.logger.Info("Contract withdraw", "to", msg.To)
+		k.logger.Info("Contract withdraw", "value", msg.Value)
+	}
+
+	return nil
+}
+
 func sameConfirm(origin, new WithdrawConfirm) bool {
 	if origin.OrderID == new.OrderID && origin.Value.IsEqual(new.Value) && origin.AccAddress.Equals(new.AccAddress) {
 		return true
