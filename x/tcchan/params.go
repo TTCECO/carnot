@@ -17,8 +17,8 @@
 package tcchan
 
 const (
-	CoinTTC = "cttc" // TTC on Cosmos
-	CoinACN = "CACN" // ACN on Cosmos, ERC20
+	CoinTTC = "ttc" // TTC on Cosmos
+	CoinACN = "acn" // ACN on Cosmos, ERC20
 
 	RouterName = "tcchan"
 	StoreAcc   = "acc"
