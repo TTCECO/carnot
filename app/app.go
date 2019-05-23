@@ -153,17 +153,14 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 
 // BeginBlocker update keeper before seal each block
 func (app *TCChanApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	res, err := app.tccKeeper.GetCurrent(ctx)
-	if err != nil {
-		ctx.Logger().Error("BeginBlocker", "error", err)
-	}
-	ctx.Logger().Info("BeginBlocker", "current", res.MaxOrderNum)
+	// calculate the confirm information, modify the balance if need
+	app.tccKeeper.CalculateConfirm(ctx)
+
 	return abci.ResponseBeginBlock{}
 }
 
 // EndBlocker  update keeper after seal each block
 func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	app.tccKeeper.CalculateConfirm(ctx)
 	return abci.ResponseEndBlock{}
 }
 
