@@ -22,8 +22,8 @@ Now, you can install and run the application.
 make install
 
 # Now you should be able to run the following commands:
-tcd help
-tccli help
+carnot help
+carnotcli help
 ```
 
 ## Running the live network and using the commands
@@ -32,43 +32,43 @@ To initialize configuration and a `genesis.json` file for your application and a
 
 > _*NOTE*_: In the below commands addresses are are pulled using terminal utilities. You can also just input the raw strings saved from creating keys, shown below. The commands require [`jq`](https://stedolan.github.io/jq/download/) to be installed on your machine.
 
-> _*NOTE*_: If you have run the tutorial before, you can start from scratch with a `tcd unsafe-reset-all` or by deleting both of the home folders `rm -rf ~/.tc*`
+> _*NOTE*_: If you have run the tutorial before, you can start from scratch with a `carnot unsafe-reset-all` or by deleting both of the home folders `rm -rf ~/.tc*`
 
-> _*NOTE*_: If you have the Cosmos app for ledger and you want to use it, when you create the key with `tccli keys add jack` just add `--ledger` at the end. That's all you need. When you sign, `jack` will be recognized as a Ledger key and will require a device.
+> _*NOTE*_: If you have the Cosmos app for ledger and you want to use it, when you create the key with `carnotcli keys add jack` just add `--ledger` at the end. That's all you need. When you sign, `jack` will be recognized as a Ledger key and will require a device.
 
 ```bash
 # Initialize configuration files and genesis file
-tcd init --chain-id tctestchain
+carnot init --chain-id tctestchain
 
 # Copy the `Address` output here and save it for later use
 # [optional] add "--ledger" at the end to use a Ledger Nano S
-tccli keys add jack
+carnotcli keys add jack
 
 # Add account, with coins to the genesis file
-tcd add-genesis-account $(tccli keys show jack -a) 1000cttc
+carnot add-genesis-account $(carnotcli keys show jack -a) 1000cttc
 
 # Configure your CLI to eliminate need for chain-id flag
-tccli config chain-id tctestchain
-tccli config output json
-tccli config indent true
-tccli config trust-node true
+carnotcli config chain-id tctestchain
+carnotcli config output json
+carnotcli config indent true
+carnotcli config trust-node true
 
 ```
 You alse need to [create your TTC account](https://github.com/TTCECO/gttc/wiki/TRY-AS-SUPERNODE-ON-TESTNET#create-your-new-accountaddress-by-gttc) for cross chain transaction. 
 
-You can now start `tcd` by calling `tcd cc-start keyfile.json password `. You will see logs begin streaming that represent blocks being produced, this will take a couple of seconds.
+You can now start `carnot` by calling `carnot cc-start keyfile.json password `. You will see logs begin streaming that represent blocks being produced, this will take a couple of seconds.
 
 Open another terminal to run commands against the network you have just created:
 
 ```bash
 # First check the accounts to ensure they have funds
-tccli query account $(tccli keys show jack -a)
+carnotcli query account $(carnotcli keys show jack -a)
 
 # Deposit using your coins from the genesis file
-tccli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 50cttc --from jack
+carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 50cttc --from jack
 
 # Query the order by id
-tccli query tcchan order 1
+carnotcli query tcchan order 1
 # > ...
 
 

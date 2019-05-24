@@ -1,15 +1,15 @@
 # Run REST routes
 
-Now that you tested your CLI queries and transactions, time to test same things in the REST server. Leave the `tcd` that you had running earlier and start by gathering your addresses:
+Now that you tested your CLI queries and transactions, time to test same things in the REST server. Leave the `carnot` that you had running earlier and start by gathering your addresses:
 
 ```bash
-$ tccli keys show jack --address
+$ carnotcli keys show jack --address
 ```
 
 Now its time to start the `rest-server` in another terminal window:
 
 ```bash
-$ tccli rest-server --chain-id tctestchain --trust-node
+$ carnotcli rest-server --chain-id tctestchain --trust-node
 ```
 
 Then you can construct and run the following queries:
@@ -18,7 +18,7 @@ Then you can construct and run the following queries:
 
 ```bash
 # Get the sequence and account numbers for jack to construct the below requests
-$ curl -s http://localhost:1317/auth/accounts/$(tccli keys show jack -a)
+$ curl -s http://localhost:1317/auth/accounts/$(carnotcli keys show jack -a)
 # > {
   "type": "auth/Account",
   "value": {

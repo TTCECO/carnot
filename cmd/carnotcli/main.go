@@ -41,7 +41,7 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 )
 
-var defaultCLIHome = os.ExpandEnv("$HOME/.tccli")
+var defaultCLIHome = os.ExpandEnv("$HOME/.carnot-cli")
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -60,8 +60,8 @@ func main() {
 	}
 
 	rootCmd := &cobra.Command{
-		Use:   "tccli",
-		Short: "Carnot - TTC COSMOS Channal Client",
+		Use:   "carnotcli",
+		Short: "Carnot Client",
 	}
 
 	// Add --chain-id to persistent flags and mark it required
