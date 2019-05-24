@@ -14,7 +14,7 @@ We encourage members of global developer communities to join in and improve the 
 ## Main components of Carnot
 This project is composed of the following two components:
 
-Carnot : The side chain developed based on the Cosmos SDK (which the Binance DEX grounds itself) will interlink the TTC blockchain and Binance Chain. It also enables TTC platform to interact with the Binance Chain through the designated RPC interface and the smart contract address.
+Carnot Chain: The side chain developed based on the Cosmos SDK (which the Binance DEX grounds itself) will interlink the TTC blockchain and Binance Chain. It also enables TTC platform to interact with the Binance Chain through the designated RPC interface and the smart contract address.
 
 Smart Contract : Triggered by the request from Carnot, the smart contract created on the TTC platform records all the cross-chain transactions and its state on the Carnot.
 
