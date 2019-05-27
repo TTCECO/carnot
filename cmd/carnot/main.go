@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -94,15 +95,21 @@ func appExporter() server.AppExporter {
 
 func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobra.Command {
 	cmd := server.StartCmd(ctx, appCreator)
-	cmd.Use = "cc-start [keystore.json] [password]"
+	cmd.Use = "cc-start [keystore.json] [password] [validator name] [validator pass] [port (26657)]"
 	cmd.Short = "Run the full node (with unlock TTC address for cross chain action)"
-	cmd.Args = cobra.ExactArgs(2)
+	cmd.Args = cobra.RangeArgs(4 , 5)
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 
 		app.InitKeystore = args[0]
 		app.InitPassword = args[1]
-
+		app.ValidatorName = args[2]
+		app.ValidatorPass = args[3]
+		if len(args) > 4 {
+			if port, err :=strconv.Atoi(args[4]); err ==nil {
+				app.RPCPort = port
+			}
+		}
 		return oldRunE(cc, args)
 	}
 	return cmd

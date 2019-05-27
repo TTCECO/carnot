@@ -19,12 +19,16 @@ package tcchan
 import (
 	"errors"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"math/big"
-
 	"github.com/tendermint/tendermint/libs/log"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	"math/big"
 )
 
 var (
@@ -40,21 +44,34 @@ var (
 
 // TCChanKeeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
 type TCChanKeeper struct {
-	coinKeeper bank.Keeper
-	tcchanKey  sdk.StoreKey // Unexposed key to access store from sdk.Context
-	cdc        *codec.Codec // The wire codec for binary encoding/decoding.
-	operator   *Operator
-	logger     log.Logger
+	coinKeeper    bank.Keeper
+	tcchanKey     sdk.StoreKey // Unexposed key to access store from sdk.Context
+	cdc           *codec.Codec // The wire codec for binary encoding/decoding.
+	operator      *Operator
+	logger        log.Logger
+	cliCtx        context.CLIContext
+	validatorName string // validator name
+	validatorPass string // validator pass
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec, keyfilepath string, password string) TCChanKeeper {
+func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec,
+	keyfilepath string, password string,
+	validatorNam string, validatorPass string, RPCPort int) TCChanKeeper {
+	cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+	cliCtx.BroadcastMode = client.BroadcastSync
+	rpc := rpcclient.NewHTTP(fmt.Sprintf("tcp://127.0.0.1:%d", RPCPort), "/websocket")
+	cliCtx = cliCtx.WithClient(rpc)
+
 	keeper := TCChanKeeper{
-		logger:     logger,
-		coinKeeper: coinKeeper,
-		tcchanKey:  tcchanKey,
-		cdc:        cdc,
-		operator:   NewCrossChainOperator(logger, keyfilepath, password),
+		logger:        logger,
+		coinKeeper:    coinKeeper,
+		tcchanKey:     tcchanKey,
+		cdc:           cdc,
+		operator:      NewCrossChainOperator(logger, keyfilepath, password),
+		cliCtx:        cliCtx,
+		validatorName: validatorNam,
+		validatorPass: validatorPass,
 	}
 	return keeper
 }
@@ -186,18 +203,55 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 
 func (k TCChanKeeper) ProcessWithdraw(ctx sdk.Context) error {
 	// todo : need find the lastID this validator already confirm for withdraw order.
-
-	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay)
+	validator, err := sdk.AccAddressFromBech32("cosmos1ph8rr46s73fyde05ufys6r9hdgr7pxm05vzmy7")
 	if err != nil {
 		return err
 	}
-	for _, msg := range msgs {
-		k.logger.Info("Contract withdraw", "id", msg.OrderID)
-		k.logger.Info("Contract Withdraw", "from", msg.From)
-		k.logger.Info("Contract withdraw", "to", msg.To)
-		k.logger.Info("Contract withdraw", "value", msg.Value)
+	// get with mags from contract on ttc mainnet
+	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay, validator)
+	if err != nil {
+		return err
+	}
+	if len(msgs) > 0 {
+		go k.sendConfirmWith(ctx, msgs, validator)
+	}
+	return nil
+}
+
+func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm, validator sdk.AccAddress) error {
+
+	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(k.cdc))
+	txBldr = txBldr.WithChainID(ctx.ChainID())
+
+	// get sequence of validator account
+	accSeq, err := k.cliCtx.GetAccountSequence(validator)
+	if err != nil {
+		return err
+	} else {
+		txBldr = txBldr.WithSequence(accSeq)
 	}
 
+	// build targetMsg for sign
+	var targetMsg []sdk.Msg
+	for _, msg := range msgs {
+		if err := msg.ValidateBasic(); err != nil || !msg.Validator.Equals(validator) {
+			continue
+		}
+		targetMsg = append(targetMsg, msg)
+	}
+
+	txBytes, err := txBldr.BuildAndSign(k.validatorName, k.validatorPass, targetMsg)
+
+	if err != nil {
+		return err
+	}
+
+	// broadcast to a Tendermint node
+	res, err := k.cliCtx.BroadcastTx(txBytes)
+	if err != nil {
+		return err
+	}
+	k.logger.Info("Confirm Withdraw Order tx", "result", res)
 	return nil
 }
 

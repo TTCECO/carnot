@@ -229,7 +229,7 @@ func (o *Operator) GetBlockNumber() (*big.Int, error) {
 }
 
 // GetContractWithdrawRecords
-func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64) ([]MsgWithdrawConfirm, error) {
+func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, validator sdk.AccAddress) ([]MsgWithdrawConfirm, error) {
 	currentOrderID, err := o.contract.WithdrawOrderID(&bind.CallOpts{})
 	var resultMsg []MsgWithdrawConfirm
 	if err != nil {
@@ -257,10 +257,11 @@ func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64) 
 			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
 			o.logger.Info("Contract ", "Value", amount)
 			resultMsg = append(resultMsg, MsgWithdrawConfirm{
-				OrderID: record.OrderID.String(),
-				From:    record.Source.String(),
-				To:      to,
-				Value:   sdk.NewCoin(CoinTTC, sdk.NewIntFromBigInt(amount)),
+				OrderID:   record.OrderID.String(),
+				From:      record.Source.String(),
+				To:        to,
+				Value:     sdk.NewCoin(CoinTTC, sdk.NewIntFromBigInt(amount)),
+				Validator: validator,
 			})
 		}
 	}
