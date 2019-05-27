@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,17 +53,26 @@ type TCChanKeeper struct {
 	cliCtx        context.CLIContext
 	validatorName string // validator name
 	validatorPass string // validator pass
+	validator     sdk.AccAddress
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
 func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec,
 	keyfilepath string, password string,
-	validatorNam string, validatorPass string, RPCPort int) TCChanKeeper {
+	validatorName string, validatorPass string, RPCPort int) TCChanKeeper {
+
+	// new cli context
 	cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 	cliCtx.BroadcastMode = client.BroadcastSync
 	rpc := rpcclient.NewHTTP(fmt.Sprintf("tcp://127.0.0.1:%d", RPCPort), "/websocket")
 	cliCtx = cliCtx.WithClient(rpc)
 
+	// set validator
+	kb, err := keys.NewKeyBaseFromHomeFlag()
+	info, err := kb.Get(validatorName)
+	if err != nil {
+		panic(err)
+	}
 	keeper := TCChanKeeper{
 		logger:        logger,
 		coinKeeper:    coinKeeper,
@@ -70,8 +80,9 @@ func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.St
 		cdc:           cdc,
 		operator:      NewCrossChainOperator(logger, keyfilepath, password),
 		cliCtx:        cliCtx,
-		validatorName: validatorNam,
+		validatorName: validatorName,
 		validatorPass: validatorPass,
+		validator:     info.GetAddress(),
 	}
 	return keeper
 }
@@ -203,28 +214,25 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 
 func (k TCChanKeeper) ProcessWithdraw(ctx sdk.Context) error {
 	// todo : need find the lastID this validator already confirm for withdraw order.
-	validator, err := sdk.AccAddressFromBech32("cosmos1ph8rr46s73fyde05ufys6r9hdgr7pxm05vzmy7")
-	if err != nil {
-		return err
-	}
+
 	// get with mags from contract on ttc mainnet
-	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay, validator)
+	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay, k.validator)
 	if err != nil {
 		return err
 	}
 	if len(msgs) > 0 {
-		go k.sendConfirmWith(ctx, msgs, validator)
+		go k.sendConfirmWith(ctx, msgs)
 	}
 	return nil
 }
 
-func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm, validator sdk.AccAddress) error {
+func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm) error {
 
 	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(k.cdc))
 	txBldr = txBldr.WithChainID(ctx.ChainID())
 
 	// get sequence of validator account
-	accSeq, err := k.cliCtx.GetAccountSequence(validator)
+	accSeq, err := k.cliCtx.GetAccountSequence(k.validator)
 	if err != nil {
 		return err
 	} else {
@@ -234,7 +242,7 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 	// build targetMsg for sign
 	var targetMsg []sdk.Msg
 	for _, msg := range msgs {
-		if err := msg.ValidateBasic(); err != nil || !msg.Validator.Equals(validator) {
+		if err := msg.ValidateBasic(); err != nil || !msg.Validator.Equals(k.validator) {
 			continue
 		}
 		targetMsg = append(targetMsg, msg)
