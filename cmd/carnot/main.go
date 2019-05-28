@@ -34,7 +34,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
@@ -106,8 +105,7 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 		app.InitPassword = args[1]
 		app.ValidatorName = args[2]
 		app.ValidatorPass = args[3]
-		cfg := config.RPCConfig{}
-		listenAddress := viper.GetString(cfg.ListenAddress)
+		listenAddress := viper.GetString("rpc.laddr")
 		if res := strings.Split(listenAddress, ":"); len(res) > 0 {
 			if port, err := strconv.Atoi(res[len(res)-1]); err == nil {
 				app.RPCPort = port
@@ -133,6 +131,9 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 			if chainID == "" {
 				chainID = fmt.Sprintf("test-chain-%v", common.RandStr(6))
 			}
+
+			config.P2P.ListenAddress = viper.GetString("p2p.laddr")
+			config.RPC.ListenAddress = viper.GetString("rpc.laddr")
 
 			_, pk, err := gaiaInit.InitializeNodeValidatorFiles(config)
 			if err != nil {
@@ -174,6 +175,8 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(cli.HomeFlag, DefaultNodeHome, "node's home directory")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
+	cmd.Flags().String("p2p.laddr", cfg.DefaultP2PConfig().ListenAddress, "Node listen address.")
+	cmd.Flags().String("rpc.laddr", cfg.DefaultRPCConfig().ListenAddress, "RPC listen address. Port required")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 
 	return cmd
