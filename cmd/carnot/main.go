@@ -34,6 +34,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
@@ -95,9 +96,9 @@ func appExporter() server.AppExporter {
 
 func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobra.Command {
 	cmd := server.StartCmd(ctx, appCreator)
-	cmd.Use = "cc-start [keystore.json] [password] [validator name] [validator pass] [port (26657)]"
+	cmd.Use = "cc-start [keystore.json] [password] [validator name] [validator pass]"
 	cmd.Short = "Run the full node (with unlock TTC address for cross chain action)"
-	cmd.Args = cobra.RangeArgs(4 , 5)
+	cmd.Args = cobra.ExactArgs(4)
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 
@@ -105,8 +106,10 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 		app.InitPassword = args[1]
 		app.ValidatorName = args[2]
 		app.ValidatorPass = args[3]
-		if len(args) > 4 {
-			if port, err :=strconv.Atoi(args[4]); err ==nil {
+		cfg := config.RPCConfig{}
+		listenAddress := viper.GetString(cfg.ListenAddress)
+		if res := strings.Split(listenAddress, ":"); len(res) > 0 {
+			if port, err := strconv.Atoi(res[len(res)-1]); err == nil {
 				app.RPCPort = port
 			}
 		}
