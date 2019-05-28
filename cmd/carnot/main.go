@@ -46,6 +46,13 @@ import (
 	cfg "github.com/tendermint/tendermint/config"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	"github.com/cosmos/cosmos-sdk/x/crisis"
+	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
@@ -59,6 +66,12 @@ func main() {
 	cobra.EnableCommandSorting = false
 
 	cdc := app.MakeCodec()
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
+	config.Seal()
+
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
@@ -69,6 +82,7 @@ func main() {
 
 	rootCmd.AddCommand(InitCmd(ctx, cdc))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc))
+	rootCmd.AddCommand(gaiaInit.GenTxCmd(ctx, cdc))
 	rootCmd.AddCommand(CrossChainStartCmd(ctx, newApp))
 	server.AddCommands(ctx, cdc, rootCmd, newApp, appExporter())
 
@@ -148,8 +162,16 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 			}
 
 			genesis := app.GenesisState{
-				AuthData: auth.DefaultGenesisState(),
-				BankData: bank.DefaultGenesisState(),
+				Accounts:     nil,
+				AuthData:     auth.DefaultGenesisState(),
+				BankData:     bank.DefaultGenesisState(),
+				StakingData:  staking.DefaultGenesisState(),
+				MintData:     mint.DefaultGenesisState(),
+				DistrData:    distr.DefaultGenesisState(),
+				GovData:      gov.DefaultGenesisState(),
+				CrisisData:   crisis.DefaultGenesisState(),
+				SlashingData: slashing.DefaultGenesisState(),
+				GenTxs:       nil,
 			}
 
 			appState, err = codec.MarshalJSONIndent(cdc, genesis)

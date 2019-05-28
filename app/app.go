@@ -34,6 +34,12 @@ import (
 	cmn "github.com/tendermint/tendermint/libs/common"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	"github.com/cosmos/cosmos-sdk/x/crisis"
+	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
 )
 
 const (
@@ -174,9 +180,16 @@ func (app *TCChanApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci
 
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState struct {
-	AuthData auth.GenesisState   `json:"auth"`
-	BankData bank.GenesisState   `json:"bank"`
-	Accounts []*auth.BaseAccount `json:"accounts"`
+	Accounts     []*auth.BaseAccount   `json:"accounts"`
+	AuthData     auth.GenesisState     `json:"auth"`
+	BankData     bank.GenesisState     `json:"bank"`
+	StakingData  staking.GenesisState  `json:"staking"`
+	MintData     mint.GenesisState     `json:"mint"`
+	DistrData    distr.GenesisState    `json:"distr"`
+	GovData      gov.GenesisState      `json:"gov"`
+	CrisisData   crisis.GenesisState   `json:"crisis"`
+	SlashingData slashing.GenesisState `json:"slashing"`
+	GenTxs       []json.RawMessage     `json:"gentxs"`
 }
 
 func (app *TCChanApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
