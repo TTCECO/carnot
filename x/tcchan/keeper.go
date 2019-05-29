@@ -59,7 +59,7 @@ type TCChanKeeper struct {
 // NewTCChanKeeper creates new instances of the tcchan Keeper
 func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec,
 	keyfilepath string, password string,
-	validatorName string, validatorPass string, RPCPort int) TCChanKeeper {
+	validatorName string, validatorPass string, RPCPort int, keyPath string) TCChanKeeper {
 
 	// new cli context
 	cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -69,6 +69,9 @@ func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.St
 
 	// set validator
 	kb, err := keys.NewKeyBaseFromHomeFlag()
+	if keyPath != ""{
+		kb, err = keys.NewKeyBaseFromDir(keyPath)
+	}
 	info, err := kb.Get(validatorName)
 	if err != nil {
 		panic(err)

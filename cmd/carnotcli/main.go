@@ -41,7 +41,7 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 )
 
-var defaultCLIHome = os.ExpandEnv("$HOME/.carnot-cli")
+var DefaultCLIHome = os.ExpandEnv("$HOME/.carnot-cli")
 
 func main() {
 	cobra.EnableCommandSorting = false
@@ -73,7 +73,7 @@ func main() {
 	// Construct Root Command
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
-		client.ConfigCmd(defaultCLIHome),
+		client.ConfigCmd(DefaultCLIHome),
 		queryCmd(cdc, mc),
 		txCmd(cdc, mc),
 		client.LineBreak,
@@ -83,7 +83,7 @@ func main() {
 		client.LineBreak,
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "TCC", defaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "TCC", DefaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
 		panic(err)

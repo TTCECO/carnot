@@ -40,6 +40,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/TTCECO/carnot/app"
+
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -53,11 +54,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
 var DefaultNodeHome = os.ExpandEnv("$HOME/.carnot")
-
+var DefaultCLIHome = os.ExpandEnv("$HOME/.carnot-cli")
 const (
 	flagOverwrite = "overwrite"
 )
@@ -116,10 +118,12 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 
+
 		app.InitKeystore = args[0]
 		app.InitPassword = args[1]
 		app.ValidatorName = args[2]
 		app.ValidatorPass = args[3]
+		app.KeyPath = viper.GetString("home-client")
 		listenAddress := viper.GetString("rpc.laddr")
 		if res := strings.Split(listenAddress, ":"); len(res) > 0 {
 			if port, err := strconv.Atoi(res[len(res)-1]); err == nil {
@@ -128,6 +132,7 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 		}
 		return oldRunE(cc, args)
 	}
+	cmd.Flags().String("home-client", DefaultCLIHome, "client's home directory")
 	return cmd
 
 }

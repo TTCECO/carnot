@@ -51,6 +51,7 @@ var InitPassword = ""
 var ValidatorName = ""
 var ValidatorPass = ""
 var RPCPort = 26657
+var KeyPath = ""
 
 type TCChanApp struct {
 	*bam.BaseApp
@@ -125,6 +126,7 @@ func NewApp(logger log.Logger, db dbm.DB) *TCChanApp {
 		ValidatorName,
 		ValidatorPass,
 		RPCPort,
+		KeyPath,
 	)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
