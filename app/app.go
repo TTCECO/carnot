@@ -18,8 +18,8 @@ package app
 
 import (
 	"encoding/json"
-
 	"github.com/tendermint/tendermint/libs/log"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -46,12 +46,16 @@ const (
 	AppName = "Carnot" // the name of app
 )
 
-var InitKeystore = ""
-var InitPassword = ""
-var ValidatorName = ""
-var ValidatorPass = ""
-var RPCPort = 26657
-var KeyPath = ""
+var (
+	DefaultNodeHome = os.ExpandEnv("$HOME/.carnot")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.carnot-cli")
+	InitKeystore    = ""
+	InitPassword    = ""
+	ValidatorName   = ""
+	ValidatorPass   = ""
+	RPCPort         = 26657
+	KeyPath         = ""
+)
 
 type TCChanApp struct {
 	*bam.BaseApp

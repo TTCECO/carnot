@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -54,12 +53,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-
 )
 
-// DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-var DefaultNodeHome = os.ExpandEnv("$HOME/.carnot")
-var DefaultCLIHome = os.ExpandEnv("$HOME/.carnot-cli")
 const (
 	flagOverwrite = "overwrite"
 )
@@ -90,7 +85,7 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, newApp, appExporter())
 
 	// prepare and add flags
-	executor := cli.PrepareBaseCmd(rootCmd, "TCC", DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "TCC", app.DefaultNodeHome)
 	err := executor.Execute()
 	if err != nil {
 		// handle with #870
@@ -118,7 +113,6 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 	oldRunE := cmd.RunE
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 
-
 		app.InitKeystore = args[0]
 		app.InitPassword = args[1]
 		app.ValidatorName = args[2]
@@ -132,7 +126,7 @@ func CrossChainStartCmd(ctx *server.Context, appCreator server.AppCreator) *cobr
 		}
 		return oldRunE(cc, args)
 	}
-	cmd.Flags().String("home-client", DefaultCLIHome, "client's home directory")
+	cmd.Flags().String("home-client", app.DefaultCLIHome, "client's home directory")
 	return cmd
 
 }
@@ -201,7 +195,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(cli.HomeFlag, DefaultNodeHome, "node's home directory")
+	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String("p2p.laddr", cfg.DefaultP2PConfig().ListenAddress, "Node listen address.")
 	cmd.Flags().String("rpc.laddr", cfg.DefaultRPCConfig().ListenAddress, "RPC listen address. Port required")
