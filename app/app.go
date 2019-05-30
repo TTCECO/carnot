@@ -277,7 +277,7 @@ func (app *CarnotApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
 
 	// calculate the confirm information, modify the balance if need
-	app.tccKeeper.CalculateConfirm(ctx)
+	//app.tccKeeper.CalculateConfirm(ctx)
 
 	return abci.ResponseBeginBlock{
 		Tags: tags.ToKVPairs(),
