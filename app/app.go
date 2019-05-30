@@ -228,7 +228,7 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 	// initialize BaseApp
 	app.MountStores(app.keyMain, app.keyAccount, app.keyStaking, app.keyMint, app.keyDistr,
 		app.keySlashing, app.keyGov, app.keyFeeCollection, app.keyParams,
-		app.tkeyParams, app.tkeyStaking, app.tkeyDistr,
+		app.tkeyParams, app.tkeyStaking, app.tkeyDistr, app.keyTCChan,
 	)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -277,7 +277,7 @@ func (app *CarnotApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
 
 	// calculate the confirm information, modify the balance if need
-	//app.tccKeeper.CalculateConfirm(ctx)
+	app.tccKeeper.CalculateConfirm(ctx)
 
 	return abci.ResponseBeginBlock{
 		Tags: tags.ToKVPairs(),
