@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,6 +45,8 @@ var (
 // GenTxCmd builds the carnot gentx command.
 // nolint: errcheck
 func GenTxCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+	const MemoPortFlag = "memo.port"
+
 	cmd := &cobra.Command{
 		Use:   "gentx",
 		Short: "Generate a genesis tx carrying a self delegation",
@@ -146,6 +149,10 @@ following delegation and commission default parameters:
 			if err != nil {
 				return err
 			}
+			// change memo by params
+			if infoList := strings.Split(txBldr.Memo(), ":"); len(infoList) == 2 {
+				txBldr = txBldr.WithMemo(fmt.Sprintf("%s:%s", infoList[0], viper.GetString(MemoPortFlag)))
+			}
 
 			info, err := txBldr.Keybase().Get(name)
 			if err != nil {
@@ -197,7 +204,9 @@ following delegation and commission default parameters:
 	}
 
 	ip, _ := server.ExternalIP()
-
+	infoList := strings.Split(cfg.DefaultP2PConfig().ListenAddress, ":")
+	port := infoList[len(infoList)-1]
+	cmd.Flags().String(MemoPortFlag, port, "Node listen port.")
 	cmd.Flags().String(tmcli.HomeFlag, app.DefaultNodeHome, "node's home directory")
 	cmd.Flags().String(flagClientHome, app.DefaultCLIHome, "client's home directory")
 	cmd.Flags().String(client.FlagName, "", "name of private key with which to sign the gentx")

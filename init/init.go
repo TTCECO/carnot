@@ -61,6 +61,9 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command { // nolint: 
 				chainID = fmt.Sprintf("test-chain-%v", common.RandStr(6))
 			}
 
+			config.P2P.ListenAddress = viper.GetString("p2p.laddr")
+			config.RPC.ListenAddress = viper.GetString("rpc.laddr")
+
 			nodeID, _, err := InitializeNodeValidatorFiles(config)
 			if err != nil {
 				return err
@@ -90,6 +93,8 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command { // nolint: 
 	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
+	cmd.Flags().String("p2p.laddr", cfg.DefaultP2PConfig().ListenAddress, "Node listen address.")
+	cmd.Flags().String("rpc.laddr", cfg.DefaultRPCConfig().ListenAddress, "RPC listen address. Port required")
 
 	return cmd
 }
