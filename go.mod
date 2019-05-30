@@ -15,6 +15,7 @@ require (
 	github.com/gorilla/mux v1.7.0
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/pborman/uuid v1.2.0 // indirect
+	github.com/rakyll/statik v0.1.4
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/spf13/cobra v0.0.3
