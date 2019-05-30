@@ -21,7 +21,6 @@ const (
 	CoinACN = "acn" // ACN on Cosmos, ERC20
 
 	RouterName = "tcchan"
-	StoreAcc   = "acc"
 	StoreTCC   = "tcchan"
 
 	prefixDeposit = "deposit"

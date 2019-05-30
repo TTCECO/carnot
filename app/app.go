@@ -1,7 +1,24 @@
+// Copyright 2019 The TTC Authors
+// This file is part of the TTC library.
+//
+// The TTC library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The TTC library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the TTC library. If not, see <http://www.gnu.org/licenses/>.
+
 package app
 
 import (
 	"fmt"
+	"github.com/TTCECO/carnot/x/tcchan"
 	"io"
 	"os"
 	"sort"
@@ -33,8 +50,14 @@ const (
 
 // default home directories for expected binaries
 var (
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.carnot-cli")
 	DefaultNodeHome = os.ExpandEnv("$HOME/.carnot")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.carnot-cli")
+	InitKeystore    = ""
+	InitPassword    = ""
+	ValidatorName   = ""
+	ValidatorPass   = ""
+	RPCPort         = 26657
+	KeyPath         = ""
 )
 
 // Extended ABCI application
@@ -57,6 +80,8 @@ type CarnotApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
+	// key for cross chain
+	keyTCChan *sdk.KVStoreKey
 
 	// Manage getting and setting accounts
 	accountKeeper       auth.AccountKeeper
@@ -69,6 +94,8 @@ type CarnotApp struct {
 	govKeeper           gov.Keeper
 	crisisKeeper        crisis.Keeper
 	paramsKeeper        params.Keeper
+	// keeper for cross chain
+	tccKeeper tcchan.TCChanKeeper
 }
 
 // NewCarnotApp returns a reference to an initialized CarnotApp.
@@ -95,6 +122,7 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		keyFeeCollection: sdk.NewKVStoreKey(auth.FeeStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
+		keyTCChan:        sdk.NewKVStoreKey(tcchan.StoreTCC),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
@@ -160,6 +188,21 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		NewStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
+	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
+	// It handles interactions with the store
+	app.tccKeeper = tcchan.NewTCChanKeeper(
+		logger,
+		app.bankKeeper,
+		app.keyTCChan,
+		app.cdc,
+		InitKeystore,
+		InitPassword,
+		ValidatorName,
+		ValidatorPass,
+		RPCPort,
+		KeyPath,
+	)
+
 	// register the crisis routes
 	bank.RegisterInvariants(&app.crisisKeeper, app.accountKeeper)
 	distr.RegisterInvariants(&app.crisisKeeper, app.distrKeeper, app.stakingKeeper)
@@ -214,6 +257,7 @@ func MakeCodec() *codec.Codec {
 	crisis.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
+	tcchan.RegisterCodec(cdc)
 	return cdc
 }
 
@@ -232,6 +276,9 @@ func (app *CarnotApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	// TODO: This should really happen at EndBlocker.
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
 
+	// calculate the confirm information, modify the balance if need
+	app.tccKeeper.CalculateConfirm(ctx)
+
 	return abci.ResponseBeginBlock{
 		Tags: tags.ToKVPairs(),
 	}
@@ -247,6 +294,9 @@ func (app *CarnotApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci
 	if app.assertInvariantsBlockly {
 		app.assertRuntimeInvariants()
 	}
+
+	// check withdraw status on contract, send tx if need
+	app.tccKeeper.ProcessWithdraw(ctx)
 
 	return abci.ResponseEndBlock{
 		ValidatorUpdates: validatorUpdates,

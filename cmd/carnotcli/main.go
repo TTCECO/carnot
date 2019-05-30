@@ -1,7 +1,24 @@
+// Copyright 2019 The TTC Authors
+// This file is part of the TTC library.
+//
+// The TTC library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The TTC library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the TTC library. If not, see <http://www.gnu.org/licenses/>.
+
 package main
 
 import (
 	"fmt"
+	"github.com/TTCECO/carnot/x/tcchan"
 	"net/http"
 	"os"
 	"path"
@@ -45,7 +62,8 @@ import (
 	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
-
+	tcclient "github.com/TTCECO/carnot/x/tcchan/client"
+	tcrest "github.com/TTCECO/carnot/x/tcchan/client/rest"
 	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
 )
 
@@ -76,6 +94,7 @@ func main() {
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
 		slashingclient.NewModuleClient(sl.StoreKey, cdc),
 		crisisclient.NewModuleClient(sl.StoreKey, cdc),
+		tcclient.NewModuleClient(tcchan.RouterName, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -177,6 +196,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	tcrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, tcchan.StoreTCC)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {
