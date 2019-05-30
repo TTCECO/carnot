@@ -2,10 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"io"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
@@ -14,6 +13,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/TTCECO/carnot/app"
+	carnotInit "github.com/TTCECO/carnot/init"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
@@ -43,10 +43,10 @@ func main() {
 		Short:             "Carnot Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
-	rootCmd.AddCommand(gaiaInit.InitCmd(ctx, cdc))
-	rootCmd.AddCommand(gaiaInit.CollectGenTxsCmd(ctx, cdc))
+	rootCmd.AddCommand(carnotInit.InitCmd(ctx, cdc))
+	rootCmd.AddCommand(carnotInit.CollectGenTxsCmd(ctx, cdc))
 	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc))
-	rootCmd.AddCommand(gaiaInit.GenTxCmd(ctx, cdc))
+	rootCmd.AddCommand(carnotInit.GenTxCmd(ctx, cdc))
 	rootCmd.AddCommand(gaiaInit.AddGenesisAccountCmd(ctx, cdc))
 	rootCmd.AddCommand(gaiaInit.ValidateGenesisCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
