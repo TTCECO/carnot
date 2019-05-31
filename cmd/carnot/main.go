@@ -59,7 +59,7 @@ func main() {
 	rootCmd := &cobra.Command{
 		Use:               "carnot",
 		Short:             "Carnot Daemon (server)",
-		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
+		PersistentPreRunE: app.PersistentPreRunEFn(ctx),
 	}
 	rootCmd.AddCommand(carnotInit.InitCmd(ctx, cdc))
 	rootCmd.AddCommand(carnotInit.CollectGenTxsCmd(ctx, cdc))
@@ -72,7 +72,7 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
-	executor := cli.PrepareBaseCmd(rootCmd, "GA", app.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "GN", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().BoolVar(&assertInvariantsBlockly, flagAssertInvariantsBlockly,
 		false, "Assert registered invariants on a blockly basis")
 	err := executor.Execute()

@@ -53,6 +53,9 @@ import (
 	st "github.com/cosmos/cosmos-sdk/x/staking"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 
+	tcclient "github.com/TTCECO/carnot/x/tcchan/client"
+	tcrest "github.com/TTCECO/carnot/x/tcchan/client/rest"
+	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	crisisclient "github.com/cosmos/cosmos-sdk/x/crisis/client"
@@ -62,9 +65,6 @@ import (
 	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
-	tcclient "github.com/TTCECO/carnot/x/tcchan/client"
-	tcrest "github.com/TTCECO/carnot/x/tcchan/client/rest"
-	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
 )
 
 func main() {
@@ -123,8 +123,8 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	// Add flags and prefix all env exposed with GA
-	executor := cli.PrepareMainCmd(rootCmd, "GA", app.DefaultCLIHome)
+	// Add flags and prefix all env exposed with GN (Carnot)
+	executor := cli.PrepareMainCmd(rootCmd, "GN", app.DefaultCLIHome)
 
 	err := executor.Execute()
 	if err != nil {
