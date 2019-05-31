@@ -94,7 +94,7 @@ func main() {
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
 		slashingclient.NewModuleClient(sl.StoreKey, cdc),
 		crisisclient.NewModuleClient(sl.StoreKey, cdc),
-		tcclient.NewModuleClient(tcchan.RouterName, cdc),
+		tcclient.NewModuleClient(tcchan.StoreTCC, cdc),
 	}
 
 	rootCmd := &cobra.Command{

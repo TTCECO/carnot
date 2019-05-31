@@ -214,7 +214,7 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
-		AddRoute(tcchan.RouterName,tcchan.NewHandler(app.tccKeeper))
+		AddRoute(tcchan.RouterName, tcchan.NewHandler(app.tccKeeper))
 
 	app.QueryRouter().
 		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
@@ -277,7 +277,7 @@ func (app *CarnotApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
 
 	// calculate the confirm information, modify the balance if need
-	app.tccKeeper.CalculateConfirm(ctx)
+	// app.tccKeeper.CalculateConfirm(ctx)
 
 	return abci.ResponseBeginBlock{
 		Tags: tags.ToKVPairs(),
@@ -296,7 +296,7 @@ func (app *CarnotApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci
 	}
 
 	// check withdraw status on contract, send tx if need
-	app.tccKeeper.ProcessWithdraw(ctx)
+	// app.tccKeeper.ProcessWithdraw(ctx)
 
 	return abci.ResponseEndBlock{
 		ValidatorUpdates: validatorUpdates,
