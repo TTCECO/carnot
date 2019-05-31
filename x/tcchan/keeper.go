@@ -69,7 +69,7 @@ func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.St
 
 	// set validator
 	kb, err := keys.NewKeyBaseFromHomeFlag()
-	if keyPath != ""{
+	if keyPath != "" {
 		kb, err = keys.NewKeyBaseFromDir(keyPath)
 	}
 	info, err := kb.Get(validatorName)

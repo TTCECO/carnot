@@ -86,7 +86,9 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 	if err := keeper.SendConfirmTx(string(currentRecord.MaxDeposit), msg.To, msg.Value.Denom, new(big.Int).Mul(big.NewInt(1e+18), msg.Value.Amount.BigInt())); err != nil {
-		return sdk.ErrInsufficientCoins(err.Error()).Result()
+		// todo : handle this error later
+		return sdk.Result{}
+		//return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
 	return sdk.Result{}
 }
