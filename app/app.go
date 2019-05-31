@@ -213,7 +213,8 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		AddRoute(distr.RouterKey, distr.NewHandler(app.distrKeeper)).
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
-		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper))
+		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
+		AddRoute(tcchan.RouterName,tcchan.NewHandler(app.tccKeeper))
 
 	app.QueryRouter().
 		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
@@ -221,7 +222,8 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper)).
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).
-		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper))
+		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper)).
+		AddRoute(tcchan.RouterName, tcchan.NewQuerier(app.tccKeeper))
 
 	// initialize BaseApp
 	app.MountStores(app.keyMain, app.keyAccount, app.keyStaking, app.keyMint, app.keyDistr,
