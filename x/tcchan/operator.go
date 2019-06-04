@@ -271,7 +271,6 @@ func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, 
 	return resultMsg, nil
 }
 
-
 func (o *Operator) tmpTestAddValidator() error {
 
 	if o.key == nil {
@@ -284,10 +283,9 @@ func (o *Operator) tmpTestAddValidator() error {
 		common.HexToAddress("t0cC2a7F0a041e0975c0B7854364e154cdA059a9F0"),
 	}
 
-
 	// init contract
 	ctx := context.Background()
-	for i:=0;i<3;i++{
+	for i := 0; i < 3; i++ {
 		exist, err := o.contract.Validators(&bind.CallOpts{}, validators[i])
 		if err != nil {
 			return err
@@ -315,7 +313,6 @@ func (o *Operator) tmpTestAddValidator() error {
 	}
 	return nil
 }
-
 
 func (o *Operator) tmpTestCallContract() error {
 
