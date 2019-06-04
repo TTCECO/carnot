@@ -95,7 +95,7 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 
 	// go operator.tmpTestCallContract()
 
-	operator.tmpTestAddValidator()
+	// operator.tmpTestAddValidator()
 
 	if blockNumber, err := operator.GetBlockNumber(); err != nil {
 		operator.logger.Error("TTC Main net query block height fail", "error", err)
@@ -278,10 +278,12 @@ func (o *Operator) tmpTestAddValidator() error {
 		return errTTCAccountMissing
 	}
 	// test data
-	var validators []common.Address
-	validators[0] = common.HexToAddress("t007573C3F5c21373B3430998F809BCFDAca38Fe28")
-	validators[1] = common.HexToAddress("t0B7c4565B1210054CAc3a0F08eD4BD631ec1C8cC9")
-	validators[2] = common.HexToAddress("t0cC2a7F0a041e0975c0B7854364e154cdA059a9F0")
+	validators := []common.Address{
+		common.HexToAddress("t007573C3F5c21373B3430998F809BCFDAca38Fe28"),
+		common.HexToAddress("t0B7c4565B1210054CAc3a0F08eD4BD631ec1C8cC9"),
+		common.HexToAddress("t0cC2a7F0a041e0975c0B7854364e154cdA059a9F0"),
+	}
+
 
 	// init contract
 	ctx := context.Background()
