@@ -50,6 +50,7 @@ type Operator struct {
 
 var (
 	errTTCAccountMissing = errors.New("ttc account missing")
+	errCallContractFail  = errors.New("call contract fail")
 )
 
 func NewCrossChainOperator(logger log.Logger, keyfilepath string, password string) *Operator {
@@ -215,6 +216,9 @@ func (o *Operator) SendConfirmTx(orderID string, target string, coinName string,
 		return err
 	}
 	o.logger.Info("Contract Confirm", "status", receipt.Status)
+	if receipt.Status != 1 {
+		return errCallContractFail
+	}
 	return nil
 }
 
