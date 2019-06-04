@@ -88,7 +88,7 @@ func handleMsgDeposit(ctx sdk.Context, keeper TCChanKeeper, msg MsgDeposit) sdk.
 	if err := keeper.SendConfirmTx(string(currentRecord.MaxDeposit), msg.To, msg.Value.Denom, new(big.Int).Mul(big.NewInt(1e+18), msg.Value.Amount.BigInt())); err != nil {
 		// todo : handle this error later , the fail tx should be record into keep and resend again next block or later during beforeBlock
 		return sdk.Result{}
-		//return sdk.ErrInsufficientCoins(err.Error()).Result()
+		// can not return err depends on outside cause err, that will break the consensus
 	}
 	return sdk.Result{}
 }
