@@ -19,6 +19,8 @@ package tcchan
 import (
 	"errors"
 	"fmt"
+
+	"github.com/spf13/viper"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -201,7 +203,7 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 	for ; iterator.Valid(); iterator.Next() {
 		var order WithdrawConfirm
 		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &order)
-		// todo min validator count, should related to validator count in genesis.json
+		// todo: min validator count, should related to validator count in genesis.json
 		if len(order.Confirms) >= minValidatorCount && order.Status == 0 {
 			if _, _, err := k.coinKeeper.AddCoins(ctx, order.AccAddress, sdk.NewCoins(order.Value)); err != nil {
 				return err
@@ -215,25 +217,35 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 	return nil
 }
 
-func (k TCChanKeeper) ProcessWithdraw(ctx sdk.Context) error {
+func (k TCChanKeeper) CatchWithdrawOrder(ctx sdk.Context) error {
 	// todo : need find the lastID this validator already confirm for withdraw order.
-
+	current, err := k.GetCurrent(ctx)
+	if err != nil {
+		return err
+	}
 	// get with mags from contract on ttc mainnet
-	msgs, err := k.operator.GetContractWithdrawRecords(0, blockDelay, k.validator)
+	msgs, err := k.operator.GetContractWithdrawRecords(current.MaxWithdraw, blockDelay, k.validator)
 	if err != nil {
 		return err
 	}
 	if len(msgs) > 0 {
 		go k.sendConfirmWith(ctx, msgs)
+	}else {
+		k.logger.Info("CatchWithdrawOrder", "msgs", "no new order")
 	}
 	return nil
 }
 
 func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm) error {
-
 	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(k.cdc))
 	txBldr = txBldr.WithChainID(ctx.ChainID())
-
+	if path:= viper.GetString("home-client");path != "" {
+		kb,err:= keys.NewKeyBaseFromDir(path)
+		if err!= nil{
+			return err
+		}
+		txBldr = txBldr.WithKeybase(kb)
+	}
 	// get sequence of validator account
 	accSeq, err := k.cliCtx.GetAccountSequence(k.validator)
 	if err != nil {
@@ -250,9 +262,7 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 		}
 		targetMsg = append(targetMsg, msg)
 	}
-
 	txBytes, err := txBldr.BuildAndSign(k.validatorName, k.validatorPass, targetMsg)
-
 	if err != nil {
 		return err
 	}

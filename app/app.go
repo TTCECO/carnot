@@ -296,7 +296,7 @@ func (app *CarnotApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci
 	}
 
 	// check withdraw status on contract, send tx if need
-	app.tccKeeper.ProcessWithdraw(ctx)
+	app.tccKeeper.CatchWithdrawOrder(ctx)
 
 	return abci.ResponseEndBlock{
 		ValidatorUpdates: validatorUpdates,

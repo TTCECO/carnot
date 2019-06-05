@@ -78,5 +78,7 @@ carnotcli --home node3/carnotcli q account $(carnotcli keys show validator3 -a -
 10. 充值 deposit
 
 carnotcli --home node1/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 2cttc --from validator1
+carnotcli --home node2/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 3cttc --from validator2
+carnotcli --home node3/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 4cttc --from validator3
 
 
