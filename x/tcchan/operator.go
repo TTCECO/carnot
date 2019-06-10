@@ -215,7 +215,7 @@ func (o *Operator) SendConfirmTx(orderID string, target string, coinName string,
 	if err != nil {
 		return err
 	}
-	o.logger.Info("Contract Confirm", "status", receipt.Status)
+	// o.logger.Info("Contract Confirm", "status", receipt.Status)
 	if receipt.Status != 1 {
 		return errCallContractFail
 	}
@@ -228,7 +228,7 @@ func (o *Operator) GetBlockNumber() (*big.Int, error) {
 	if err := o.cl.Call(&response, "eth_blockNumber"); err != nil {
 		return nil, errors.New("block number query fail")
 	} else {
-		o.logger.Info("Contract Confirm", "status", response)
+		// o.logger.Info("Contract Confirm", "status", response)
 		blockNumber := big.NewInt(0)
 		err = blockNumber.UnmarshalText([]byte(response))
 		return blockNumber, err
@@ -262,7 +262,7 @@ func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, 
 			}
 
 			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
-			o.logger.Info("Contract ", "Value", amount)
+			//o.logger.Info("Contract ", "Value", amount)
 			resultMsg = append(resultMsg, MsgWithdrawConfirm{
 				OrderID:   record.OrderID.String(),
 				From:      record.Source.String(),
