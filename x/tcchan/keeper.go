@@ -210,6 +210,8 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 			} else {
 				// update the status the order to 1
 				k.setConfirmSuccess(ctx, order.OrderID)
+				// add the balance of target
+				k.coinKeeper.AddCoins(ctx, order.AccAddress, sdk.Coins{order.Value})
 			}
 		}
 	}
