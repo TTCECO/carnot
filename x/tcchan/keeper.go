@@ -19,6 +19,7 @@ package tcchan
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -267,6 +268,13 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 	// build targetMsg for sign
 	var targetMsg []sdk.Msg
 	for _, msg := range msgs {
+		orderID, err := strconv.Atoi(msg.OrderID)
+		if err != nil {
+			continue
+		}
+		if confirm, err := k.GetConfirm(ctx, uint64(orderID)); err != nil || confirm.Status == 1 {
+			continue
+		}
 		if err := msg.ValidateBasic(); err != nil || !msg.Validator.Equals(k.validator) {
 			continue
 		}
