@@ -280,6 +280,10 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 		}
 		targetMsg = append(targetMsg, msg)
 	}
+	if len(targetMsg) == 0 {
+		return nil
+	}
+
 	txBytes, err := txBldr.BuildAndSign(k.validatorName, k.validatorPass, targetMsg)
 	if err != nil {
 		return err
