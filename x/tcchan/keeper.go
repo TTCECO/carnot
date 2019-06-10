@@ -20,7 +20,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/spf13/viper"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -29,6 +28,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"math/big"
@@ -230,7 +230,7 @@ func (k TCChanKeeper) CatchWithdrawOrder(ctx sdk.Context) error {
 	}
 	if len(msgs) > 0 {
 		go k.sendConfirmWith(ctx, msgs)
-	}else {
+	} else {
 		k.logger.Info("CatchWithdrawOrder", "msgs", "no new order")
 	}
 	return nil
@@ -239,9 +239,9 @@ func (k TCChanKeeper) CatchWithdrawOrder(ctx sdk.Context) error {
 func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm) error {
 	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(k.cdc))
 	txBldr = txBldr.WithChainID(ctx.ChainID())
-	if path:= viper.GetString("home-client");path != "" {
-		kb,err:= keys.NewKeyBaseFromDir(path)
-		if err!= nil{
+	if path := viper.GetString("home-client"); path != "" {
+		kb, err := keys.NewKeyBaseFromDir(path)
+		if err != nil {
 			return err
 		}
 		txBldr = txBldr.WithKeybase(kb)
@@ -252,6 +252,14 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 		return err
 	} else {
 		txBldr = txBldr.WithSequence(accSeq)
+	}
+
+	// get account number
+	accNum, err := k.cliCtx.GetAccountNumber(k.validator)
+	if err != nil {
+		return err
+	} else {
+		txBldr = txBldr.WithAccountNumber(accNum)
 	}
 
 	// build targetMsg for sign
