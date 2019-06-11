@@ -14,7 +14,7 @@ import (
 )
 
 // ContractABI is the input ABI used to generate the binding from.
-const ContractABI = "[{\"constant\":false,\"inputs\":[],\"name\":\"ownerChargeFund\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"delValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_num\",\"type\":\"uint256\"}],\"name\":\"setMinConfirmNum\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"withdrawOrderID\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"ownerWithdrawFund\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setDepositFee\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"getConfirmStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"depositFee\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"string\"}],\"name\":\"crossChainTransaction\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"uint256\"},{\"name\":\"source\",\"type\":\"address\"},{\"name\":\"target\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"height\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_id\",\"type\":\"string\"},{\"name\":\"_target\",\"type\":\"address\"},{\"name\":\"_name\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"confirm\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"depositRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"string\"},{\"name\":\"targetAddress\",\"type\":\"address\"},{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"confirmCount\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"minConfirmNum\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
+const ContractABI = "[{\"constant\":false,\"inputs\":[],\"name\":\"ownerChargeFund\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"uint256\"},{\"name\":\"_target\",\"type\":\"address\"},{\"name\":\"_tokenName\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"},{\"name\":\"_confirmer\",\"type\":\"address\"}],\"name\":\"getConfirmStatus\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_tokenName\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addSupportToken\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"delValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_num\",\"type\":\"uint256\"}],\"name\":\"setMinConfirmNum\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_id\",\"type\":\"uint256\"},{\"name\":\"_addr\",\"type\":\"address\"},{\"name\":\"_tokenName\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"toBytes\",\"outputs\":[{\"name\":\"addr\",\"type\":\"bytes\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"withdrawOrderID\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"ownerWithdrawFund\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_fee\",\"type\":\"uint256\"}],\"name\":\"setDepositFee\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"addValidator\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_id\",\"type\":\"uint256\"},{\"name\":\"_target\",\"type\":\"address\"},{\"name\":\"_tokenName\",\"type\":\"string\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"confirmDeposit\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"depositFee\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_addr\",\"type\":\"string\"}],\"name\":\"crossChainTransaction\",\"outputs\":[],\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"withdrawRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"uint256\"},{\"name\":\"source\",\"type\":\"address\"},{\"name\":\"target\",\"type\":\"string\"},{\"name\":\"tokenName\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"height\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"depositRecords\",\"outputs\":[{\"name\":\"orderID\",\"type\":\"uint256\"},{\"name\":\"target\",\"type\":\"address\"},{\"name\":\"tokenName\",\"type\":\"string\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"status\",\"type\":\"uint8\"},{\"name\":\"confirmCount\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_tokenName\",\"type\":\"string\"},{\"name\":\"_addr\",\"type\":\"address\"}],\"name\":\"delSupportToken\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"validators\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"minConfirmNum\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}]"
 
 // Contract is an auto generated Go binding around an Ethereum contract.
 type Contract struct {
@@ -186,22 +186,22 @@ func (_Contract *ContractCallerSession) DepositFee() (*big.Int, error) {
 
 // DepositRecords is a free data retrieval call binding the contract method 0xcf50cb6b.
 //
-// Solidity: function depositRecords( bytes32) constant returns(orderID string, targetAddress address, name string, value uint256, status uint8, confirmCount uint256)
+// Solidity: function depositRecords( bytes32) constant returns(orderID uint256, target address, tokenName string, value uint256, status uint8, confirmCount uint256)
 func (_Contract *ContractCaller) DepositRecords(opts *bind.CallOpts, arg0 [32]byte) (struct {
-	OrderID       string
-	TargetAddress common.Address
-	Name          string
-	Value         *big.Int
-	Status        uint8
-	ConfirmCount  *big.Int
+	OrderID      *big.Int
+	Target       common.Address
+	TokenName    string
+	Value        *big.Int
+	Status       uint8
+	ConfirmCount *big.Int
 }, error) {
 	ret := new(struct {
-		OrderID       string
-		TargetAddress common.Address
-		Name          string
-		Value         *big.Int
-		Status        uint8
-		ConfirmCount  *big.Int
+		OrderID      *big.Int
+		Target       common.Address
+		TokenName    string
+		Value        *big.Int
+		Status       uint8
+		ConfirmCount *big.Int
 	})
 	out := ret
 	err := _Contract.contract.Call(opts, out, "depositRecords", arg0)
@@ -210,56 +210,56 @@ func (_Contract *ContractCaller) DepositRecords(opts *bind.CallOpts, arg0 [32]by
 
 // DepositRecords is a free data retrieval call binding the contract method 0xcf50cb6b.
 //
-// Solidity: function depositRecords( bytes32) constant returns(orderID string, targetAddress address, name string, value uint256, status uint8, confirmCount uint256)
+// Solidity: function depositRecords( bytes32) constant returns(orderID uint256, target address, tokenName string, value uint256, status uint8, confirmCount uint256)
 func (_Contract *ContractSession) DepositRecords(arg0 [32]byte) (struct {
-	OrderID       string
-	TargetAddress common.Address
-	Name          string
-	Value         *big.Int
-	Status        uint8
-	ConfirmCount  *big.Int
+	OrderID      *big.Int
+	Target       common.Address
+	TokenName    string
+	Value        *big.Int
+	Status       uint8
+	ConfirmCount *big.Int
 }, error) {
 	return _Contract.Contract.DepositRecords(&_Contract.CallOpts, arg0)
 }
 
 // DepositRecords is a free data retrieval call binding the contract method 0xcf50cb6b.
 //
-// Solidity: function depositRecords( bytes32) constant returns(orderID string, targetAddress address, name string, value uint256, status uint8, confirmCount uint256)
+// Solidity: function depositRecords( bytes32) constant returns(orderID uint256, target address, tokenName string, value uint256, status uint8, confirmCount uint256)
 func (_Contract *ContractCallerSession) DepositRecords(arg0 [32]byte) (struct {
-	OrderID       string
-	TargetAddress common.Address
-	Name          string
-	Value         *big.Int
-	Status        uint8
-	ConfirmCount  *big.Int
+	OrderID      *big.Int
+	Target       common.Address
+	TokenName    string
+	Value        *big.Int
+	Status       uint8
+	ConfirmCount *big.Int
 }, error) {
 	return _Contract.Contract.DepositRecords(&_Contract.CallOpts, arg0)
 }
 
-// GetConfirmStatus is a free data retrieval call binding the contract method 0x57ab0d0a.
+// GetConfirmStatus is a free data retrieval call binding the contract method 0x0441fc7b.
 //
-// Solidity: function getConfirmStatus(_id string, _addr address) constant returns(bool)
-func (_Contract *ContractCaller) GetConfirmStatus(opts *bind.CallOpts, _id string, _addr common.Address) (bool, error) {
+// Solidity: function getConfirmStatus(_id uint256, _target address, _tokenName string, _value uint256, _confirmer address) constant returns(bool)
+func (_Contract *ContractCaller) GetConfirmStatus(opts *bind.CallOpts, _id *big.Int, _target common.Address, _tokenName string, _value *big.Int, _confirmer common.Address) (bool, error) {
 	var (
 		ret0 = new(bool)
 	)
 	out := ret0
-	err := _Contract.contract.Call(opts, out, "getConfirmStatus", _id, _addr)
+	err := _Contract.contract.Call(opts, out, "getConfirmStatus", _id, _target, _tokenName, _value, _confirmer)
 	return *ret0, err
 }
 
-// GetConfirmStatus is a free data retrieval call binding the contract method 0x57ab0d0a.
+// GetConfirmStatus is a free data retrieval call binding the contract method 0x0441fc7b.
 //
-// Solidity: function getConfirmStatus(_id string, _addr address) constant returns(bool)
-func (_Contract *ContractSession) GetConfirmStatus(_id string, _addr common.Address) (bool, error) {
-	return _Contract.Contract.GetConfirmStatus(&_Contract.CallOpts, _id, _addr)
+// Solidity: function getConfirmStatus(_id uint256, _target address, _tokenName string, _value uint256, _confirmer address) constant returns(bool)
+func (_Contract *ContractSession) GetConfirmStatus(_id *big.Int, _target common.Address, _tokenName string, _value *big.Int, _confirmer common.Address) (bool, error) {
+	return _Contract.Contract.GetConfirmStatus(&_Contract.CallOpts, _id, _target, _tokenName, _value, _confirmer)
 }
 
-// GetConfirmStatus is a free data retrieval call binding the contract method 0x57ab0d0a.
+// GetConfirmStatus is a free data retrieval call binding the contract method 0x0441fc7b.
 //
-// Solidity: function getConfirmStatus(_id string, _addr address) constant returns(bool)
-func (_Contract *ContractCallerSession) GetConfirmStatus(_id string, _addr common.Address) (bool, error) {
-	return _Contract.Contract.GetConfirmStatus(&_Contract.CallOpts, _id, _addr)
+// Solidity: function getConfirmStatus(_id uint256, _target address, _tokenName string, _value uint256, _confirmer address) constant returns(bool)
+func (_Contract *ContractCallerSession) GetConfirmStatus(_id *big.Int, _target common.Address, _tokenName string, _value *big.Int, _confirmer common.Address) (bool, error) {
+	return _Contract.Contract.GetConfirmStatus(&_Contract.CallOpts, _id, _target, _tokenName, _value, _confirmer)
 }
 
 // MinConfirmNum is a free data retrieval call binding the contract method 0xffa5a563.
@@ -312,6 +312,32 @@ func (_Contract *ContractSession) Owner() (common.Address, error) {
 // Solidity: function owner() constant returns(address)
 func (_Contract *ContractCallerSession) Owner() (common.Address, error) {
 	return _Contract.Contract.Owner(&_Contract.CallOpts)
+}
+
+// ToBytes is a free data retrieval call binding the contract method 0x28ce621f.
+//
+// Solidity: function toBytes(_id uint256, _addr address, _tokenName string, _value uint256) constant returns(addr bytes)
+func (_Contract *ContractCaller) ToBytes(opts *bind.CallOpts, _id *big.Int, _addr common.Address, _tokenName string, _value *big.Int) ([]byte, error) {
+	var (
+		ret0 = new([]byte)
+	)
+	out := ret0
+	err := _Contract.contract.Call(opts, out, "toBytes", _id, _addr, _tokenName, _value)
+	return *ret0, err
+}
+
+// ToBytes is a free data retrieval call binding the contract method 0x28ce621f.
+//
+// Solidity: function toBytes(_id uint256, _addr address, _tokenName string, _value uint256) constant returns(addr bytes)
+func (_Contract *ContractSession) ToBytes(_id *big.Int, _addr common.Address, _tokenName string, _value *big.Int) ([]byte, error) {
+	return _Contract.Contract.ToBytes(&_Contract.CallOpts, _id, _addr, _tokenName, _value)
+}
+
+// ToBytes is a free data retrieval call binding the contract method 0x28ce621f.
+//
+// Solidity: function toBytes(_id uint256, _addr address, _tokenName string, _value uint256) constant returns(addr bytes)
+func (_Contract *ContractCallerSession) ToBytes(_id *big.Int, _addr common.Address, _tokenName string, _value *big.Int) ([]byte, error) {
+	return _Contract.Contract.ToBytes(&_Contract.CallOpts, _id, _addr, _tokenName, _value)
 }
 
 // Validators is a free data retrieval call binding the contract method 0xfa52c7d8.
@@ -368,20 +394,22 @@ func (_Contract *ContractCallerSession) WithdrawOrderID() (*big.Int, error) {
 
 // WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
 //
-// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, tokenName string, value uint256, height uint256)
 func (_Contract *ContractCaller) WithdrawRecords(opts *bind.CallOpts, arg0 *big.Int) (struct {
-	OrderID *big.Int
-	Source  common.Address
-	Target  string
-	Value   *big.Int
-	Height  *big.Int
+	OrderID   *big.Int
+	Source    common.Address
+	Target    string
+	TokenName string
+	Value     *big.Int
+	Height    *big.Int
 }, error) {
 	ret := new(struct {
-		OrderID *big.Int
-		Source  common.Address
-		Target  string
-		Value   *big.Int
-		Height  *big.Int
+		OrderID   *big.Int
+		Source    common.Address
+		Target    string
+		TokenName string
+		Value     *big.Int
+		Height    *big.Int
 	})
 	out := ret
 	err := _Contract.contract.Call(opts, out, "withdrawRecords", arg0)
@@ -390,28 +418,51 @@ func (_Contract *ContractCaller) WithdrawRecords(opts *bind.CallOpts, arg0 *big.
 
 // WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
 //
-// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, tokenName string, value uint256, height uint256)
 func (_Contract *ContractSession) WithdrawRecords(arg0 *big.Int) (struct {
-	OrderID *big.Int
-	Source  common.Address
-	Target  string
-	Value   *big.Int
-	Height  *big.Int
+	OrderID   *big.Int
+	Source    common.Address
+	Target    string
+	TokenName string
+	Value     *big.Int
+	Height    *big.Int
 }, error) {
 	return _Contract.Contract.WithdrawRecords(&_Contract.CallOpts, arg0)
 }
 
 // WithdrawRecords is a free data retrieval call binding the contract method 0x9147fe70.
 //
-// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, value uint256, height uint256)
+// Solidity: function withdrawRecords( uint256) constant returns(orderID uint256, source address, target string, tokenName string, value uint256, height uint256)
 func (_Contract *ContractCallerSession) WithdrawRecords(arg0 *big.Int) (struct {
-	OrderID *big.Int
-	Source  common.Address
-	Target  string
-	Value   *big.Int
-	Height  *big.Int
+	OrderID   *big.Int
+	Source    common.Address
+	Target    string
+	TokenName string
+	Value     *big.Int
+	Height    *big.Int
 }, error) {
 	return _Contract.Contract.WithdrawRecords(&_Contract.CallOpts, arg0)
+}
+
+// AddSupportToken is a paid mutator transaction binding the contract method 0x0dfbb718.
+//
+// Solidity: function addSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractTransactor) AddSupportToken(opts *bind.TransactOpts, _tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "addSupportToken", _tokenName, _addr)
+}
+
+// AddSupportToken is a paid mutator transaction binding the contract method 0x0dfbb718.
+//
+// Solidity: function addSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractSession) AddSupportToken(_tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.AddSupportToken(&_Contract.TransactOpts, _tokenName, _addr)
+}
+
+// AddSupportToken is a paid mutator transaction binding the contract method 0x0dfbb718.
+//
+// Solidity: function addSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractTransactorSession) AddSupportToken(_tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.AddSupportToken(&_Contract.TransactOpts, _tokenName, _addr)
 }
 
 // AddValidator is a paid mutator transaction binding the contract method 0x4d238c8e.
@@ -435,25 +486,25 @@ func (_Contract *ContractTransactorSession) AddValidator(_addr common.Address) (
 	return _Contract.Contract.AddValidator(&_Contract.TransactOpts, _addr)
 }
 
-// Confirm is a paid mutator transaction binding the contract method 0xc41c79c3.
+// ConfirmDeposit is a paid mutator transaction binding the contract method 0x5ac1a3f9.
 //
-// Solidity: function confirm(_id string, _target address, _name string, _value uint256) returns()
-func (_Contract *ContractTransactor) Confirm(opts *bind.TransactOpts, _id string, _target common.Address, _name string, _value *big.Int) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "confirm", _id, _target, _name, _value)
+// Solidity: function confirmDeposit(_id uint256, _target address, _tokenName string, _value uint256) returns()
+func (_Contract *ContractTransactor) ConfirmDeposit(opts *bind.TransactOpts, _id *big.Int, _target common.Address, _tokenName string, _value *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "confirmDeposit", _id, _target, _tokenName, _value)
 }
 
-// Confirm is a paid mutator transaction binding the contract method 0xc41c79c3.
+// ConfirmDeposit is a paid mutator transaction binding the contract method 0x5ac1a3f9.
 //
-// Solidity: function confirm(_id string, _target address, _name string, _value uint256) returns()
-func (_Contract *ContractSession) Confirm(_id string, _target common.Address, _name string, _value *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.Confirm(&_Contract.TransactOpts, _id, _target, _name, _value)
+// Solidity: function confirmDeposit(_id uint256, _target address, _tokenName string, _value uint256) returns()
+func (_Contract *ContractSession) ConfirmDeposit(_id *big.Int, _target common.Address, _tokenName string, _value *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.ConfirmDeposit(&_Contract.TransactOpts, _id, _target, _tokenName, _value)
 }
 
-// Confirm is a paid mutator transaction binding the contract method 0xc41c79c3.
+// ConfirmDeposit is a paid mutator transaction binding the contract method 0x5ac1a3f9.
 //
-// Solidity: function confirm(_id string, _target address, _name string, _value uint256) returns()
-func (_Contract *ContractTransactorSession) Confirm(_id string, _target common.Address, _name string, _value *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.Confirm(&_Contract.TransactOpts, _id, _target, _name, _value)
+// Solidity: function confirmDeposit(_id uint256, _target address, _tokenName string, _value uint256) returns()
+func (_Contract *ContractTransactorSession) ConfirmDeposit(_id *big.Int, _target common.Address, _tokenName string, _value *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.ConfirmDeposit(&_Contract.TransactOpts, _id, _target, _tokenName, _value)
 }
 
 // CrossChainTransaction is a paid mutator transaction binding the contract method 0x88062f11.
@@ -475,6 +526,27 @@ func (_Contract *ContractSession) CrossChainTransaction(_addr string) (*types.Tr
 // Solidity: function crossChainTransaction(_addr string) returns()
 func (_Contract *ContractTransactorSession) CrossChainTransaction(_addr string) (*types.Transaction, error) {
 	return _Contract.Contract.CrossChainTransaction(&_Contract.TransactOpts, _addr)
+}
+
+// DelSupportToken is a paid mutator transaction binding the contract method 0xe4a7c5d6.
+//
+// Solidity: function delSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractTransactor) DelSupportToken(opts *bind.TransactOpts, _tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "delSupportToken", _tokenName, _addr)
+}
+
+// DelSupportToken is a paid mutator transaction binding the contract method 0xe4a7c5d6.
+//
+// Solidity: function delSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractSession) DelSupportToken(_tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.DelSupportToken(&_Contract.TransactOpts, _tokenName, _addr)
+}
+
+// DelSupportToken is a paid mutator transaction binding the contract method 0xe4a7c5d6.
+//
+// Solidity: function delSupportToken(_tokenName string, _addr address) returns()
+func (_Contract *ContractTransactorSession) DelSupportToken(_tokenName string, _addr common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.DelSupportToken(&_Contract.TransactOpts, _tokenName, _addr)
 }
 
 // DelValidator is a paid mutator transaction binding the contract method 0x12ae2c65.

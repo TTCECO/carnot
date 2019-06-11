@@ -9,6 +9,59 @@
 		"type": "function"
 	},
 	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_target",
+				"type": "address"
+			},
+			{
+				"name": "_tokenName",
+				"type": "string"
+			},
+			{
+				"name": "_value",
+				"type": "uint256"
+			},
+			{
+				"name": "_confirmer",
+				"type": "address"
+			}
+		],
+		"name": "getConfirmStatus",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_tokenName",
+				"type": "string"
+			},
+			{
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "addSupportToken",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": false,
 		"inputs": [
 			{
@@ -34,6 +87,37 @@
 		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_addr",
+				"type": "address"
+			},
+			{
+				"name": "_tokenName",
+				"type": "string"
+			},
+			{
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "toBytes",
+		"outputs": [
+			{
+				"name": "addr",
+				"type": "bytes"
+			}
+		],
+		"payable": false,
+		"stateMutability": "pure",
 		"type": "function"
 	},
 	{
@@ -88,26 +172,29 @@
 		"type": "function"
 	},
 	{
-		"constant": true,
+		"constant": false,
 		"inputs": [
 			{
 				"name": "_id",
+				"type": "uint256"
+			},
+			{
+				"name": "_target",
+				"type": "address"
+			},
+			{
+				"name": "_tokenName",
 				"type": "string"
 			},
 			{
-				"name": "_addr",
-				"type": "address"
+				"name": "_value",
+				"type": "uint256"
 			}
 		],
-		"name": "getConfirmStatus",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"name": "confirmDeposit",
+		"outputs": [],
 		"payable": false,
-		"stateMutability": "view",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -175,6 +262,10 @@
 				"type": "string"
 			},
 			{
+				"name": "tokenName",
+				"type": "string"
+			},
+			{
 				"name": "value",
 				"type": "uint256"
 			},
@@ -185,32 +276,6 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_id",
-				"type": "string"
-			},
-			{
-				"name": "_target",
-				"type": "address"
-			},
-			{
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			}
-		],
-		"name": "confirm",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -225,14 +290,14 @@
 		"outputs": [
 			{
 				"name": "orderID",
-				"type": "string"
+				"type": "uint256"
 			},
 			{
-				"name": "targetAddress",
+				"name": "target",
 				"type": "address"
 			},
 			{
-				"name": "name",
+				"name": "tokenName",
 				"type": "string"
 			},
 			{
@@ -250,6 +315,24 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_tokenName",
+				"type": "string"
+			},
+			{
+				"name": "_addr",
+				"type": "address"
+			}
+		],
+		"name": "delSupportToken",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
