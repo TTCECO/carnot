@@ -6,6 +6,9 @@ import "./Token.sol";
 
 contract TCChan is Ownable{
 
+    // default coin name
+    string constant COIN_NAME = "ttc";
+
     // safe math
     using SafeMath for uint;
 
@@ -111,7 +114,7 @@ contract TCChan is Ownable{
     function confirmDeposit(uint _id, address _target, string _tokenName, uint _value) onlyValidator public {
         require(_target != address(0));
         require(_value > depositFee);
-        require(keccak256(_tokenName) == keccak256("ttc") || tokenSupported[sha256(_tokenName)] != address(0));
+        require(keccak256(_tokenName) == keccak256(COIN_NAME) || tokenSupported[sha256(_tokenName)] != address(0));
         bytes32 key = sha256(toBytes(_id, _target, _tokenName, _value));
         // update the confirmAddress status
         if (depositRecords[key].orderID == _id
@@ -138,7 +141,7 @@ contract TCChan is Ownable{
         // udpate status & send coin if got enough confirmAddress
         if (depositRecords[key].status == orderStatus.UNFINISHED
             && depositRecords[key].confirmCount >= minConfirmNum){
-            if (keccak256(depositRecords[key].tokenName) == keccak256("ttc")){
+            if (keccak256(depositRecords[key].tokenName) == keccak256(COIN_NAME)){
                 require(depositRecords[key].target.send(depositRecords[key].value.sub(depositFee)));
                 depositRecords[key].status = orderStatus.SUCCESS;
             }else {
@@ -151,12 +154,12 @@ contract TCChan is Ownable{
     function getConfirmStatus(uint _id, address _target, string _tokenName, uint _value, address _confirmer) public view returns (bool){
        require(_target != address(0));
         require(_value > depositFee);
-        require(keccak256(_tokenName) == keccak256("ttc") || tokenSupported[sha256(_tokenName)] != address(0));
+        require(keccak256(_tokenName) == keccak256(COIN_NAME) || tokenSupported[sha256(_tokenName)] != address(0));
         bytes32 key = sha256(toBytes(_id, _target, _tokenName, _value));
         return depositRecords[key].confirmRecord[_confirmer];
     }
 
-    function crossChainTransaction(string _addr) payable public{
+    function crossChainTransactionCoin(string _addr) payable public{
         WithdrawOrder memory newOrder;
         withdrawOrderID += 1;
         newOrder.orderID = withdrawOrderID;
@@ -164,6 +167,22 @@ contract TCChan is Ownable{
         newOrder.target = _addr;
         newOrder.value = msg.value;
         newOrder.height = block.number;
+        newOrder.tokenName = COIN_NAME;
+        withdrawRecords[withdrawOrderID] = newOrder;
+    }
+
+    function crossChainTransactionToken(ERC20 token,string _tokenName,string _addr, uint _value) public {
+        bytes32 key = sha256(_tokenName);
+        require(tokenSupported[key] == token);
+        require(token.transferFrom(msg.sender, this, _value));
+        WithdrawOrder memory newOrder;
+        withdrawOrderID += 1;
+        newOrder.orderID = withdrawOrderID;
+        newOrder.source = msg.sender;
+        newOrder.target = _addr;
+        newOrder.value = _value;
+        newOrder.height = block.number;
+        newOrder.tokenName = _tokenName;
         withdrawRecords[withdrawOrderID] = newOrder;
     }
 }
