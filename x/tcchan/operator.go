@@ -20,7 +20,6 @@ package tcchan
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/TTCECO/carnot/x/tcchan/contract"
 	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/gttc/accounts/keystore"
@@ -64,14 +63,14 @@ func NewCrossChainOperator(keyfilepath string, password string) *Operator {
 			//logger.Error("Account unlock fail", "error", err)
 		}
 	} else {
-		fmt.Println("Keystore load fail", "error", err)
+		//fmt.Println("Keystore load fail", "error", err)
 	}
 	// dial rpc
 	if client, err := rpc.Dial(rpcUrl); err == nil {
 		operator.cl = client
 		//logger.Info("Dial rpc success", "url", rpcUrl)
 	} else {
-		fmt.Println("Dial rpc fail", "error", err)
+		//fmt.Println("Dial rpc fail", "error", err)
 	}
 	// update chain id
 	operator.updateVersion()
