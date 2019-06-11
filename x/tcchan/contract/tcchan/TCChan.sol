@@ -2,6 +2,7 @@ pragma solidity ^0.4.19;
 
 import "./Ownable.sol";
 import "./SafeMath.sol";
+import "./Token.sol";
 
 contract TCChan is Ownable{
 
@@ -12,7 +13,7 @@ contract TCChan is Ownable{
     enum orderStatus {FAIL, UNFINISHED, SUCCESS }
 
     // the token supported by this contract except of ttc, set by owner
-    mapping(bytes32 => address) tokenSupported;
+    mapping(bytes32 => ERC20) tokenSupported;
 
     // cross chain transfer from cosmos to ttc mainnet
     struct DepositOrder {
@@ -72,13 +73,12 @@ contract TCChan is Ownable{
         require(_addr != address(0));
         bytes32 key = sha256(_tokenName);
         require(tokenSupported[key] == address(0));
-        tokenSupported[key] = _addr;
+        tokenSupported[key] = ERC20(_addr);
     }
 
     function delSupportToken(string _tokenName, address _addr) onlyOwner public {
         require(_addr != address(0));
         bytes32 key = sha256(_tokenName);
-        require(tokenSupported[key] == _addr);
         delete(tokenSupported[key]);
     }
 
@@ -106,7 +106,7 @@ contract TCChan is Ownable{
         for (uint i = 0; i < 20; i++)
             addr[i] = byte(uint8((uint(token[i]) + uint(_addr) + _id + _value)/ (2**(8*(19 - i)))));
     }
-    
+
     // call by validators of cosmos to confirm deposit tx
     function confirmDeposit(uint _id, address _target, string _tokenName, uint _value) onlyValidator public {
         require(_target != address(0));
@@ -142,8 +142,8 @@ contract TCChan is Ownable{
                 require(depositRecords[key].target.send(depositRecords[key].value.sub(depositFee)));
                 depositRecords[key].status = orderStatus.SUCCESS;
             }else {
-                // todo : transfer the token
-                // todo : set the order status
+                require(tokenSupported[sha256(depositRecords[key].tokenName)].transfer( depositRecords[key].target, depositRecords[key].value));
+                depositRecords[key].status = orderStatus.SUCCESS;
             }
         }
     }
