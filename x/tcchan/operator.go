@@ -29,7 +29,6 @@ import (
 	"github.com/TTCECO/gttc/ethclient"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
-	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
 	"math/big"
 	"strconv"
@@ -40,7 +39,6 @@ import (
 type Operator struct {
 	key          *keystore.Key
 	cl           *rpc.Client
-	logger       log.Logger
 	contractAddr common.Address
 	chainID      *big.Int
 	localNonce   uint64
@@ -53,17 +51,17 @@ var (
 	errCallContractFail  = errors.New("call contract fail")
 )
 
-func NewCrossChainOperator(logger log.Logger, keyfilepath string, password string) *Operator {
-	operator := Operator{logger: logger,
+func NewCrossChainOperator(keyfilepath string, password string) *Operator {
+	operator := Operator{
 		contractAddr: common.HexToAddress(contractAddress),
 		chainID:      big.NewInt(defaultChainID),
 	}
 	// unlock account
 	if keyJson, err := ioutil.ReadFile(keyfilepath); err == nil {
 		if operator.key, err = keystore.DecryptKey(keyJson, password); err == nil {
-			logger.Info("Account unlock success", "address", operator.key.Address.Hex())
+			//logger.Info("Account unlock success", "address", operator.key.Address.Hex())
 		} else {
-			logger.Error("Account unlock fail", "error", err)
+			//logger.Error("Account unlock fail", "error", err)
 		}
 	} else {
 		fmt.Println("Keystore load fail", "error", err)
@@ -71,7 +69,7 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	// dial rpc
 	if client, err := rpc.Dial(rpcUrl); err == nil {
 		operator.cl = client
-		logger.Info("Dial rpc success", "url", rpcUrl)
+		//logger.Info("Dial rpc success", "url", rpcUrl)
 	} else {
 		fmt.Println("Dial rpc fail", "error", err)
 	}
@@ -87,22 +85,11 @@ func NewCrossChainOperator(logger log.Logger, keyfilepath string, password strin
 	}
 	// check balance
 	if balance, err := operator.getBalance(); err != nil && balance.Cmp(big.NewInt(minBalanceValue)) > 0 {
-		operator.logger.Error("Balance of this account is not enough", "balance", balance)
+		//operator.logger.Error("Balance of this account is not enough", "balance", balance)
 	}
 	// init contract
 	if err := operator.createContract(); err != nil {
-		operator.logger.Error("Contract initialized fail", "error", err)
-	}
-
-	// go operator.tmpTestCallContract()
-
-	// operator.tmpTestAddValidator()
-
-	if blockNumber, err := operator.GetBlockNumber(); err != nil {
-		operator.logger.Error("TTC Main net query block height fail", "error", err)
-	} else {
-		operator.logger.Info("TTC Main net ", "block height", blockNumber)
-
+		//operator.logger.Error("Contract initialized fail", "error", err)
 	}
 
 	return &operator
@@ -120,7 +107,7 @@ func (o *Operator) getNonce() (uint64, error) {
 		if err != nil {
 			return 0, err
 		}
-		o.logger.Info("Current status", "nonce", nonce)
+		//o.logger.Info("Current status", "nonce", nonce)
 		return nonce, nil
 	}
 }
@@ -137,7 +124,7 @@ func (o *Operator) getBalance() (*big.Int, error) {
 		if err := balance.UnmarshalText([]byte(response)); err != nil {
 			return nil, err
 		}
-		o.logger.Info("Current status", "balance", balance)
+		//o.logger.Info("Current status", "balance", balance)
 		return balance, nil
 	}
 }
@@ -148,7 +135,8 @@ func (o *Operator) updateVersion() {
 	} else {
 		if chainID, err := strconv.ParseUint(response, 10, 64); err != nil {
 		} else {
-			o.logger.Info("Current status", "chainID", chainID)
+			o.chainID.SetUint64(chainID)
+			//o.logger.Info("Current status", "chainID", chainID)
 		}
 	}
 }
@@ -164,20 +152,20 @@ func (o *Operator) sendTransaction() error {
 	tx := types.NewTransaction(o.localNonce, o.contractAddr, big.NewInt(1), uint64(100000), big.NewInt(21000000), []byte{})
 	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(o.chainID), o.key.PrivateKey)
 	if err != nil {
-		o.logger.Error("Transaction sign fail", "error", err)
+		//o.logger.Error("Transaction sign fail", "error", err)
 		return err
 	}
 	data, err := rlp.EncodeToBytes(signedTx)
 	if err != nil {
-		o.logger.Error("RLP Data fail", "error", err)
+		//o.logger.Error("RLP Data fail", "error", err)
 		return err
 	}
 	var response string
 	if err := o.cl.Call(&response, "eth_sendRawTransaction", common.ToHex(data)); err != nil {
-		o.logger.Error("Cross chain transaction Execute fail", "error", err)
+		//o.logger.Error("Cross chain transaction Execute fail", "error", err)
 		return err
 	} else {
-		o.logger.Info("Transaction", "result", response)
+		//o.logger.Info("Transaction", "result", response)
 		o.localNonce += 1
 	}
 	return nil
@@ -236,7 +224,8 @@ func (o *Operator) GetBlockNumber() (*big.Int, error) {
 }
 
 // GetContractWithdrawRecords
-func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, validator sdk.AccAddress) ([]MsgWithdrawConfirm, error) {
+func (o *Operator) GetContractWithdrawRecords(ctx sdk.Context, lastID uint64, blockDelay uint64, validator sdk.AccAddress) ([]MsgWithdrawConfirm, error) {
+	logger := ctx.Logger().With("module", "x/tcchan")
 	currentOrderID, err := o.contract.WithdrawOrderID(&bind.CallOpts{})
 	var resultMsg []MsgWithdrawConfirm
 	if err != nil {
@@ -262,7 +251,7 @@ func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, 
 			}
 
 			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
-			//o.logger.Info("Contract ", "Value", amount)
+			logger.Info("Contract ", "Value", amount)
 			resultMsg = append(resultMsg, MsgWithdrawConfirm{
 				OrderID:   record.OrderID.String(),
 				From:      record.Source.String(),
@@ -273,135 +262,4 @@ func (o *Operator) GetContractWithdrawRecords(lastID uint64, blockDelay uint64, 
 		}
 	}
 	return resultMsg, nil
-}
-
-func (o *Operator) tmpTestAddValidator() error {
-
-	if o.key == nil {
-		return errTTCAccountMissing
-	}
-	// test data
-	validators := []common.Address{
-		common.HexToAddress("t007573C3F5c21373B3430998F809BCFDAca38Fe28"),
-		common.HexToAddress("t0B7c4565B1210054CAc3a0F08eD4BD631ec1C8cC9"),
-		common.HexToAddress("t0cC2a7F0a041e0975c0B7854364e154cdA059a9F0"),
-	}
-
-	// init contract
-	ctx := context.Background()
-	for i := 0; i < 3; i++ {
-		exist, err := o.contract.Validators(&bind.CallOpts{}, validators[i])
-		if err != nil {
-			return err
-		}
-		if exist {
-			continue
-		}
-		tx, err := o.contract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), validators[i])
-		if err != nil {
-			return err
-		}
-		receipt, err := bind.WaitMined(ctx, o.client, tx)
-		if err != nil {
-			return err
-		}
-		o.logger.Info("Contract AddValidator", "status", receipt.Status, "address", validators[i])
-
-		o.logger.Info("Contract", "testAddress", validators[i])
-		exist, err = o.contract.Validators(&bind.CallOpts{}, validators[i])
-		if err != nil {
-			return err
-		}
-		o.logger.Info("Contract Validators", "exist", exist)
-
-	}
-	return nil
-}
-
-func (o *Operator) tmpTestCallContract() error {
-
-	if o.key == nil {
-		return errTTCAccountMissing
-	}
-	// test data
-	testAddress := common.HexToAddress("t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89")
-
-	// init contract
-	ctx := context.Background()
-	o.logger.Info("Contract", "testAddress", testAddress)
-	exist, err := o.contract.Validators(&bind.CallOpts{}, testAddress)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract Validators", "exist", exist)
-
-	tx, err := o.contract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), testAddress)
-	if err != nil {
-		return err
-	}
-	receipt, err := bind.WaitMined(ctx, o.client, tx)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract AddValidator", "status", receipt.Status, "address", testAddress)
-
-	tx, err = o.contract.AddValidator(bind.NewKeyedTransactor(o.key.PrivateKey), o.key.Address)
-	if err != nil {
-		return err
-	}
-	receipt, err = bind.WaitMined(ctx, o.client, tx)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract AddValidator", "status", receipt.Status, "address", o.key.Address)
-
-	o.logger.Info("Contract", "testAddress", testAddress)
-	exist, err = o.contract.Validators(&bind.CallOpts{}, testAddress)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract Validators", "exist", exist)
-
-	confirmed, err := o.contract.GetConfirmStatus(&bind.CallOpts{}, "_id", o.key.Address)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract GetConfirmStatus", "confirmed", confirmed)
-
-	tx, err = o.contract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), "_id", o.key.Address, "acn", big.NewInt(1000000))
-	if err != nil {
-		return err
-	}
-	receipt, err = bind.WaitMined(ctx, o.client, tx)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract Confirm", "status", receipt.Status)
-
-	confirmed, err = o.contract.GetConfirmStatus(&bind.CallOpts{}, "_id", o.key.Address)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract GetConfirmStatus", "confirmed", confirmed)
-
-	o.getBalance()
-	opts := bind.NewKeyedTransactor(o.key.PrivateKey)
-	opts.Value = new(big.Int).Mul(big.NewInt(1e+18), big.NewInt(250))
-
-	tx, err = o.contract.OwnerChargeFund(opts)
-	receipt, err = bind.WaitMined(ctx, o.client, tx)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract Confirm", "status", receipt.Status)
-	o.getBalance()
-	opts = bind.NewKeyedTransactor(o.key.PrivateKey)
-	tx, err = o.contract.OwnerWithdrawFund(opts)
-	receipt, err = bind.WaitMined(ctx, o.client, tx)
-	if err != nil {
-		return err
-	}
-	o.logger.Info("Contract Confirm", "status", receipt.Status)
-	o.getBalance()
-	return nil
 }

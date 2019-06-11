@@ -189,7 +189,6 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 	// The tccKeeper is the Keeper from the module for tcc-cosmos-channal
 	// It handles interactions with the store
 	app.tccKeeper = tcchan.NewTCChanKeeper(
-		logger,
 		app.bankKeeper,
 		app.keyTCChan,
 		app.cdc,

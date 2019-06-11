@@ -30,7 +30,6 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/spf13/viper"
-	"github.com/tendermint/tendermint/libs/log"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	"math/big"
 )
@@ -52,7 +51,6 @@ type TCChanKeeper struct {
 	tcchanKey     sdk.StoreKey // Unexposed key to access store from sdk.Context
 	cdc           *codec.Codec // The wire codec for binary encoding/decoding.
 	operator      *Operator
-	logger        log.Logger
 	cliCtx        context.CLIContext
 	validatorName string // validator name
 	validatorPass string // validator pass
@@ -60,7 +58,7 @@ type TCChanKeeper struct {
 }
 
 // NewTCChanKeeper creates new instances of the tcchan Keeper
-func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec,
+func NewTCChanKeeper(coinKeeper bank.Keeper, tcchanKey sdk.StoreKey, cdc *codec.Codec,
 	keyfilepath string, password string,
 	validatorName string, validatorPass string, RPCPort int, keyPath string) TCChanKeeper {
 
@@ -80,11 +78,10 @@ func NewTCChanKeeper(logger log.Logger, coinKeeper bank.Keeper, tcchanKey sdk.St
 		panic(err)
 	}
 	keeper := TCChanKeeper{
-		logger:        logger,
 		coinKeeper:    coinKeeper,
 		tcchanKey:     tcchanKey,
 		cdc:           cdc,
-		operator:      NewCrossChainOperator(logger, keyfilepath, password),
+		operator:      NewCrossChainOperator(keyfilepath, password),
 		cliCtx:        cliCtx,
 		validatorName: validatorName,
 		validatorPass: validatorPass,
@@ -221,25 +218,27 @@ func (k TCChanKeeper) CalculateConfirm(ctx sdk.Context) error {
 }
 
 func (k TCChanKeeper) CatchWithdrawOrder(ctx sdk.Context) error {
+	logger := ctx.Logger().With("module", "x/tcchan")
 	// todo : need find the lastID this validator already confirm for withdraw order.
 	current, err := k.GetCurrent(ctx)
 	if err != nil {
 		return err
 	}
 	// get with mags from contract on ttc mainnet
-	msgs, err := k.operator.GetContractWithdrawRecords(current.MaxWithdraw, blockDelay, k.validator)
+	msgs, err := k.operator.GetContractWithdrawRecords(ctx, current.MaxWithdraw, blockDelay, k.validator)
 	if err != nil {
 		return err
 	}
 	if len(msgs) > 0 {
 		go k.sendConfirmWith(ctx, msgs)
 	} else {
-		k.logger.Info("CatchWithdrawOrder", "msgs", "no new order")
+		logger.Info("CatchWithdrawOrder", "msgs", "no new order")
 	}
 	return nil
 }
 
 func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm) error {
+	logger := ctx.Logger().With("module", "x/tcchan")
 	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(k.cdc))
 	txBldr = txBldr.WithChainID(ctx.ChainID())
 	if path := viper.GetString("home-client"); path != "" {
@@ -294,7 +293,7 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 	if err != nil {
 		return err
 	}
-	k.logger.Info("Confirm Withdraw Order tx", "result", res)
+	logger.Info("Confirm Withdraw Order tx", "result", res)
 	return nil
 }
 
@@ -394,6 +393,6 @@ func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Ite
 }
 
 // SendConfirmTx send confirm tx to ttc
-func (k TCChanKeeper) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
+func (k TCChanKeeper) SendConfirmTx(ctx sdk.Context, orderID string, target string, coinName string, value *big.Int) error {
 	return k.operator.SendConfirmTx(orderID, target, coinName, value)
 }
