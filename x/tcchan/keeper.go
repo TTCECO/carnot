@@ -393,6 +393,6 @@ func (k TCChanKeeper) GetRecordsIterator(ctx sdk.Context, prefix string) sdk.Ite
 }
 
 // SendConfirmTx send confirm tx to ttc
-func (k TCChanKeeper) SendConfirmTx(ctx sdk.Context, orderID string, target string, coinName string, value *big.Int) error {
+func (k TCChanKeeper) SendConfirmTx(ctx sdk.Context, orderID uint64, target string, coinName string, value *big.Int) error {
 	return k.operator.SendConfirmTx(orderID, target, coinName, value)
 }

@@ -187,14 +187,14 @@ func (o *Operator) createContract() error {
 }
 
 // SendConfirmTx send tx to TTC contract to confirm this validator confirm deposit transaction on cosmos
-func (o *Operator) SendConfirmTx(orderID string, target string, coinName string, value *big.Int) error {
+func (o *Operator) SendConfirmTx(orderID uint64, target string, coinName string, value *big.Int) error {
 
 	if o.key == nil {
 		return errTTCAccountMissing
 	}
 
 	ctx := context.Background()
-	tx, err := o.contract.Confirm(bind.NewKeyedTransactor(o.key.PrivateKey), orderID, common.HexToAddress(target), coinName, value)
+	tx, err := o.contract.ConfirmDeposit(bind.NewKeyedTransactor(o.key.PrivateKey), new(big.Int).SetUint64(orderID), common.HexToAddress(target), coinName, value)
 	if err != nil {
 		return err
 	}
