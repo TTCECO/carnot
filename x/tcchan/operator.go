@@ -66,9 +66,9 @@ func NewCrossChainOperator(keyfilepath string, password string) *Operator {
 		//fmt.Println("Keystore load fail", "error", err)
 	}
 	// dial rpc
-	if client, err := rpc.Dial(rpcUrl); err == nil {
+	if client, err := rpc.Dial(RPCURL); err == nil {
 		operator.cl = client
-		//logger.Info("Dial rpc success", "url", rpcUrl)
+		//logger.Info("Dial rpc success", "url", RPCURL)
 	} else {
 		//fmt.Println("Dial rpc fail", "error", err)
 	}

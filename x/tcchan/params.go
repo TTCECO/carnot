@@ -29,12 +29,12 @@ const (
 	prefixConfirm = "confirm"
 
 	minBalanceValue = 1e+18 // for gas
-	//rpcUrl = "http://rpc-tokyo.ttcnet.io" // Mainnet
-	rpcUrl = "http://47.111.177.215:8511" // Testnet
+	//RPCURL= "http://rpc-tokyo.ttcnet.io" // Mainnet
+	RPCURL = "http://47.111.177.215:8511" // Testnet
 	//defaultChainID = 8848                 // Mainnet
 	defaultChainID = 8341 // Testnet
 
-	contractAddress = "t0e04b30b03f4371958ecd29bcdbf0d8b4493ec344" // test address
+	contractAddress = "t096E041cF51DD0811E283D1a5E851e7dbA47d4098" // test address
 
 	minValidatorCount = 2
 
