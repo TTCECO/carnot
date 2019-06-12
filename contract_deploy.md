@@ -20,9 +20,9 @@ eth.getTransactionReceipt("t03f4fb3e135498a40784e3e6d27ce32184ad5961c2d6137a4796
 
 6. 记录合约地址
 
-eth.getTransactionReceipt("t03f4fb3e135498a40784e3e6d27ce32184ad5961c2d6137a4796f92ef20aec5ab").contractAddress
+eth.getTransactionReceipt("t03f4fb3e135498a40784e3e6d27ce32184ad5961c2d6137a4796f92ef20aec5ab").ContractAddress
 t0e04b30b03f4371958ecd29bcdbf0d8b4493ec344
-并将得到的结果，保存到 carnot/x/tcchan/params.go 中给 contractAddress 赋值。
+并将得到的结果，保存到 carnot/x/tcchan/params.go 中给 ContractAddress 赋值。
 
 7. 创建多个ttc地址，给cosmos的见证人使用
 t007573C3F5c21373B3430998F809BCFDAca38Fe28  (keyfile_1.json)

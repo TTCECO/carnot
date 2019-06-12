@@ -14,7 +14,7 @@ compile *.sol in tcchan to get tcchan.abi and bytecode
 2. ```cd $GOPATH/src/github.com/TTCECO/carnot/```
 3. ```make cd```
 4. ```carnotcd```
-5. set contractAddress in carnot/x/tcchan/params by contract address.
+5. set ContractAddress in carnot/x/tcchan/params by contract address.
 
 or your can deploy the contract by any way you prefer.
 

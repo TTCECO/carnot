@@ -43,9 +43,9 @@ cp node1/carnot/config/genesis.json node3/carnot/config/
 
 708299348f1674c7341035a35f1f615d610fd8b3@192.168.80.197:26656,8baa5bbb529dc32fdf6eb2fdd3384855c486e646@192.168.80.197:26659,34c530f14849621d923d8ac909bedd30f9688127@192.168.80.197:26661
 
-carnot cc-start keyfile_1.json 1 validator1 12345678 --home node1/carnot --home-client node1/carnotcli
-carnot cc-start keyfile_2.json 1 validator2 12345678 --home node2/carnot --home-client node2/carnotcli
-carnot cc-start keyfile_3.json 1 validator3 12345678 --home node3/carnot --home-client node3/carnotcli
+carnot cc-start keyfile_1.json 1 validator1 11111111 --home node1/carnot --home-client node1/carnotcli
+carnot cc-start keyfile_2.json 1 validator2 22222222 --home node2/carnot --home-client node2/carnotcli
+carnot cc-start keyfile_3.json 1 validator3 33333333 --home node3/carnot --home-client node3/carnotcli
 
 
 8. 配置cli
@@ -75,7 +75,11 @@ carnotcli --home node1/carnotcli q account $(carnotcli keys show validator1 -a -
 carnotcli --home node2/carnotcli q account $(carnotcli keys show validator2 -a --home node2/carnotcli)
 carnotcli --home node3/carnotcli q account $(carnotcli keys show validator3 -a --home node3/carnotcli)
 
-10. 充值 deposit
+10. 提币 withdraw ttc 从ttc主链到cosmos
+
+
+
+11. 充值 deposit
 
 carnotcli --home node1/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 2cttc --from validator1
 carnotcli --home node2/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 3cttc --from validator2

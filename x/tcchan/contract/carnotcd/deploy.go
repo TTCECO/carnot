@@ -22,14 +22,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/TTCECO/carnot/x/tcchan"
-	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/carnot/x/tcchan/contract"
+	"github.com/TTCECO/gttc/accounts/abi/bind"
 	"github.com/TTCECO/gttc/common"
 	"github.com/TTCECO/gttc/core/types"
 	"github.com/TTCECO/gttc/crypto"
+	"github.com/TTCECO/gttc/ethclient"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
-	"github.com/TTCECO/gttc/ethclient"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"math/big"
 	"strconv"
 	"time"
@@ -56,128 +58,176 @@ const (
 	// the follow address is only used on testnet , no real ttc on them :-)
 	Address    = "t0979F6bCa65f7436731C81A3C955C3b74492F9B80"
 	PrivateKey = "3da3ea45d1ae2f9c8cf5b44bf67da7885fd2632d6d5c21e06ed24bfc1b75ba14"
-
-
-
-
 )
+
 var (
-	validators = []string{"07573c3f5c21373b3430998f809bcfdaca38fe28","b7c4565b1210054cac3a0f08ed4bd631ec1c8cc9","cc2a7f0a041e0975c0b7854364e154cda059a9f0"}
+	validators = []string{"07573c3f5c21373b3430998f809bcfdaca38fe28", "b7c4565b1210054cac3a0f08ed4bd631ec1c8cc9", "cc2a7f0a041e0975c0b7854364e154cda059a9f0"}
 )
 
 func main() {
+	viper.New()
+	rootCmd := &cobra.Command{
+		Use:   "carnotcd",
+		Short: "Carnot Contract Deploy Tools",
+	}
+	rootCmd.AddCommand(DeployCmd())
+	rootCmd.AddCommand(InitContractSettingCmd())
 
-	client, err := rpc.Dial(tcchan.RPCURL)
-	if err != nil {
-		fmt.Println("rpc.Dial err", err)
-		return
-	}
-	var result string
-	err = client.Call(&result, "eth_getTransactionCount", Address, "latest")
-	if err != nil {
-		fmt.Println("client.nonce err", err)
-		return
-	}
-	nonce, err := strconv.ParseInt(result[2:], 16, 64)
-	if err != nil {
-		fmt.Println("nonce parse fail", err)
-		return
-	}
-	fmt.Printf("nonce : %d\n", nonce)
+	rootCmd.Execute()
+}
 
-	err = client.Call(&result, "net_version")
-	if err != nil {
-		fmt.Println("get chain id fail", err)
-		return
-	}
-	fmt.Printf("chainId: %s\n", result)
+func DeployCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "deploy",
+		Short: "deploy contract by default settings",
+		RunE: func(_ *cobra.Command, _ []string) error {
+			client, err := rpc.Dial(tcchan.RPCURL)
+			if err != nil {
+				fmt.Println("rpc.Dial err", err)
+				return err
+			}
+			var result string
+			err = client.Call(&result, "eth_getTransactionCount", Address, "latest")
+			if err != nil {
+				fmt.Println("client.nonce err", err)
+				return err
+			}
+			nonce, err := strconv.ParseInt(result[2:], 16, 64)
+			if err != nil {
+				fmt.Println("nonce parse fail", err)
+				return err
+			}
+			fmt.Printf("nonce : %d\n", nonce)
 
-	chainID, err := strconv.ParseInt(result, 10, 64)
-	if err != nil {
-		fmt.Println("parse chain id fail", err)
-		return
-	}
+			err = client.Call(&result, "net_version")
+			if err != nil {
+				fmt.Println("get chain id fail", err)
+				return err
+			}
+			fmt.Printf("chainId: %s\n", result)
 
-	privateKey, err := crypto.HexToECDSA(PrivateKey)
-	if err != nil {
-		fmt.Println("create private key err :", err)
-		return
-	}
+			chainID, err := strconv.ParseInt(result, 10, 64)
+			if err != nil {
+				fmt.Println("parse chain id fail", err)
+				return err
+			}
 
-	res := make(map[string]interface{})
-	err = json.Unmarshal([]byte(byteCode), &res)
-	if err != nil {
-		fmt.Println("json unmarshal fail", err)
-		return
-	}
-	byteData,err := hex.DecodeString(res["object"].(string))
-	if err != nil {
-		fmt.Println("decode string fail ", err)
-		return
-	}
-	tx := types.NewContractCreation(uint64(nonce),  big.NewInt(0), uint64(30000000), big.NewInt(21000000), byteData)
-	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(chainID)), privateKey)
-	txData, err := rlp.EncodeToBytes(signedTx)
-	if err != nil {
-		fmt.Println("rlp Encode fail", err)
-		return
-	}
-	if err := client.Call(&result, "eth_sendRawTransaction", common.ToHex(txData)); err != nil {
-		fmt.Println("send Transaction fail", err)
-		return
-	}
-	fmt.Println("send Transaction tx : ", result)
-	waitSeconds := 20
-	fmt.Println("wait ",waitSeconds, " seconds for receipt ")
-	for i:=0;i<waitSeconds;i++ {
-		time.Sleep(time.Second)
-		fmt.Println(waitSeconds - i)
-	}
-	var receiptResult types.Receipt
-	if err := client.Call(&receiptResult, "eth_getTransactionReceipt", result); err != nil {
-		fmt.Println("get Transaction Receipt fail", err)
-		return
-	}
+			privateKey, err := crypto.HexToECDSA(PrivateKey)
+			if err != nil {
+				fmt.Println("create private key err :", err)
+				return err
+			}
 
-	if receiptResult.Status > 0{
-		fmt.Println("contract deploy address : ", receiptResult.ContractAddress.Hex())
-		fmt.Println("set contractAddress in carnot/x/tcchan/params by this. ")
-	}else {
-		fmt.Println("contract deploy fail")
-		return
-	}
+			res := make(map[string]interface{})
+			err = json.Unmarshal([]byte(byteCode), &res)
+			if err != nil {
+				fmt.Println("json unmarshal fail", err)
+				return err
+			}
+			byteData, err := hex.DecodeString(res["object"].(string))
+			if err != nil {
+				fmt.Println("decode string fail ", err)
+				return err
+			}
+			tx := types.NewContractCreation(uint64(nonce), big.NewInt(0), uint64(30000000), big.NewInt(21000000), byteData)
+			signedTx, err := types.SignTx(tx, types.NewEIP155Signer(big.NewInt(chainID)), privateKey)
+			txData, err := rlp.EncodeToBytes(signedTx)
+			if err != nil {
+				fmt.Println("rlp Encode fail", err)
+				return err
+			}
+			if err := client.Call(&result, "eth_sendRawTransaction", common.ToHex(txData)); err != nil {
+				fmt.Println("send Transaction fail", err)
+				return err
+			}
+			fmt.Println("send Transaction tx : ", result)
+			waitSeconds := 20
+			fmt.Println("wait ", waitSeconds, " seconds for receipt ")
+			for i := 0; i < waitSeconds; i++ {
+				time.Sleep(time.Second)
+				fmt.Println(waitSeconds - i)
+			}
+			var receiptResult types.Receipt
+			if err := client.Call(&receiptResult, "eth_getTransactionReceipt", result); err != nil {
+				fmt.Println("get Transaction Receipt fail", err)
+				return err
+			}
 
-	/*--------------------------------*/
+			if receiptResult.Status > 0 {
+				fmt.Println("contract deploy address : ", receiptResult.ContractAddress.Hex())
+				fmt.Println("set ContractAddress in carnot/x/tcchan/params by this. ")
+			} else {
+				fmt.Println("contract deploy fail")
+				return err
+			}
 
-	ctx := context.Background()
-	cl := ethclient.NewClient(client)
-	contract, err := contract.NewContract(receiptResult.ContractAddress, cl)
-	if err != nil {
-		fmt.Println("initialize contract fail : ",err)
-		return
-	}
-
-	for _,v := range validators{
-		tx, err := contract.AddValidator(bind.NewKeyedTransactor(privateKey),  common.HexToAddress(v))
-		if err != nil {
-			continue
-		}
-		receipt, err := bind.WaitMined(ctx, cl, tx)
-		if err != nil {
-			continue
-		}
-		if receipt.Status != 1 {
-			continue
-		}
-		fmt.Println("add validator sucess : ", v)
+			return nil
+		},
 	}
 
-	minConfirmNum := big.NewInt(2)
-	if _, err := contract.SetMinConfirmNum(bind.NewKeyedTransactor(privateKey),  minConfirmNum); err != nil {
-		fmt.Println("setMinConfirmNum fail : ",err)
-	}else {
-		fmt.Println("setMinConfirmNum success to : ",minConfirmNum)
+	//cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
+	return cmd
+}
+
+func InitContractSettingCmd() *cobra.Command {
+
+	const addressFlg = "address"
+	cmd := &cobra.Command{
+		Use:   "init [contract address]",
+		Short: "Initialize contract ",
+		Args:  cobra.RangeArgs(0, 1),
+		RunE: func(_ *cobra.Command, args []string) error {
+
+			client, err := rpc.Dial(tcchan.RPCURL)
+			if err != nil {
+				fmt.Println("rpc.Dial err", err)
+				return err
+			}
+
+			privateKey, err := crypto.HexToECDSA(PrivateKey)
+			if err != nil {
+				fmt.Println("create private key err :", err)
+				return err
+			}
+
+			ctx := context.Background()
+			cl := ethclient.NewClient(client)
+
+			contractAddress := tcchan.ContractAddress
+			if len(args) > 0 {
+				contractAddress = args[0]
+			}
+			contract, err := contract.NewContract(common.HexToAddress(contractAddress), cl)
+			if err != nil {
+				fmt.Println("initialize contract fail : ", err)
+				return err
+			}
+
+			for _, v := range validators {
+				tx, err := contract.AddValidator(bind.NewKeyedTransactor(privateKey), common.HexToAddress(v))
+				if err != nil {
+					return err
+				}
+				receipt, err := bind.WaitMined(ctx, cl, tx)
+				if err != nil {
+					return err
+				}
+				if receipt.Status != 1 {
+					return err
+				}
+				fmt.Println("add validator sucess : ", v)
+			}
+
+			minConfirmNum := big.NewInt(2)
+			if _, err := contract.SetMinConfirmNum(bind.NewKeyedTransactor(privateKey), minConfirmNum); err != nil {
+				fmt.Println("setMinConfirmNum fail : ", err)
+				return err
+			} else {
+				fmt.Println("setMinConfirmNum success to : ", minConfirmNum)
+			}
+			return nil
+		},
 	}
 
-
+	return cmd
 }

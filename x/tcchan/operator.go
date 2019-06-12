@@ -52,7 +52,7 @@ var (
 
 func NewCrossChainOperator(keyfilepath string, password string) *Operator {
 	operator := Operator{
-		contractAddr: common.HexToAddress(contractAddress),
+		contractAddr: common.HexToAddress(ContractAddress),
 		chainID:      big.NewInt(defaultChainID),
 	}
 	// unlock account
@@ -177,7 +177,7 @@ func (o *Operator) createContract() error {
 	}
 	// init contract
 	o.client = ethclient.NewClient(o.cl)
-	contract, err := contract.NewContract(common.HexToAddress(contractAddress), o.client)
+	contract, err := contract.NewContract(common.HexToAddress(ContractAddress), o.client)
 	if err != nil {
 		o.contract, o.client = nil, nil
 		return err
