@@ -263,7 +263,6 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 	} else {
 		txBldr = txBldr.WithAccountNumber(accNum)
 	}
-
 	// build targetMsg for sign
 	var targetMsg []sdk.Msg
 	for _, msg := range msgs {
@@ -271,7 +270,7 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 		if err != nil {
 			continue
 		}
-		if confirm, err := k.GetConfirm(ctx, uint64(orderID)); err != nil || confirm.Status == 1 {
+		if confirm, err := k.GetConfirm(ctx, uint64(orderID)); err == nil && confirm.Status == 1 {
 			continue
 		}
 		if err := msg.ValidateBasic(); err != nil || !msg.Validator.Equals(k.validator) {
@@ -287,7 +286,6 @@ func (k TCChanKeeper) sendConfirmWith(ctx sdk.Context, msgs []MsgWithdrawConfirm
 	if err != nil {
 		return err
 	}
-
 	// broadcast to a Tendermint node
 	res, err := k.cliCtx.BroadcastTx(txBytes)
 	if err != nil {

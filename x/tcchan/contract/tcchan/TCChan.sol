@@ -106,11 +106,18 @@ contract TCChan is Ownable{
         require(owner.send(this.balance));
     }
 
-    // calculate the key from confrim order info
-    function toBytes(uint _id, address _addr, string _tokenName, uint _value) public pure returns (bytes addr) {
+    // calculate the key from confirm order info
+    function toBytes(uint _id, address _addr, string _tokenName, uint _value) public pure returns (bytes32) {
+        bytes memory info = new bytes(128);
+        bytes32 id = sha256(_id);
+        for (uint i=0; i< 32; i++) info[i] = id[i];
+        bytes32 addr = sha256(_addr);
+        for ( i=32; i< 64; i++) info[i] = addr[i-32];
         bytes32 token = sha256(_tokenName);
-        for (uint i = 0; i < 20; i++)
-            addr[i] = byte(uint8((uint(token[i]) + uint(_addr) + _id + _value)/ (2**(8*(19 - i)))));
+        for (i=64; i< 96; i++) info[i] =  token[i-64];
+        bytes32 value = sha256(_value);
+        for (i=96; i< 128; i++) info[i] = value[i-96];
+        return sha256(info);
     }
 
     // call by validators of cosmos to confirm deposit tx
@@ -118,7 +125,7 @@ contract TCChan is Ownable{
         require(_target != address(0));
         require(_value > depositFee);
         require(keccak256(_tokenName) == keccak256(COIN_NAME) || tokenSupported[sha256(_tokenName)] != address(0));
-        bytes32 key = sha256(toBytes(_id, _target, _tokenName, _value));
+        bytes32 key = toBytes(_id, _target, _tokenName, _value);
         // update the confirmAddress status
         if (depositRecords[key].orderID == _id
             && depositRecords[key].target == _target

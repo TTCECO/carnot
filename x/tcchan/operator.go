@@ -248,14 +248,13 @@ func (o *Operator) GetContractWithdrawRecords(ctx sdk.Context, lastID uint64, bl
 			if err != nil {
 				continue
 			}
-
 			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
 			logger.Info("Contract ", "Value", amount)
 			resultMsg = append(resultMsg, MsgWithdrawConfirm{
 				OrderID:   record.OrderID.String(),
 				From:      record.Source.String(),
 				To:        to,
-				Value:     sdk.NewCoin(CoinTTC, sdk.NewIntFromBigInt(amount)),
+				Value:     sdk.NewCoin(record.TokenName, sdk.NewIntFromBigInt(amount)),
 				Validator: validator,
 			})
 		}

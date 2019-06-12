@@ -11,17 +11,17 @@ carnot init  testing --chain-id=testing  --home node2/carnot --p2p.laddr tcp://0
 carnot init  testing --chain-id=testing  --home node3/carnot --p2p.laddr tcp://0.0.0.0:26661 --rpc.laddr tcp://0.0.0.0:26662
 
 3. 每个节点创世块增加三个验证人
-carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake,10000cttc;
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake;
 
-carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake,10000cttc;
+carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node2/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake;
 
-carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake,10000cttc;
-carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake,10000cttc;
+carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node3/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake;
 
 4. 生成三笔交易
 mkdir gentxs
@@ -81,8 +81,8 @@ carnotcli --home node3/carnotcli q account $(carnotcli keys show validator3 -a -
 
 11. 充值 deposit
 
-carnotcli --home node1/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 2cttc --from validator1
-carnotcli --home node2/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 3cttc --from validator2
-carnotcli --home node3/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 4cttc --from validator3
+carnotcli --home node1/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 2ttc --from validator1
+carnotcli --home node2/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 3ttc --from validator2
+carnotcli --home node3/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 4ttc --from validator3
 
 
