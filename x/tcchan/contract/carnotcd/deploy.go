@@ -17,15 +17,19 @@
 package main
 
 import (
+	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/TTCECO/carnot/x/tcchan"
+	"github.com/TTCECO/gttc/accounts/abi/bind"
+	"github.com/TTCECO/carnot/x/tcchan/contract"
 	"github.com/TTCECO/gttc/common"
 	"github.com/TTCECO/gttc/core/types"
 	"github.com/TTCECO/gttc/crypto"
 	"github.com/TTCECO/gttc/rlp"
 	"github.com/TTCECO/gttc/rpc"
+	"github.com/TTCECO/gttc/ethclient"
 	"math/big"
 	"strconv"
 	"time"
@@ -52,6 +56,13 @@ const (
 	// the follow address is only used on testnet , no real ttc on them :-)
 	Address    = "t0979F6bCa65f7436731C81A3C955C3b74492F9B80"
 	PrivateKey = "3da3ea45d1ae2f9c8cf5b44bf67da7885fd2632d6d5c21e06ed24bfc1b75ba14"
+
+
+
+
+)
+var (
+	validators = []string{"07573c3f5c21373b3430998f809bcfdaca38fe28","b7c4565b1210054cac3a0f08ed4bd631ec1c8cc9","cc2a7f0a041e0975c0b7854364e154cda059a9f0"}
 )
 
 func main() {
@@ -133,9 +144,40 @@ func main() {
 		fmt.Println("set contractAddress in carnot/x/tcchan/params by this. ")
 	}else {
 		fmt.Println("contract deploy fail")
+		return
 	}
 
+	/*--------------------------------*/
 
+	ctx := context.Background()
+	cl := ethclient.NewClient(client)
+	contract, err := contract.NewContract(receiptResult.ContractAddress, cl)
+	if err != nil {
+		fmt.Println("initialize contract fail : ",err)
+		return
+	}
+
+	for _,v := range validators{
+		tx, err := contract.AddValidator(bind.NewKeyedTransactor(privateKey),  common.HexToAddress(v))
+		if err != nil {
+			continue
+		}
+		receipt, err := bind.WaitMined(ctx, cl, tx)
+		if err != nil {
+			continue
+		}
+		if receipt.Status != 1 {
+			continue
+		}
+		fmt.Println("add validator sucess : ", v)
+	}
+
+	minConfirmNum := big.NewInt(2)
+	if _, err := contract.SetMinConfirmNum(bind.NewKeyedTransactor(privateKey),  minConfirmNum); err != nil {
+		fmt.Println("setMinConfirmNum fail : ",err)
+	}else {
+		fmt.Println("setMinConfirmNum success to : ",minConfirmNum)
+	}
 
 
 }
