@@ -54,6 +54,9 @@ contract TCChan is Ownable{
     // deposit order record, the key should be calculate from all information on order params
     mapping(bytes32  => DepositOrder) public depositRecords;
 
+    // deposit key list
+    bytes32[] public depositKeys;
+
     // withdraw order record, the key is the orderID (auto increase)
     mapping(uint => WithdrawOrder) public withdrawRecords;
 
@@ -126,6 +129,7 @@ contract TCChan is Ownable{
             order.confirmRecord[msg.sender] = true;
             order.confirmCount = order.confirmCount + 1;
         } else {
+            depositKeys.push(key);
             // create new deposit record
             DepositOrder memory newOrder ;
             newOrder.orderID = _id;
