@@ -17,9 +17,6 @@
 package tcchan
 
 const (
-	CoinTTC = "ttc" // TTC on Cosmos
-	CoinACN = "acn" // ACN on Cosmos, ERC20
-
 	RouterName = "tcchan"
 	StoreTCC   = "tcchan"
 
@@ -28,15 +25,13 @@ const (
 	prefixCurrent = "current"
 	prefixConfirm = "confirm"
 
-	minBalanceValue = 1e+18 // for gas
+	decimals = 1e+18 // change to 1, if use wei
+
 	//RPCURL= "http://rpc-tokyo.ttcnet.io" // Mainnet
 	RPCURL = "http://47.111.177.215:8511" // Testnet
 	//defaultChainID = 8848                 // Mainnet
-	defaultChainID = 8341 // Testnet
-
-	ContractAddress = "t0C4B13EA1219a6FfA1A092707db7071377c0E4374" // test address
-
+	defaultChainID    = 8341                                         // Testnet
+	ContractAddress   = "t0C4B13EA1219a6FfA1A092707db7071377c0E4374" // test address
 	minValidatorCount = 2
-
-	blockDelay = 15
+	blockDelay        = 3 // 15
 )

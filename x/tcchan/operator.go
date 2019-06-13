@@ -83,9 +83,9 @@ func NewCrossChainOperator(keyfilepath string, password string) *Operator {
 		operator.localNonce = nonce
 	}
 	// check balance
-	if balance, err := operator.getBalance(); err != nil && balance.Cmp(big.NewInt(minBalanceValue)) > 0 {
-		//operator.logger.Error("Balance of this account is not enough", "balance", balance)
-	}
+	//if balance, err := operator.getBalance(); err != nil && balance.Cmp(big.NewInt(minBalanceValue)) > 0 {
+	//operator.logger.Error("Balance of this account is not enough", "balance", balance)
+	//}
 	// init contract
 	if err := operator.createContract(); err != nil {
 		//operator.logger.Error("Contract initialized fail", "error", err)
@@ -248,7 +248,7 @@ func (o *Operator) GetContractWithdrawRecords(ctx sdk.Context, lastID uint64, bl
 			if err != nil {
 				continue
 			}
-			amount := new(big.Int).Div(record.Value, big.NewInt(1e+18))
+			amount := new(big.Int).Div(record.Value, big.NewInt(decimals))
 			logger.Info("Contract ", "Value", amount)
 			resultMsg = append(resultMsg, MsgWithdrawConfirm{
 				OrderID:   record.OrderID.String(),
