@@ -52,8 +52,38 @@ func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithd
 		Status:      0,
 		Confirms:    msg.GetSigners(),
 	}
-
 	keeper.SetConfirm(ctx, confirm)
+
+	newOrder := true
+	// set current
+	currentRecord, err := keeper.GetCurrent(ctx)
+	if err != nil {
+		return sdk.ErrInsufficientCoins(err.Error()).Result()
+	}
+
+	if confirm.OrderID > currentRecord.MaxWithdraw {
+		currentRecord.MaxWithdraw = confirm.OrderID
+	}
+	for _, order := range currentRecord.Withdraw {
+		if order.OrderID == confirm.OrderID {
+			newOrder = false
+		}
+	}
+	if newOrder {
+		currentRecord.Withdraw = append(currentRecord.Withdraw, OrderExtra{OrderID: confirm.OrderID, Step: 0})
+		keeper.SetCurrent(ctx, currentRecord)
+	}
+
+	// set person
+	if newOrder {
+		personRecord, err := keeper.GetPerson(ctx, msg.To.String())
+		if err != nil {
+			return sdk.ErrInsufficientCoins(err.Error()).Result()
+		}
+		personRecord.WithdrawOrderIDs = append(personRecord.WithdrawOrderIDs, confirm.OrderID)
+		keeper.SetPerson(ctx, personRecord)
+	}
+
 	return sdk.Result{}
 }
 
