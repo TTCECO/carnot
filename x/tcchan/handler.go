@@ -19,18 +19,20 @@ package tcchan
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"math/big"
 	"strconv"
 )
 
 // NewHandler returns a handler for "tcchan" type messages.
-func NewHandler(keeper TCChanKeeper) sdk.Handler {
+func NewHandler(keeper TCChanKeeper, stakingKeeper staking.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
 		case MsgDeposit:
 			return handleMsgDeposit(ctx, keeper, msg)
 		case MsgWithdrawConfirm:
-			return handleMsgWithdrawConfirm(ctx, keeper, msg)
+			return handleMsgWithdrawConfirm(ctx, keeper, msg, stakingKeeper)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized tcchan Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -38,11 +40,22 @@ func NewHandler(keeper TCChanKeeper) sdk.Handler {
 	}
 }
 
-func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithdrawConfirm) sdk.Result {
+func handleMsgWithdrawConfirm(ctx sdk.Context, keeper TCChanKeeper, msg MsgWithdrawConfirm, stakingKeeper staking.Keeper) sdk.Result {
 	orderID, err := strconv.Atoi(msg.OrderID)
 	if err != nil {
 		return sdk.ErrInsufficientCoins(err.Error()).Result()
 	}
+
+	isDelegation := false
+	for _, delegation := range stakingKeeper.GetAllDelegations(ctx) {
+		if delegation.ValidatorAddress.Equals(msg.Validator){
+			isDelegation = true
+		}
+	}
+	if !isDelegation {
+		return sdk.ErrInsufficientFee("not delegation").Result()
+	}
+
 	confirm := WithdrawConfirm{
 		OrderID:     uint64(orderID),
 		BlockNumber: uint64(ctx.BlockHeight()),

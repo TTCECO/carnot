@@ -213,7 +213,7 @@ func NewCarnotApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
-		AddRoute(tcchan.RouterName, tcchan.NewHandler(app.tccKeeper))
+		AddRoute(tcchan.RouterName, tcchan.NewHandler(app.tccKeeper,app.stakingKeeper))
 
 	app.QueryRouter().
 		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
