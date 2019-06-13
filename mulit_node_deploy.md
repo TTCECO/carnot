@@ -41,7 +41,7 @@ cp node1/carnot/config/genesis.json node3/carnot/config/
  prof_laddr 为不同的端口 "localhost:6060"  （52行）
  persistent_peers 为真实值，用逗号分隔 （145）
 
-708299348f1674c7341035a35f1f615d610fd8b3@192.168.80.197:26656,8baa5bbb529dc32fdf6eb2fdd3384855c486e646@192.168.80.197:26659,34c530f14849621d923d8ac909bedd30f9688127@192.168.80.197:26661
+13cb778bec971708a07964ce95d0fc7b6fb548cb@192.168.80.197:26661,d3cf51ce6640654eebde030e1b71accca6939ed6@192.168.80.197:26659,5288486b9494f753937269b29b4ecb1d8d40fffb@192.168.80.197:26656
 
 carnot cc-start keyfile_1.json 1 validator1 11111111 --home node1/carnot --home-client node1/carnotcli
 carnot cc-start keyfile_2.json 1 validator2 22222222 --home node2/carnot --home-client node2/carnotcli

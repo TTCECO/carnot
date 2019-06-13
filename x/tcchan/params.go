@@ -31,7 +31,7 @@ const (
 	RPCURL = "http://47.111.177.215:8511" // Testnet
 	//defaultChainID = 8848                 // Mainnet
 	defaultChainID    = 8341                                         // Testnet
-	ContractAddress   = "t0C4B13EA1219a6FfA1A092707db7071377c0E4374" // test address
+	ContractAddress   = "t05987D8eEe0aB7bb2DF2dFcc19aEDE1bd8fe5b7FC" // test address
 	minValidatorCount = 2
 	blockDelay        = 3 // 15
 )
