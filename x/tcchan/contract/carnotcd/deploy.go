@@ -62,6 +62,9 @@ const (
 
 	TokenAddress = "t0Fc68d6E129E93875827a94F716128d0D55E7Fd87"
 	TokenName = "acn"
+
+	acnAddress = "0xb25Dc368Db7d1C14856561a2461375c7484050EE"
+	acnPrivateKey = "ad2b6467dc3708e3c79f195b02375990bdb2b0624ffed9246aa400080bd34eac"
 )
 
 var (
@@ -77,6 +80,7 @@ func main() {
 	rootCmd.AddCommand(DeployCmd())
 	rootCmd.AddCommand(InitContractSettingCmd())
 	rootCmd.AddCommand(WithdrawTxCmd())
+	rootCmd.AddCommand(WithdrawTokenCmd())
 	rootCmd.AddCommand(DisplayTxCmd())
 
 	rootCmd.Execute()
@@ -280,6 +284,60 @@ func WithdrawTxCmd() *cobra.Command {
 			txOpts := bind.NewKeyedTransactor(privateKey)
 			txOpts.Value = ttcAmount
 			tx, err := contract.CrossChainTransactionCoin(txOpts, targetAddress)
+			if err != nil {
+				return err
+			}
+			receipt, err := bind.WaitMined(ctx, cl, tx)
+			if err != nil {
+				return err
+			}
+			if receipt.Status != 1 {
+				return err
+			}
+			fmt.Println("send coin success .")
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+
+func WithdrawTokenCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "withdrawToken [target accAddress] [amount]",
+		Short: "Call withdraw func on contract (send acn from ttc mainnet to cosmos)",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(_ *cobra.Command, args []string) error {
+
+			targetAddress := args[0]
+			tokenAmount, ok := new(big.Int).SetString(args[1], 10)
+			if !ok {
+				fmt.Println("amount is not number")
+				return errors.New("is not number")
+			}
+			fmt.Println(tokenAmount)
+
+			client, err := rpc.Dial(tcchan.RPCURL)
+			if err != nil {
+				fmt.Println("rpc.Dial err", err)
+				return err
+			}
+			privateKey, err := crypto.HexToECDSA(acnPrivateKey)
+			if err != nil {
+				fmt.Println("create private key err :", err)
+				return err
+			}
+			ctx := context.Background()
+			cl := ethclient.NewClient(client)
+			contract, err := contract.NewContract(common.HexToAddress(tcchan.ContractAddress), cl)
+			if err != nil {
+				fmt.Println("initialize contract fail : ", err)
+				return err
+			}
+
+			txOpts := bind.NewKeyedTransactor(privateKey)
+			tx, err := contract.CrossChainTransactionToken(txOpts,common.HexToAddress(TokenAddress),TokenName,targetAddress,tokenAmount)
 			if err != nil {
 				return err
 			}
