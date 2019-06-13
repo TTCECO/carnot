@@ -56,9 +56,12 @@ var byteCode = `
 // contract.ownerChargeFund()
 
 const (
-	// the follow address is only used on testnet , no real ttc on them :-)
+	// the follow address is only used on testnet to deploy contract, no real ttc on them :-)
 	Address    = "t0979F6bCa65f7436731C81A3C955C3b74492F9B80"
 	PrivateKey = "3da3ea45d1ae2f9c8cf5b44bf67da7885fd2632d6d5c21e06ed24bfc1b75ba14"
+
+	TokenAddress = "t0Fc68d6E129E93875827a94F716128d0D55E7Fd87"
+	TokenName = "acn"
 )
 
 var (
@@ -224,6 +227,16 @@ func InitContractSettingCmd() *cobra.Command {
 			} else {
 				fmt.Println("setMinConfirmNum success to : ", minConfirmNum)
 			}
+
+
+			if _, err := contract.AddSupportToken(bind.NewKeyedTransactor(privateKey), TokenName, common.HexToAddress(TokenAddress)); err != nil {
+				fmt.Println("AddSupportToken fail : ", err)
+				return err
+			} else {
+				fmt.Println("AddSupportToken success : ", TokenName)
+			}
+
+
 			return nil
 		},
 	}
