@@ -15,7 +15,10 @@ echo "export GO111MODULE=on" >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
-Now, you can install and run the application.
+Now You can deploy a new contract on TTC block chain.
+Please follow the step on [Deploy Contract For Test](x/tcchan/contract/README.md)
+
+When the contract is ready, you can install and run the application.
 
 ```bash
 # Install the app into your $GOBIN
