@@ -1,6 +1,6 @@
 # Deploy Contract For Test
 
->>  Do not deploy like this for Online service.
+> Do not deploy like this for Online service.
 
 ## Step 1. Compile Contract
 
