@@ -86,6 +86,7 @@ carnotcli --home node1/carnotcli config indent true
 carnotcli --home node1/carnotcli config trust-node true
 ...
 
+```
 
 
 ### Congratulations, you have built a Cosmos SDK application! This tutorial is now complete. If you want to see how to run the same commands using the REST server [click here](run-rest.md).
