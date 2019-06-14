@@ -76,8 +76,12 @@ carnot cc-start keyfile_1.json 1 validator1 11111111 --home node1/carnot --home-
 carnot cc-start keyfile_2.json 1 validator2 22222222 --home node2/carnot --home-client node2/carnotcli
 carnot cc-start keyfile_3.json 1 validator3 33333333 --home node3/carnot --home-client node3/carnotcli
 
+```
+
 > _*NOTE*_: keyfile_1.json is the keyfile node used for send confirm transaction, you can use the keyfile in contract/testdata only for Test!!
 > Or You can [create your TTC account](https://github.com/TTCECO/gttc/wiki/TRY-AS-SUPERNODE-ON-TESTNET#create-your-new-accountaddress-by-gttc) yourself.
+
+```bash
 
 # Configure your CLI to eliminate need for chain-id flag
 carnotcli --home node1/carnotcli config chain-id testing
@@ -85,6 +89,18 @@ carnotcli --home node1/carnotcli config output json
 carnotcli --home node1/carnotcli config indent true
 carnotcli --home node1/carnotcli config trust-node true
 ...
+
+# First check the accounts to ensure they have funds
+carnotcli --home node1/carnotcli q account $(carnotcli keys show validator1 -a --home node1/carnotcli)
+
+# Deposit using your coins from the genesis file
+carnotcli --home node1/carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 2ttc --from validator1
+
+# Query the current status
+carnotcli --home node1/carnotcli query tcchan current
+
+# Query the order by id
+carnotcli --home node1/carnotcli query tcchan order 1
 
 ```
 
