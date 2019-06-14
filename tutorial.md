@@ -40,41 +40,52 @@ To initialize configuration and a `genesis.json` file for your application and a
 > _*NOTE*_: If you have the Cosmos app for ledger and you want to use it, when you create the key with `carnotcli keys add jack` just add `--ledger` at the end. That's all you need. When you sign, `jack` will be recognized as a Ledger key and will require a device.
 
 ```bash
-# Initialize configuration files and genesis file
-carnot init --chain-id tctestchain
+# Create validators
+carnotcli keys add validator1 --home node1/carnotcli
+carnotcli keys add validator2 --home node2/carnotcli
+carnotcli keys add validator3 --home node3/carnotcli
 
-# Copy the `Address` output here and save it for later use
-# [optional] add "--ledger" at the end to use a Ledger Nano S
-carnotcli keys add jack
+# Initialize configuration files
+carnot init  testing --chain-id=testing  --home node1/carnot --p2p.laddr tcp://0.0.0.0:26656 --rpc.laddr tcp://0.0.0.0:26657
+carnot init  testing --chain-id=testing  --home node2/carnot --p2p.laddr tcp://0.0.0.0:26659 --rpc.laddr tcp://0.0.0.0:26660
+carnot init  testing --chain-id=testing  --home node3/carnot --p2p.laddr tcp://0.0.0.0:26661 --rpc.laddr tcp://0.0.0.0:26662
 
 # Add account, with coins to the genesis file
-carnot add-genesis-account $(carnotcli keys show jack -a) 1000cttc
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator1 -a --home node1/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator2 -a --home node2/carnotcli) 1000000000stake;
+carnot add-genesis-account --home node1/carnot $(carnotcli keys show validator3 -a --home node3/carnotcli) 1000000000stake;
+...
+
+# Create transactions for set validators and write them into genesis
+mkdir gentxs
+carnot gentx --name validator1 --memo.port 26656 --home node1/carnot --home-client node1/carnotcli --output-document gentxs/node1.json
+carnot gentx --name validator2 --memo.port 26659 --home node2/carnot --home-client node2/carnotcli --output-document gentxs/node2.json
+carnot gentx --name validator3 --memo.port 26661 --home node3/carnot --home-client node3/carnotcli --output-document gentxs/node3.json
+carnot collect-gentxs --home node1/carnot --gentx-dir gentxs/
+
+# Copy the genesis file to all node dir
+cp node1/carnot/config/genesis.json node2/carnot/config/
+cp node1/carnot/config/genesis.json node3/carnot/config/
+
+# Modify settings on config.toml
+set allow_duplicate_ip to true // for test three nodes on one machine.
+set persistent_peers by the memo in genesis file
+
+# Start the service
+carnot cc-start keyfile_1.json 1 validator1 11111111 --home node1/carnot --home-client node1/carnotcli
+carnot cc-start keyfile_2.json 1 validator2 22222222 --home node2/carnot --home-client node2/carnotcli
+carnot cc-start keyfile_3.json 1 validator3 33333333 --home node3/carnot --home-client node3/carnotcli
+
+> _*NOTE*_: keyfile_1.json is the keyfile node used for send confirm transaction, you can use the keyfile in contract/testdata only for Test!!
+> Or You can [create your TTC account](https://github.com/TTCECO/gttc/wiki/TRY-AS-SUPERNODE-ON-TESTNET#create-your-new-accountaddress-by-gttc) yourself.
 
 # Configure your CLI to eliminate need for chain-id flag
-carnotcli config chain-id tctestchain
-carnotcli config output json
-carnotcli config indent true
-carnotcli config trust-node true
-
-```
-You alse need to [create your TTC account](https://github.com/TTCECO/gttc/wiki/TRY-AS-SUPERNODE-ON-TESTNET#create-your-new-accountaddress-by-gttc) for cross chain transaction. 
-
-You can now start `carnot` by calling `carnot cc-start keyfile.json password `. You will see logs begin streaming that represent blocks being produced, this will take a couple of seconds.
-
-Open another terminal to run commands against the network you have just created:
-
-```bash
-# First check the accounts to ensure they have funds
-carnotcli query account $(carnotcli keys show jack -a)
-
-# Deposit using your coins from the genesis file
-carnotcli tx tcchan deposit t0c233eC8cB98133Bf202DcBAF07112C6Abb058B89 50cttc --from jack
-
-# Query the order by id
-carnotcli query tcchan order 1
-# > ...
+carnotcli --home node1/carnotcli config chain-id testing
+carnotcli --home node1/carnotcli config output json
+carnotcli --home node1/carnotcli config indent true
+carnotcli --home node1/carnotcli config trust-node true
+...
 
 
-```
 
 ### Congratulations, you have built a Cosmos SDK application! This tutorial is now complete. If you want to see how to run the same commands using the REST server [click here](run-rest.md).
